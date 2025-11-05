@@ -1,0 +1,518 @@
+/* DATA TABLE*/
+/*************************************************************/
+$('.tablas').DataTable({
+	"language": {
+		"decimal": ".",
+		"thousands": ",",
+		"info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+		"infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+		"infoPostFix": "",
+		"infoFiltered": "(filtrado de un total de _MAX_ registros)",
+		"loadingRecords": "Cargando...",
+		"lengthMenu": "Mostrar _MENU_ registros",
+		"paginate": {
+			"first": "Primero",
+			"last": "Último",
+			"next": "Siguiente",
+			"previous": "Anterior"
+		},
+		"processing": "Procesando...",
+		"search": "Buscar:",
+		"searchPlaceholder": "Término de búsqueda",
+		"zeroRecords": "No se encontraron resultados",
+		"emptyTable": "Ningún dato disponible en esta tabla",
+		"aria": {
+			"sortAscending": ": Activar para ordenar la columna de manera ascendente",
+			"sortDescending": ": Activar para ordenar la columna de manera descendente"
+		},
+		//only works for built-in buttons, not for custom buttons
+		"buttons": {
+			"create": "Nuevo",
+			"edit": "Cambiar",
+			"remove": "Borrar",
+			"copy": "Copiar",
+			"csv": "fichero CSV",
+			"excel": "tabla Excel",
+			"pdf": "documento PDF",
+			"print": "Imprimir",
+			"colvis": "Visibilidad columnas",
+			"collection": "Colección",
+			"upload": "Seleccione fichero...."
+		},
+		"select": {
+			"rows": {
+				_: '%d filas seleccionadas',
+				0: 'clic fila para seleccionar',
+				1: 'una fila seleccionada'
+			}
+		}
+	}
+});
+
+
+/*************************************************************/
+function execQueryUpd(formData, funcCharge, form) {
+	let result = null;
+	fetch('helpers/ajaxRouter.php', {
+		method: 'POST',
+		body: formData
+	}).then(resp => resp.json())
+		.then(async data => {
+			if (data["success"]) {
+				result = true;
+				if (typeof funcCharge === 'string' && typeof window[funcCharge] === 'function') {
+					window[funcCharge]();
+				} else if (typeof funcCharge === 'function') {
+					//funcCharge();
+				}
+				if (form !== null) {
+					$(form).modal("hide");
+				}
+				const notify = await swal.fire({
+					title: $(".success").val(),
+					text: data["message"],
+					icon: 'success',
+					confirmButtonText: 'Aceptar'
+				});
+			} else {
+				result = false;
+				const notify = await swal.fire({
+					title: $(".error").val(),
+					text: data["message"],
+					icon: 'error',
+					confirmButtonText: 'Aceptar'
+				});
+			}
+		});
+	return result;
+}
+
+
+/*************************************************************************************/
+$("#lang").change(function (e) {
+// $('#formLang').on('submit', function(e) {
+	e.preventDefault();
+	const formData = new FormData();
+	formData.append("option", "languages");
+	formData.append("action", "switch");
+	formData.append("lang", $("#lang").val());
+	// alert($("#lang").val());
+
+	fetch('helpers/ajaxRouter.php', {
+		method: 'POST',
+		body: formData
+	}).then(resp => resp.json())
+	.then(async data => {
+		if (data["success"]) {
+			const notify = await swal.fire({
+				title: 'Éxito',
+				text: data["message"],
+				icon: 'success',
+				confirmButtonText: 'Aceptar'
+			});
+			// location.reload();
+		} else {
+			const notify = await swal.fire({
+				title: 'Error',
+				text: data["message"],
+				icon: 'error',
+				confirmButtonText: 'Aceptar'
+			});
+		}
+	}).catch(error => {
+		alert('Error al cambiar el idioma. Por favor, inténtelo de nuevo.'+error);
+		console.error('Error:', error);
+	});
+	// formData.append("action", "changeLanguage");
+	// formData.append("lang", $(this).val());
+});
+
+
+// Función para actualizar la información del paginador
+/*************************************************************/
+function updatePaginationInfo_ant(ListInstance) {
+   if (!ListInstance) return;
+   const list = ListInstance;
+   const visibleItems = list.visibleItems.length;
+   const currentPage = list.i;  // Página actual (comienza en 1)
+   const itemsPerPage = list.page;  // Items por página (20)
+
+	console.log(visibleItems);
+	console.log(currentPage);
+	console.log(itemsPerPage);
+
+   let start = 0;
+   let end = 0;
+   if (visibleItems > 0) {
+      start = (currentPage - 1) * itemsPerPage + 1;
+      end = Math.min(currentPage * itemsPerPage, visibleItems);
+      start = Math.min(start, end); // Asegurar que start <= end
+   }
+   const infoText = `${start} to ${end} of ${visibleItems}`;
+   $('[data-list-info]').text(infoText);
+}
+
+
+/*************************************************************************************/
+$(document).ready(function() {
+    // Inicializar cuando el elemento se agregue al DOM
+    $(document).on('DOMNodeInserted', function(e) {
+        if ($(e.target).is('.findOwner') || $(e.target).find('.findOwner').length) {
+            // initializeOwnerSelect();
+        }
+    });
+    
+    // También intentar inicializar si ya existe
+   //  setTimeout(initializeOwnerSelect, 100);
+});
+
+
+// $(".findCustomer").ready(function() {
+// $(document).ready(function() {
+/*************************************************************************************/
+function initializeOwnerSelect() {
+	const $select = $(".findOwner");
+	if ($select.length === 0) {
+		console.log('Elemento .findOwner no encontrado, se intentará más tarde...');
+		return;
+	}
+	// Verificar si ya está inicializado con Select2
+	if ($select.hasClass('select2-hidden-accessible')) {
+		console.log('Select2 ya está inicializado en .findOwner');
+		return;
+	}
+	console.log('Inicializando Select2 en .findOwner');
+	let listWhere = [];
+	listWhere.push({
+		"id": "status",
+		"value": '1'
+	})
+	listWhere = JSON.stringify(listWhere);
+	parameters = { "option": "owners", "action": "getWhere", "listWhere": listWhere };
+
+	// const $select = $(".findOwner");
+	// console.log('Elemento encontrado:', $select.length);
+	// console.log('Es un select:', $select.is('select'));
+
+	initialSelect(".findOwner", parameters);
+};
+
+
+/*************************************************************************************/
+function initialSelect(setupSelect, parameters){
+	const ajaxUrl = 'helpers/ajaxRouter.php';
+	const optionParam = parameters["option"];
+	const actionParam = parameters["action"];
+	let listWhere = parameters["listWhere"] || null;
+	listWhere = JSON.stringify(listWhere);
+	const formDataSearch = new FormData();
+	formDataSearch.append("option", option);
+	formDataSearch.append("action", action);
+	formDataSearch.append("listWhere", listWhere);
+
+	console.log(parameters);
+	alert(optionParam);
+
+	const source = parameters["source"] || null;
+   $(setupSelect).select2({
+		language: "es",
+		theme: "default",
+		// theme: "classic",
+		// theme: "bootstrap",
+		placeholder: 'Escribe al menos 3 caracteres para buscar...',
+		minimumInputLength: 3,
+		ajax: {
+			url: ajaxUrl,
+			type: 'POST',
+			// data: formDataSearch,
+			dataType: 'json',
+			delay: 250,
+			data: function (params) {
+				return {
+					option: optionParam,
+					action: actionParam,
+					listWhere: listWhere,
+					source: source || "*",
+					query: params.term,
+					page: params.page || 1
+				};
+			},
+			processResults: function (data, params) {
+				// var sourceT = "*";
+				// if (setupSelect == ".findCustomerPre") {
+				// 	sourceT = "precliente";
+				// }
+				// params.source = params.sourceT || "*";
+			
+				params.page = params.page || 1;
+				if (data[0]["items"].length < 1) {
+					data[0]["items"].push({ id: '0', text: 'Sin Resultados'});
+				}
+				return {
+					results: data[0]["items"],
+					pagination: {
+						more: data[0]["pagination"]["more"]
+					}
+				};
+			},
+			cache: true
+		},
+		templateResult: formatResult,
+		templateSelection: formatSelection
+	});
+	
+	function formatResult(item) {
+		if (!item.id) {
+			return item.id;
+		}
+		var $item = $('<div><b>' + item.id + '</b> - ' + item.text + '</div>');
+		return $item;
+  	}
+
+	function formatSelection(item) {
+		if (ajaxUrl == 'ajax/co_planctas.ajax.php') {
+			return item.id + " - " + item.text;
+		} else {
+			return item.text;
+		}
+  	}
+
+	$(setupSelect).on('select2:open', function () {
+		// var firstOption = $(setupSelect + ' option:first');
+		var firstOption = $(setupSelect + ' option').first();
+		if (firstOption.length) {
+			$(setupSelect).val(firstOption.val()).trigger('change');
+		}
+	});
+}
+
+
+/*************************************************************************************/
+async function getSelects(modulo, select, selectElement, value, text, listWhere) {
+   // const selectElement = document.getElementById(element);
+   listWhere = JSON.stringify(listWhere);
+   const formDataTipDoc = new FormData();
+   formDataTipDoc.append("modulo", modulo);
+   formDataTipDoc.append("option", select);
+   formDataTipDoc.append("action", "getWhere");
+   formDataTipDoc.append("listWhere", listWhere);
+   const response = await fetch('helpers/ajaxRouter.php', {
+      method: 'POST',
+      body: formDataTipDoc
+   }).then(response => response.json())
+   .then(options => {
+      if (options.length === 0) {
+         selectElement.innerHTML = '<option value="" disabled></option>';
+      } else {
+         options.forEach(option => {
+            let optText = "";
+            text.forEach(elemnt => {
+               optText += option[elemnt]+' ' || '';
+            });
+            const optionResponse = document.createElement('option');
+            optionResponse.value = option[value];
+            optionResponse.textContent = optText;
+            selectElement.appendChild(optionResponse);
+         });
+         selectElement.disabled = false;
+      }
+   })
+   .catch(error => {
+      console.error('Error:', error);
+   });
+}
+
+const formato = new Intl.NumberFormat('es-MX', { minimumFractionDigits: 0, maximumFractionDiits: 0 });
+
+
+// Funciones de autocomplete para búsqueda de clientes (similares a las de mascotas)
+//***********************************************************************************************
+function initAutocomplete(inputElement, left = null, top = null) {
+   if (!inputElement) return;
+   let timeoutId;
+   inputElement.addEventListener('input', function (e) {
+      clearTimeout(timeoutId);
+      const searchTerm = e.target.value.trim();
+      if (searchTerm.length < 2) {
+         hideSuggestions();
+         resetOwnerSelection();
+         return;
+      }
+      timeoutId = setTimeout(() => {
+         searchClients(searchTerm, inputElement, left, top);
+      }, 300);
+   });
+
+   // Manejar selección con teclado
+   inputElement.addEventListener('keydown', function (e) {
+      const suggestions = document.getElementById('clientSuggestions');
+      if (!suggestions || suggestions.style.display === 'none') return;
+      const items = suggestions.querySelectorAll('.list-group-item');
+      let activeItem = suggestions.querySelector('.active');
+      switch (e.key) {
+         case 'ArrowDown':
+            e.preventDefault();
+            if (!activeItem) {
+               items[0]?.classList.add('active');
+            } else {
+               activeItem.classList.remove('active');
+               const next = activeItem.nextElementSibling || items[0];
+               next.classList.add('active');
+            }
+            break;
+         case 'ArrowUp':
+            e.preventDefault();
+            if (!activeItem) {
+               items[items.length - 1]?.classList.add('active');
+            } else {
+               activeItem.classList.remove('active');
+               const prev = activeItem.previousElementSibling || items[items.length - 1];
+               prev.classList.add('active');
+            }
+            break;
+         case 'Enter':
+            e.preventDefault();
+            if (activeItem) {
+               selectClient(activeItem, inputElement);
+            }
+            break;
+         case 'Escape':
+            hideSuggestions();
+            break;
+      }
+   });
+	// Cerrar sugerencias al hacer clic fuera
+	document.addEventListener('click', function(e) {
+		if (!inputElement.contains(e.target) &&
+			!document.getElementById('clientSuggestions')?.contains(e.target)) {
+			hideSuggestions();
+		}
+	});
+}
+
+//***********************************************************************************************
+function searchClients(searchTerm, inputElement, left, top) {
+   let listWhere = [];
+   listWhere.push({
+      "id": "status",
+      "value": '1',
+      "like": false
+   })
+   listWhere.push({
+      "id": "name",
+      "value": searchTerm,
+      "like": true
+   })
+   listWhere = JSON.stringify(listWhere);
+   const formData = new FormData();
+   formData.append("modulo", "dival");
+   formData.append("option", "clientes");
+   formData.append("action", "searchClient");
+   formData.append("searchTerm", searchTerm);
+   fetch('helpers/ajaxRouter.php', {
+         method: 'POST',
+         body: formData
+   }).then(response => response.json())
+   .then(clients => {
+      showClientSuggestions(clients, inputElement, left, top);
+   })
+   .catch(error => {
+      console.error('Error:', error);
+   });
+}
+
+//***********************************************************************************************
+function showClientSuggestions(clients, inputElement, left, top) {
+   hideSuggestions();
+   if (clients.length === 0) return;
+   const suggestionsDiv = document.createElement('div');
+   suggestionsDiv.id = 'clientSuggestions';
+   suggestionsDiv.className = 'list-group position-absolute';
+   suggestionsDiv.style.zIndex = '1000';
+   suggestionsDiv.style.width = inputElement.offsetWidth + 'px';
+   suggestionsDiv.style.maxHeight = '200px';
+   suggestionsDiv.style.overflowY = 'auto';
+   clients.forEach(client => {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'list-group-item list-group-item-action';
+      item.innerHTML = `
+      <div class="fw-bold">${client.TerDocId} ${client.TerNombr}</div>
+      <small class="text-label">${client.TerEmail} | Teléfono: ${client.TerTele1}</small>
+      ${client.nivel_riezgo ? `<br><small class="text-label">N.R.: ${client.nivel_riezgo}</small>` : ''}
+      `;
+      item.dataset.clientId = client.id_dvcliente;
+      item.dataset.clientData = JSON.stringify(client);
+      item.addEventListener('click', function () {
+         selectClient(this, inputElement);
+      });
+      item.addEventListener('mouseenter', function () {
+         suggestionsDiv.querySelectorAll('.list-group-item').forEach(i => i.classList.remove('active'));
+         this.classList.add('active');
+      });
+      suggestionsDiv.appendChild(item);
+   });
+
+   // Posicionar debajo del input
+   const rect = inputElement.getBoundingClientRect();
+	// suggestionsDiv.style.top = (rect.bottom + window.scrollY) + 'px';
+   // suggestionsDiv.style.left = (rect.left + window.scrollX) + 'px';
+	if (left == null) {
+		left = rect.left;
+	}
+	if (top == null) {
+		top = rect.bottom;
+	}
+	// console.log(rect);
+	// console.log(window.scrollY);
+	// console.log(window.scrollX);
+	// console.log(inputElement);
+   suggestionsDiv.style.top = top + 'px';
+   suggestionsDiv.style.left = left + 'px';
+   //document.getElementById('formCtaclienAdd').appendChild(suggestionsDiv);
+   document.getElementsByClassName('form-search')[0].appendChild(suggestionsDiv);
+   // document.body.appendChild(suggestionsDiv);
+}
+
+//***********************************************************************************************
+/*
+function selectClient(selectedItem, inputElement) {
+   const clientData = JSON.parse(selectedItem.dataset.clientData);
+	// console.log(clientData);
+   // Establecer dueño seleccionado
+   document.getElementById('idCliente').value = clientData.id_dvcliente;
+   inputElement.value = `${clientData.TerDocId} ${clientData.TerNombr} (${clientData.TerEmail})`;
+   // Cargar mascotas del dueño
+   //loadCtasByClient(clientData.id_dvcliente);
+   hideSuggestions();
+}
+*/
+
+//***********************************************************************************************
+function resetOwnerSelection() {
+   document.getElementById('idCliente').value = '';
+   // const petSelect = document.getElementById('id_pet');
+   // petSelect.innerHTML = '<option value="">Seleccionar Mascota</option>';
+   // petSelect.disabled = true;
+}
+
+
+//***********************************************************************************************
+function hideSuggestions() {
+   const existing = document.getElementById('clientSuggestions');
+   if (existing) {
+      existing.remove();
+   }
+}
+
+
+//***********************************************************************************************
+function getRiskBadgeClass($nivelRiesgo) {
+	switch($nivelRiesgo) {
+		case 1: return 'success';
+		case 2: return 'info';
+		case 3: return 'warning';
+		case 4: return 'danger';
+		default: return 'secondary';
+	}
+}
