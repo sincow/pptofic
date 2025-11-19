@@ -107,9 +107,9 @@
             <div class="card-body p-2">
                <?php
                   $permiModsw = "0";
-                  $opcion = array_search("appointmentedit", array_column($_SESSION['permissionsvet'], 'OpcLink'));
+                  $opcion = array_search("appointmentedit", array_column($_SESSION['permissionssin'], 'OpcLink'));
                   if ($opcion !== NULL && $opcion !== FALSE) {
-                     $permi = $_SESSION['permissionsvet'][$opcion]["UsuPermi"];
+                     $permi = $_SESSION['permissionssin'][$opcion]["UsuPermi"];
                      if ($permi != 0) {
                         $permiModsw = "1";
                      }
@@ -157,17 +157,17 @@
                <div class="card-body p-3">
                   <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
                      <?php
-                        $opcion = array_search("appointmentadd", array_column($_SESSION['permissionsvet'], 'OpcLink'));
+                        $opcion = array_search("appointmentadd", array_column($_SESSION['permissionssin'], 'OpcLink'));
                         if ($opcion !== NULL && $opcion !== FALSE) {
-                           $permi = $_SESSION['permissionsvet'][$opcion]["UsuPermi"];
+                           $permi = $_SESSION['permissionssin'][$opcion]["UsuPermi"];
                            if ($permi != 0) {
                               echo '<a class="btn btn-phoenix-primary btn-sm p-2" href="appointmentadd"><span class="fas fa-calendar-plus me-2"></span>' . 'servicios.schedule_appointment' . '</a>';
                            }
                         }
 
-                        $opcion = array_search("petdetails", array_column($_SESSION['permissionsvet'], 'OpcLink'));
+                        $opcion = array_search("petdetails", array_column($_SESSION['permissionssin'], 'OpcLink'));
                         if ($opcion !== NULL && $opcion !== FALSE) {
-                           $permi = $_SESSION['permissionsvet'][$opcion]["UsuPermi"];
+                           $permi = $_SESSION['permissionssin'][$opcion]["UsuPermi"];
                            if ($permi != 0) {
                               echo '<a class="btn btn-sm btn-phoenix-primary btn-sm p-2" href="petdetails"><span class="fas fa-paw me-2"></span>' . 'pacientes.consult_pet' . '</a>';
                               echo '<a class="btn btn-sm btn-phoenix-primary btn-sm p-2" href="petdetails"><span class="fas fa-plus me-2"></span>' . 'pacientes.consult_pet' . '</a>';

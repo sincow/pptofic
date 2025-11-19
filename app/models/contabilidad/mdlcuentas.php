@@ -23,7 +23,7 @@ class CuentasModel {
          WHERE EmpCodig = :id_empresa
          ORDER BY BanNombr"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_STR);
       $stmt->execute();
       $resp = $stmt->fetchAll(PDO::FETCH_ASSOC);
       $stmt = null;
@@ -49,7 +49,7 @@ class CuentasModel {
          WHERE 1 = 1 " . $where . "
          ORDER BY a.CueCodig"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_STR);
       foreach ($listWhere as $key => $value) {
          $stmt->bindParam(":" . $value["id"], $value["value"]);
       }
@@ -64,12 +64,13 @@ class CuentasModel {
    /**********************************************************************/
    static public function getOne($id) {
       $connection = Database::getConnection();
-      $stmt = $connection->prepare("SELECT a.*
-         FROM CoPlaCue a 
-         WHERE a.EmpCodig = :id_empresa AND a.CueCodig = :id"
+      $stmt = $connection->prepare("SELECT a.*, b.ImpDescr, b.ImpPorce 
+         FROM CoPlaCue a
+			LEFT JOIN CoTipImp b ON a.EmpCodig = b.EmpCodig AND a.ImpCodig = b.ImpCodig
+         WHERE a.EmpCodig = :id_empresa AND a.CueCodig = :CueCodig"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
-      $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
+      $stmt->bindParam(":CueCodig", $id, PDO::PARAM_INT);
       $stmt->execute();
       $resp = $stmt->fetch(PDO::FETCH_ASSOC);
       $stmt = null;

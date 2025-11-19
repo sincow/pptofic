@@ -27,8 +27,8 @@ class CuentasController {
 
    //*****************************************************************************************************
    static public function getOne($id) {
-      $client = CuentasModel::getOne("clients", "id", $id, null);
-      return $client;
+      $cuenta = CuentasModel::getOne($id);
+      return $cuenta;
    }
 
 

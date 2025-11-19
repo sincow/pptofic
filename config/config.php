@@ -16,9 +16,6 @@ if (ENVIRONMENT == 'development') {
 }
 
 
-
-// Configuración de la base de datos
-//define('DB_HOST', 'localhost');
 define('DB_HOST', 'mysql:host=localhost;dbname=u302138738_si001');
 define('DB_NAME', 'u302138738_si001');
 define('DB_USER', 'u302138738_si001');
@@ -30,15 +27,18 @@ define('BD_USERDEFUSU', '');
 define('BD_PASSDEFUSU', '');
 
 
-define('APP_NAME', 'Vet-Clinic');
-define('APP_DESCRIPTION', 'Gestión completa de la salud y el bienestar de tu mascota. Accede a servicios de clínica, belleza y guardería veterinaria en una sola aplicación.');
+define('APP_NAME', 'DIVAL');
+define('APP_DESCRIPTION', 'Gestión completa ERP. Accede a utilidades financieras, contabilidad, inventario, compras, ventas, facturación, gestión de clientes y proveedores y mucho más dentro de un mismo sistema de gestión integrado.');
 define('APP_ICON', 'assets/img/favicons/dival_tra.png');
-define('APP_URL', 'http://localhost/vetclinic/');
+define('APP_URL', 'http://localhost/dival/');
 define('UPLOADS_PATH', '../storage/uploads/');
 define('APP_PATH', 'app');
 //define('CONFIG_PATH', '../config');
 define('CONTROLLERS_PATH', APP_PATH . '/controllers');
 define('MODELS_PATH', APP_PATH . '/models');
+
+define("DATE_FORMAT", 'Y-m-d');
+define("DATE_DISPLAY", 'yyyy-mm-dd');
 
 define('CSRF_TOKEN_EXPIRATION', 3600);
 
@@ -51,9 +51,8 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 
 
-// Generar token CSRF si no existe o ha expirado
-//var_dump($_SESSION);
-if (empty($_SESSION['csrf_token']) || empty($_SESSION['csrf_token_time']) || time() > $_SESSION['csrf_token_time']) {
+
+function setCSRFToken() {
 	$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 	$_SESSION['csrf_token_time'] = time() + CSRF_TOKEN_EXPIRATION;
 	echo '<meta name="csrf-token" content="' . $_SESSION['csrf_token'] . '">';
@@ -74,8 +73,21 @@ function validateCSRFToken($token) {
 		time() <= $_SESSION['csrf_token_time'];
 }
 
+
+// Generar token CSRF si no existe o ha expirado
+if (empty($_SESSION['csrf_token']) || empty($_SESSION['csrf_token_time']) || time() > $_SESSION['csrf_token_time']) {
+	setCSRFToken();
+	/*
+	$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+	$_SESSION['csrf_token_time'] = time() + CSRF_TOKEN_EXPIRATION;
+	echo '<meta name="csrf-token" content="' . $_SESSION['csrf_token'] . '">';
+	echo '<meta name="csrf-token_time" content="' . $_SESSION['csrf_token_time'] . '">';
+	*/
+}
+
+
 //require_once 'app/core/Autoloader.php';
-// require_once 'app/core/Controller.php';
+//require_once 'app/core/Controller.php';
 //require_once 'config/languages.php';
 //require_once 'app/core/Language.php';
 //require_once 'app/controllers/ctrpets.php';

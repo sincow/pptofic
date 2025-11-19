@@ -20,26 +20,28 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 class GeneralModel {
 
 	/********************** GET ALL ***********************/
-	static public function getAll($tabla, $order, $where, $conn = null) {
+	static public function getAll($tabla, $order, $where, $connection = null) {
+		$conn = false;
 		$resp = "";
-		if ($conn == null) {
-			$conn = Database::getConnection();
+		if ($connection == null) {
+			$conn = true;
+			$connection = Database::getConnection();
 		}
-		if ($conn != null) {
-			if ($tabla != null) {
-				$stmt = $conn->prepare("SELECT * FROM $tabla WHERE $where ORDER BY $order");
-				$stmt->execute();
-				$resp = $stmt->fetchAll(PDO::FETCH_ASSOC);
-				// }else{
-				// 	$stmt = null;
-				// 	return $resp;
-			}
-			// $stmt = null;
-			// return $resp;
+		if ($tabla != null) {
+			$stmt = $connection->prepare("SELECT * FROM $tabla WHERE $where ORDER BY $order");
+			$stmt->execute();
+			$resp = $stmt->fetchAll(PDO::FETCH_ASSOC);
 			// }else{
+			// 	$stmt = null;
+			// 	return $resp;
 		}
+		// $stmt = null;
+		// return $resp;
+		// }else{
+      if ($conn == true) {
+         $connection = null;
+      }
 		$stmt = null;
-		$conn = null;
 		return $resp;
 	}
 
@@ -147,13 +149,14 @@ class GeneralModel {
          $response = array("success" => true, "message" => 'Registro guardado exitosamente', "lastId" => $lastId);
 
 		} catch (PDOException $e) {
+			// var_dump($e);
 			$errorInfo = GeneralController::handleMySQLerror($stmt->errorInfo()[1], $stmt->errorInfo()[2]);
 			if (ENVIRONMENT == 'development') {
 				$messageError = $errorInfo["error_code"]." ".$errorInfo["technical_message"];
 			} else {
 				$messageError = $errorInfo["error_code"]." ".$errorInfo["error_message"];
 			}
-			$response = array("success" => false, "message" => $messageError);
+			$response = array("success" => false, "message" => $messageError, "code" => $errorInfo["error_code"]);
 
 			// if ($stmt->errorInfo()[1] == 1062) {
 			// 	$response = array("success" => false, "message" =>"Ya existe un registro con estos datos");
@@ -298,7 +301,7 @@ class GeneralModel {
 			} else {
 				$messageError = $errorInfo["error_code"]." ".$errorInfo["error_message"];
 			}
-			$response = array("success" => false, "message" => $messageError);
+			$response = array("success" => false, "message" => $messageError, "code" =>  $errorInfo["error_code"]);
 		}
 		if ($conn == true) {
 			$connection = null;

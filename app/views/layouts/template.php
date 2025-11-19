@@ -115,9 +115,9 @@ if (!isset($_SESSION)) {
 				$pagina = $_GET["ruta"]; // se adicionó para que pudieran aliminar registros (slia error de permiso)
 			}
 
-			$permi = array_search($pagina, array_column($_SESSION['permissionsvet'], 'OpcLink'));
+			$permi = array_search($pagina, array_column($_SESSION['permissionssin'], 'OpcLink'));
 			// if($pagina != "dashboard" && $pagina != "signout" && $pagina != "sinpermiso" && $pagina != "cerrarsesion"){
-			if ($_SESSION['permissionsvet'][$permi]["UsuPermi"] != 1 && $pagina != "dashboard" && $pagina != "sellersdashboard" && $pagina != "signout" && $pagina != "forbidden" && $pagina != "cerrarsesion") {
+			if ($_SESSION['permissionssin'][$permi]["UsuPermi"] != 1 && $pagina != "dashboard" && $pagina != "sellersdashboard" && $pagina != "signout" && $pagina != "forbidden" && $pagina != "cerrarsesion") {
 				echo '<main class="main" id="top">';
 				include "menu.php";
 				include "header.php";
@@ -135,15 +135,15 @@ if (!isset($_SESSION)) {
 			include "header.php";
 			// include "messages.php";
 			if (isset($_GET["ruta"])) {
-				$opcion = array_search($_GET["ruta"], array_column($_SESSION['permissionsvet'], 'OpcLink'));
+				$opcion = array_search($_GET["ruta"], array_column($_SESSION['permissionssin'], 'OpcLink'));
 				if ($opcion !== NULL && $opcion !== FALSE) {
-					$permi = $_SESSION['permissionsvet'][$opcion]["UsuPermi"];
+					$permi = $_SESSION['permissionssin'][$opcion]["UsuPermi"];
 				} else {
 					$permi = 0;
 				}
 				if ($permi == 1 || $_GET["ruta"] == "dashboard" || $_GET["ruta"] == "sellersdashboard" || $_GET["ruta"] == "signout" || $_GET["ruta"] == "forbidden" || $_GET["ruta"] == "cerrarsesion") {
 					$ruta = $_GET["ruta"] ?? '';
-					$path = $_SESSION['permissionsvet'][$opcion]["path_module"];
+					$path = $_SESSION['permissionssin'][$opcion]["path_module"];
 					$view = APP_PATH."/views/".$path."/" . $_GET["ruta"] . ".php";
 					echo "<script>
 						var navbarTopStyle = window.config.config.phoenixNavbarTopStyle;
@@ -782,28 +782,32 @@ if (!isset($_SESSION)) {
 	<script>
 		$(document).ready(function () {
 			$('.dp_fecha_ini').datepicker({
-				format: 'mm-dd-yyyy',
+				format: '<?php echo DATE_DISPLAY ?>',
+				// format: 'yyyy-mm-dd',
 				// minDate: new Date(),
 				// startDate: '-0m',
 				minDate: 0,
 				autoclose: true,
 				todayBtn: true,
-				language: 'en',
-				todayHighlight: true
+				language: 'es',
+				todayHighlight: true,
+				orientation: "bottom auto"
 			}).on('changeDate', function(selected) {
 				var minDate = new Date(selected.date.valueOf());
 				$('.dp_fecha_fin').datepicker('setStartDate', minDate);
 			});
 
 			$(".dp_fecha_fin").datepicker({
-				format: 'mm-dd-yyyy',
+				format: '<?php echo DATE_DISPLAY ?>',
+				// format: 'yyyy-mm-dd',
 				autoclose: true,
 				todayBtn: true,
-				language: 'en',
+				language: 'es',
 				todayHighlight: true,
 				// startDate: '+1d',
 				startDate: '-0m',
-				minDate: 0
+				minDate: 0,
+				orientation: "bottom auto"
 			}).on('changeDate', function(selected) {
 				var minDate = new Date(selected.date.valueOf());
 				$('.dp_fecha_ini').datepicker('setEndDate', minDate);

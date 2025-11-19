@@ -294,7 +294,7 @@
 				$menu = "**";
 				$opcion = "**";
 				$menuact = '1';
-				foreach ($_SESSION['permissionsvet'] as $key => $value) {
+				foreach ($_SESSION['permissionssin'] as $key => $value) {
 					if ($value["UsuPermi"] == 0) {
 						continue;
 					}

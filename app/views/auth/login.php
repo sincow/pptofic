@@ -151,7 +151,6 @@
 	<script type="text/javascript">
 		document.onload = function() {
 			console.log(document.querySelector('meta[name="csrf-token"]').content);
-			
 		}
 		var imgArray = ['url(assets/img/bg/bg_350.png)', 'url(assets/img/bg/10.png)', 'url(assets/img/bg/17.png)', 'url(assets/img/bg/20.png)', 'url(assets/img/bg/24.png)', 'url(assets/img/bg/34.png)', 'url(assets/img/bg/bg_278.jpeg)', 'url(assets/img/bg/bg_327.jpeg)', 'url(assets/img/bg/bg_383.jpeg)', 'url(assets/img/bg/bg_557.jpeg)'];
 		let element = Math.floor(Math.random() * 6);
@@ -162,9 +161,9 @@
 			console.log("CSRF token not found!");
 		} else {
 			console.log("CSRF token found: " + csrfToken.getAttribute('content'));
-			$("#pyt").val(document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+			document.getElementById("pyt").value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+			// $("#pyt").val(document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
 		}
-		// $("#pyt").val(document.querySelector('meta[name="csrf-token"]').content);
 	</script>
 
 	<script src="vendor/fontawesome/all.min.js"></script>

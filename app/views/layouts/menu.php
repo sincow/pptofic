@@ -10,7 +10,7 @@
 			<!-- <ul class="navbar-nav flex-column" id="navbarVerticalNav"> -->
             <?php
                $structured_menu = [];
-               foreach ($_SESSION['permissionsvet'] as $item) {
+               foreach ($_SESSION['permissionssin'] as $item) {
                   $module = $item['description_module'];
                   $menu = $item['description_menu'];
                   $option = ['name' => $item['description_option'], 'url' => $item['OpcLink']];
@@ -23,7 +23,7 @@
                $currentModule = null;
                $currentMenu = null;
                echo '<ul class="navbar-nav flex-column" id="navbarVerticalNav">';
-               foreach ($_SESSION['permissionsvet'] as $item) {
+               foreach ($_SESSION['permissionssin'] as $item) {
                   if ((int)$item["UsuPermi"] !== 1 || empty($item["description_option"])) continue;
                   if ((int)$item["status_option"] > 3 ) continue;
                   if ($currentModule !== $item["id_module"]) {        // Nuevo módulo

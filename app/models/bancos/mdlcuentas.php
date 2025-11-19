@@ -24,7 +24,7 @@ class CuentasModel {
          WHERE EmpCodig = :id_empresa
          ORDER BY BanNombr"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_STR);
       $stmt->execute();
       $resp = $stmt->fetchAll(PDO::FETCH_ASSOC);
       $stmt = null;
@@ -37,7 +37,7 @@ class CuentasModel {
    static public function getWhere($data) {
       $listWhere = json_decode($data["listWhere"], true);
       $status = "1";
-      $where = "a.id_empresa = :id_empresa AND ";
+      $where = "a.EmpCodig = :id_empresa AND ";
       foreach ($listWhere as $key => $value) {
          $where .= $value["id"] . " = :" . $value["id"] . " AND ";
       }
@@ -46,13 +46,13 @@ class CuentasModel {
          $where = " AND " . $where;
       }
       $connection = Database::getConnection();
-      $stmt = $connection->prepare("SELECT a.id_banco, a.codigo, a.nombre, a.iniciales, a.status, a.id_user, 
-         a.creado_el, a.actualizado_el  
-         FROM DvBancos a 
+      $stmt = $connection->prepare("SELECT a.BanCodig, a.BanNombr, a.BanCuent, a.CueCodig, a.BanCodNa, 
+         a.BanNomNa, a.BanFeApe, a.CheCodig, a.BanConCh, a.BanCodBa, a.BanEstad, a.UsuCodig, a.UsuFecCr, a.UsuFecAc 
+         FROM BaCuenta a 
          WHERE 1 = 1 " . $where . "
-         ORDER BY a.nombre"
+         ORDER BY a.BanNombr"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_STR);
       foreach ($listWhere as $key => $value) {
          $stmt->bindParam(":" . $value["id"], $value["value"]);
       }
@@ -67,10 +67,10 @@ class CuentasModel {
    /**********************************************************************/
    static public function getOne($id) {
       $connection = Database::getConnection();
-      $stmt = $connection->prepare("SELECT a.id_banco, a.codigo, a.nombre, a.iniciales, a.status, a.id_user, 
-         a.creado_el, a.actualizado_el 
-         FROM DvBancos a 
-         WHERE a.id_empresa = :id_empresa AND id_banco = :id"
+      $stmt = $connection->prepare("SELECT a.BanCodig, a.BanNombr, a.BanCuent, a.CueCodig, a.BanCodNa, 
+         a.BanNomNa, a.BanFeApe, a.CheCodig, a.BanConCh, a.BanCodBa, a.BanEstad, a.UsuCodig, a.UsuFecCr, a.UsuFecAc 
+         FROM BaCuenta a 
+         WHERE a.EmpCodig = :id_empresa AND BanCodig = :id"
       );
       $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
       $stmt->bindParam(":id", $id, PDO::PARAM_INT);

@@ -136,11 +136,6 @@ function updatePaginationInfo_ant(ListInstance) {
    const visibleItems = list.visibleItems.length;
    const currentPage = list.i;  // Página actual (comienza en 1)
    const itemsPerPage = list.page;  // Items por página (20)
-
-	console.log(visibleItems);
-	console.log(currentPage);
-	console.log(itemsPerPage);
-
    let start = 0;
    let end = 0;
    if (visibleItems > 0) {
@@ -157,9 +152,9 @@ function updatePaginationInfo_ant(ListInstance) {
 $(document).ready(function() {
     // Inicializar cuando el elemento se agregue al DOM
     $(document).on('DOMNodeInserted', function(e) {
-        if ($(e.target).is('.findOwner') || $(e.target).find('.findOwner').length) {
-            // initializeOwnerSelect();
-        }
+		if ($(e.target).is('.findOwner') || $(e.target).find('.findOwner').length) {
+			// initializeOwnerSelect();
+		}
     });
     
     // También intentar inicializar si ya existe
@@ -178,10 +173,8 @@ function initializeOwnerSelect() {
 	}
 	// Verificar si ya está inicializado con Select2
 	if ($select.hasClass('select2-hidden-accessible')) {
-		console.log('Select2 ya está inicializado en .findOwner');
 		return;
 	}
-	console.log('Inicializando Select2 en .findOwner');
 	let listWhere = [];
 	listWhere.push({
 		"id": "status",
@@ -189,31 +182,27 @@ function initializeOwnerSelect() {
 	})
 	listWhere = JSON.stringify(listWhere);
 	parameters = { "option": "owners", "action": "getWhere", "listWhere": listWhere };
-
 	// const $select = $(".findOwner");
-	// console.log('Elemento encontrado:', $select.length);
-	// console.log('Es un select:', $select.is('select'));
-
 	initialSelect(".findOwner", parameters);
 };
 
 
 /*************************************************************************************/
-function initialSelect(setupSelect, parameters){
+function initialSelect(selectQuery, parameters){
 	const ajaxUrl = 'helpers/ajaxRouter.php';
-	const optionParam = parameters["option"];
-	const actionParam = parameters["action"];
-	let listWhere = parameters["listWhere"] || null;
+	setupSelect = "#terceroVale";
+	setupSelect = "#"+selectQuery;
+   var moduleParam = parameters[0]["modulo"];
+	var optionParam = parameters[0]["option"];
+	let actionParam = parameters[0]["action"];
+	let listWhere = parameters[0]["listWhere"] || null;
 	listWhere = JSON.stringify(listWhere);
 	const formDataSearch = new FormData();
-	formDataSearch.append("option", option);
-	formDataSearch.append("action", action);
+	formDataSearch.append("modulo", moduleParam);
+	formDataSearch.append("option", optionParam);
+	formDataSearch.append("action", actionParam);
 	formDataSearch.append("listWhere", listWhere);
-
-	console.log(parameters);
-	alert(optionParam);
-
-	const source = parameters["source"] || null;
+	let source = parameters["source"] || "";
    $(setupSelect).select2({
 		language: "es",
 		theme: "default",
@@ -224,11 +213,13 @@ function initialSelect(setupSelect, parameters){
 		ajax: {
 			url: ajaxUrl,
 			type: 'POST',
+			//body: formDataSearch,
 			// data: formDataSearch,
 			dataType: 'json',
 			delay: 250,
 			data: function (params) {
 				return {
+					modulo: moduleParam,
 					option: optionParam,
 					action: actionParam,
 					listWhere: listWhere,
@@ -270,7 +261,8 @@ function initialSelect(setupSelect, parameters){
   	}
 
 	function formatSelection(item) {
-		if (ajaxUrl == 'ajax/co_planctas.ajax.php') {
+		// if (ajaxUrl == 'ajax/co_planctas.ajax.php') {
+		if (optionParam == 'terceros' || optionParam == 'clientes' || optionParam == 'cuentas') {
 			return item.id + " - " + item.text;
 		} else {
 			return item.text;
@@ -330,12 +322,14 @@ const formato = new Intl.NumberFormat('es-MX', { minimumFractionDigits: 0, maxim
 function initAutocomplete(inputElement, left = null, top = null) {
    if (!inputElement) return;
    let timeoutId;
-   inputElement.addEventListener('input', function (e) {
+	inputElement.addEventListener('input', function (e) {
       clearTimeout(timeoutId);
       const searchTerm = e.target.value.trim();
       if (searchTerm.length < 2) {
          hideSuggestions();
-         resetOwnerSelection();
+			if (inputElement.id == 'idCliente') {
+				resetOwnerSelection();
+			}
          return;
       }
       timeoutId = setTimeout(() => {
@@ -390,6 +384,7 @@ function initAutocomplete(inputElement, left = null, top = null) {
 	});
 }
 
+
 //***********************************************************************************************
 function searchClients(searchTerm, inputElement, left, top) {
    let listWhere = [];
@@ -421,6 +416,7 @@ function searchClients(searchTerm, inputElement, left, top) {
    });
 }
 
+
 //***********************************************************************************************
 function showClientSuggestions(clients, inputElement, left, top) {
    hideSuggestions();
@@ -437,9 +433,9 @@ function showClientSuggestions(clients, inputElement, left, top) {
       item.type = 'button';
       item.className = 'list-group-item list-group-item-action';
       item.innerHTML = `
-      <div class="fw-bold">${client.TerDocId} ${client.TerNombr}</div>
-      <small class="text-label">${client.TerEmail} | Teléfono: ${client.TerTele1}</small>
-      ${client.nivel_riezgo ? `<br><small class="text-label">N.R.: ${client.nivel_riezgo}</small>` : ''}
+			<div class="fw-bold">${client.TerDocId} ${client.TerNombr}</div>
+			<small class="text-label">${client.TerEmail} | Teléfono: ${client.TerTele1}</small>
+			${client.nivel_riezgo ? `<br><small class="text-label">N.R.: ${client.nivel_riezgo}</small>` : ''}
       `;
       item.dataset.clientId = client.id_dvcliente;
       item.dataset.clientData = JSON.stringify(client);
@@ -463,10 +459,6 @@ function showClientSuggestions(clients, inputElement, left, top) {
 	if (top == null) {
 		top = rect.bottom;
 	}
-	// console.log(rect);
-	// console.log(window.scrollY);
-	// console.log(window.scrollX);
-	// console.log(inputElement);
    suggestionsDiv.style.top = top + 'px';
    suggestionsDiv.style.left = left + 'px';
    //document.getElementById('formCtaclienAdd').appendChild(suggestionsDiv);
@@ -478,11 +470,8 @@ function showClientSuggestions(clients, inputElement, left, top) {
 /*
 function selectClient(selectedItem, inputElement) {
    const clientData = JSON.parse(selectedItem.dataset.clientData);
-	// console.log(clientData);
-   // Establecer dueño seleccionado
    document.getElementById('idCliente').value = clientData.id_dvcliente;
    inputElement.value = `${clientData.TerDocId} ${clientData.TerNombr} (${clientData.TerEmail})`;
-   // Cargar mascotas del dueño
    //loadCtasByClient(clientData.id_dvcliente);
    hideSuggestions();
 }

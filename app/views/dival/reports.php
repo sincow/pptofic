@@ -83,9 +83,9 @@
 			<div class="row gy-2 list" id="reportsList">
 				<?php
 					foreach ($reports as $report => $value) {
-						$opcion = array_search($value["link_report"], array_column($_SESSION['permissionsvet'], 'OpcLink'));
+						$opcion = array_search($value["link_report"], array_column($_SESSION['permissionssin'], 'OpcLink'));
 						if ($opcion !== NULL && $opcion !== FALSE) {
-							$permi = $_SESSION['permissionsvet'][$opcion]["UsuPermi"];
+							$permi = $_SESSION['permissionssin'][$opcion]["UsuPermi"];
 							if ($permi == 0) {
 							  continue;
 							}

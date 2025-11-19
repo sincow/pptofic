@@ -75,10 +75,14 @@ class AuthController {
 		}
 		if (isset($_POST['username']) && $_POST['username'] !== "") {
 			if (!validateCSRFToken($_POST['pyt'])) {
-				echo '<div class="alert alert-soft-danger" role="alert">Invalid request method</div>';
+				echo '<div class="alert alert-soft-danger" role="alert">Método de solicitud inválido</div>';
 				session_destroy();
 				echo '<script>
-					window.location = "#";
+					setTimeout(function() {
+						console.log("Ejecutado después de 2 segundos");
+						miFuncion();
+					}, 4000);
+					window.location = "";
 				</script>';
 				return;
 			}
@@ -143,14 +147,14 @@ class AuthController {
 				// if ($seller != null) {
 				// 	$_SESSION["idSeller"] = $seller[0]["id_seller"];
 				// } else {
-					$_SESSION["idSeller"] = 0;
+				$_SESSION["idSeller"] = 0;
 				// }
 				$item = null;
 				$valor = null;
 				$permusua = PermissionModel::ViewPermissions($item, $valor);
-				$_SESSION['permissionsvet'] = $permusua;
-
+				$_SESSION['permissionssin'] = $permusua;
 				$_SESSION['ivaIncluido'] = 2;
+
 				$tabla = "GrParame";
 				$order = "ParCodig";
 				$where = "EmpCodig = '" . $_SESSION['empdef']."' AND ModCodig = '21'"." AND ParCodig = 'IVI'";
@@ -182,12 +186,13 @@ class AuthController {
 					$table = "users";
 					$data = array(
 						"last_login" => $fechaHora,
-						"last_ip"   => $UsuIp
+						"last_ip"    => $UsuIp
 					);
 					$where = array("id_user" => $_SESSION['user_id']);
 					$userupdt = GeneralModel::update($table, $data, $where, $conn);
-					if ($userupdt[0] != "ok") {
-						throw new PDOException($userupdt[1], $userupdt[0]);
+					if ($userupdt["success"] == false) {
+						// throw new PDOException($userupdt[1], $userupdt[0]);
+						throw new PDOException($userupdt["message"], $userupdt["code"]);
 					}
 					$conn->commit();
 				} catch (PDOException $ex) {
@@ -208,10 +213,10 @@ class AuthController {
 				echo '<div class="alert alert-soft-danger" role="alert">'.'Usuario o contraseña incorrectos'.'</div>';
 				// echo '<div class="alert alert-soft-danger" role="alert">Correo o Contraseña <strong>Incorrectos</strong>, vuelve a intentarlo</div>';
 				session_destroy();
-				echo '<script>
-					window.location = "#";
-				</script>';
-				return;
+				// echo '<script>
+				// 	window.location = "";
+				// </script>';
+				// return;
 			}
 		}
 	}
