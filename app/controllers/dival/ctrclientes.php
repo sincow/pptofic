@@ -47,6 +47,25 @@ class ClientesController {
    }
 
 
+   //*****************************************************************************************************
+	static public function getByQuery(){
+      $query = $_POST["query"];
+      $page = $_POST["page"];
+      if (strlen($query) < 3 ) {
+			$respuesta = array(['items' => [
+					[
+						'id' => '0', 
+						'text' => 'Sin Resultados'
+					]
+				], 'pagination' => ['more' => false]
+			]);
+      } else {
+         $respuesta = ClientesModel::getByQuery($query, $page);
+      }
+		return $respuesta;
+	}
+
+
    //******************************************************************************************
    static public function getSaldo() {
       // if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

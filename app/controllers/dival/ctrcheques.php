@@ -13,6 +13,18 @@ if (isset($_POST["action"]) && ($_POST["action"] == "create" || $_POST["action"]
 class ChequesController {
 
 
+   //*******************************************************************************************
+   static public function filter(){
+      if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+         $response = array("success" => false, "message" => 'Método inválido');
+         return $response;
+      }
+		$data = filter_input_array(INPUT_POST);
+      $especies = ChequesModel::filter($data);
+      return $especies;
+   }
+
+
    //******************************************************************************************
    static public function getOne() {
       $required = ['id_cheque'];
@@ -38,6 +50,30 @@ class ChequesController {
       $response = ChequesModel::getOne($data, 1);
       return $response;
    }
+
+
+   static public function getDetails() {
+      $required = ['idDocument'];
+      $verification = GeneralController::verifyRequiredFields($required, $_POST);
+      if ($verification["success"] == false) {
+         return $verification;
+      }
+      $data = $_POST;
+      $data["id_cheque"] = filter_var($data["idDocument"], FILTER_SANITIZE_NUMBER_INT);
+      $responseOne = ChequesModel::getOne($data);
+      $dataCon = [];
+      $responseCon = [];
+      if ($responseOne != null ) {
+         $idCheque = $responseOne["id_cheque"];
+         $dataCon = array("id_cheque" => $idCheque);
+         $responseCon = ChequesModel::getConsignacion($dataCon);
+         $responseDev = ChequesModel::getDevolucion($dataCon);
+         $responseApl = ChequesModel::getAplaza($dataCon);
+      }
+      $response = array("cheque" => $responseOne, "consignacion" => $responseCon, "devolucion" => $responseDev, "aplaza" => $responseApl); ;
+      return $response;
+   }
+
 
 
    //******************************************************************************************

@@ -53,18 +53,18 @@
 						<?php
 							$permiAdd = "";
 							$permiExp = "";
-							$opcion = array_search("clienteadd", array_column($_SESSION['permissionssin'], 'OpcLink'));
+							$opcion = array_search("clienteadd", array_column($_SESSION['permissionsvet'], 'OpcLink'));
 							if ($opcion !== NULL && $opcion !== FALSE) {
-								$permi = $_SESSION['permissionssin'][$opcion]["UsuPermi"];
+								$permi = $_SESSION['permissionsvet'][$opcion]["UsuPermi"];
 								if ($permi != 0) {
 									$permiAdd = '<a class="btn btn-primary" href="?action=create"><span class="fas fa-plus me-2"></span>Agregar Cliente</a>';
 									$permiAdd = '<a class="btn btn-primary" id="btnaddCliente" href="clienteadd"><span class="fas fa-plus me-2"></span>Adicionar Especie</a>';
 									$permiAdd = '<a class="btn btn-primary" id="btnaddCliente"><span class="fas fa-plus me-2"></span>Agregar Cliente</a>';
 								}
 							}
-							$opcion = array_search("clientesexport", array_column($_SESSION['permissionssin'], 'OpcLink'));
+							$opcion = array_search("clientesexport", array_column($_SESSION['permissionsvet'], 'OpcLink'));
 							if ($opcion !== NULL && $opcion !== FALSE) {
-								$permi = $_SESSION['permissionssin'][$opcion]["UsuPermi"];
+								$permi = $_SESSION['permissionsvet'][$opcion]["UsuPermi"];
 								if ($permi != 0) {
 									$permiExp = '<button class="btn btn-link text-900 me-4 px-0"><span class="fa-solid fa-file-export fs--1 me-2"></span>Exportar</button>';
 								}
@@ -73,16 +73,16 @@
                      $permiDelsw = "0";
                      $permiMod = "";
                      $permiDel = "";
-                     $opcion = array_search("clienteedit", array_column($_SESSION['permissionssin'], 'OpcLink'));
+                     $opcion = array_search("clienteedit", array_column($_SESSION['permissionsvet'], 'OpcLink'));
                      if ($opcion !== NULL && $opcion !== FALSE) {
-                        $permi = $_SESSION['permissionssin'][$opcion]["UsuPermi"];
+                        $permi = $_SESSION['permissionsvet'][$opcion]["UsuPermi"];
                         if ($permi != 0) {
                            $permiModsw = "1";
                         }
                      }
-                     $opcion = array_search("clientedelete", array_column($_SESSION['permissionssin'], 'OpcLink'));
+                     $opcion = array_search("clientedelete", array_column($_SESSION['permissionsvet'], 'OpcLink'));
                      if ($opcion !== NULL && $opcion !== FALSE) {
-                        $permi = $_SESSION['permissionssin'][$opcion]["UsuPermi"];
+                        $permi = $_SESSION['permissionsvet'][$opcion]["UsuPermi"];
                         if ($permi != 0) {
                            $permiDelsw = "1";
                         }

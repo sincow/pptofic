@@ -12,7 +12,6 @@ if (!isset($_SESSION)) {
 
 class ClientesModel {
 
-
    //******************************************************************************************
    static public function getAll($conn = null) {
       if ($conn == null) {
@@ -33,33 +32,6 @@ class ClientesModel {
          ORDER BY c.TerNombr"
       );
       $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
-      $stmt->execute();
-      $resp = $stmt->fetchAll(PDO::FETCH_ASSOC);
-      $stmt = null;
-      $connection = null;
-      return $resp;
-   }
-
-
-   //*************************************************************************************************
-   static public function searchClient($data) {
-      $searchTerm = trim($data["searchTerm"]);
-      $connection = Database::getConnection();
-      $sql = "SELECT a.id_dvcliente, a.TerDocId, a.direccion_residencia, a.referencia_comercial, a.telefono_refcomercial, 
-         a.referencia_personal, a.telefono_refpersonal, a.valor_cupo, a.valor_cupotemporal, a.id_actividad, 
-         a.origen_recursos, a.nivel_riezgo, a.pep, a.status, a.id_user, a.creado_el, a.actualizado_el, e.TerNombr, 
-         e.TerEmail, e.TerTele1 
-         FROM DvClient a 
-         LEFT JOIN companies d ON a.id_empresa = d.id_empresa
-         LEFT JOIN CoTercer  e ON d.EmpCodig = e.EmpCodig AND a.TerDocId = e.TerDocId 
-         WHERE (e.TerNombr LIKE :search1 OR e.TerDocId LIKE :search2 OR e.TerEmail LIKE :search3) AND 
-         a.id_empresa = :id_empresa AND a.status = '1' 
-         ORDER BY e.TerNombr";
-      $stmt = $connection->prepare($sql);
-      for ($i = 1; $i <= 3; $i++) {
-         $stmt->bindValue(":search$i", "%$searchTerm%", PDO::PARAM_STR);
-      }
-      $stmt->bindValue(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
       $stmt->execute();
       $resp = $stmt->fetchAll(PDO::FETCH_ASSOC);
       $stmt = null;
@@ -107,6 +79,33 @@ class ClientesModel {
    }
 
 
+   //*************************************************************************************************
+   static public function searchClient($data) {
+      $searchTerm = trim($data["searchTerm"]);
+      $connection = Database::getConnection();
+      $sql = "SELECT a.id_dvcliente, a.TerDocId, a.direccion_residencia, a.referencia_comercial, a.telefono_refcomercial, 
+         a.referencia_personal, a.telefono_refpersonal, a.valor_cupo, a.valor_cupotemporal, a.id_actividad, 
+         a.origen_recursos, a.nivel_riezgo, a.pep, a.status, a.id_user, a.creado_el, a.actualizado_el, e.TerNombr, 
+         e.TerEmail, e.TerTele1 
+         FROM DvClient a 
+         LEFT JOIN companies d ON a.id_empresa = d.id_empresa
+         LEFT JOIN CoTercer  e ON d.EmpCodig = e.EmpCodig AND a.TerDocId = e.TerDocId 
+         WHERE (e.TerNombr LIKE :search1 OR e.TerDocId LIKE :search2 OR e.TerEmail LIKE :search3) AND 
+         a.id_empresa = :id_empresa AND a.status = '1' 
+         ORDER BY e.TerNombr";
+      $stmt = $connection->prepare($sql);
+      for ($i = 1; $i <= 3; $i++) {
+         $stmt->bindValue(":search$i", "%$searchTerm%", PDO::PARAM_STR);
+      }
+      $stmt->bindValue(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->execute();
+      $resp = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $stmt = null;
+      $connection = null;
+      return $resp;
+   }
+
+
    //******************************************************************************************
    static public function getOne($id) {
       $connection = Database::getConnection();
@@ -131,6 +130,59 @@ class ClientesModel {
       $connection = null;
       return $resp;
    }
+
+
+   //*********************************************************************************************
+	static public function getByQuery($query, $page){
+      $connection = Database::getConnection();
+		$results_per_page = 10;
+		$offset = ($page -1) * $results_per_page;
+		if ($query != '') {
+			$queryLike = "%$query%";
+			$stmt = $connection->prepare("SELECT a.TerDocId, c.TerNombr
+				FROM 	DvClient a
+            LEFT JOIN companies b ON a.id_empresa = b.id_empresa
+            LEFT JOIN CoTercer  c ON b.EmpCodig = c.EmpCodig AND a.TerDocId = c.TerDocId 
+				WHERE a.id_empresa = :id_empresa AND (a.TerDocId LIKE :query OR c.TerNombr LIKE :query2) 
+				ORDER BY c.TerNombr ASC 
+				LIMIT :limite OFFSET :offset"
+			);
+			$stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+			$stmt->bindParam(":query", $queryLike, PDO::PARAM_STR);
+			$stmt->bindParam(":query2", $queryLike, PDO::PARAM_STR);
+			$stmt->bindParam(":limite", $results_per_page, PDO::PARAM_INT);
+			$stmt->bindParam(":offset", $offset, PDO::PARAM_INT);
+			// print_r($stmt);
+			$stmt->execute();
+			$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			$stmt = null;
+			$stmt_count = $connection->prepare("SELECT COUNT(*) 
+				FROM DvClient 
+				WHERE id_empresa = :id_empresa AND (TerDocId LIKE :query OR TerNombr LIKE :query2)"
+			);
+			$stmt_count->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+			$stmt_count->bindParam(":query", $queryLike, PDO::PARAM_STR);
+			$stmt_count->bindParam(":query2", $queryLike, PDO::PARAM_STR);
+			$stmt_count->execute();
+			$total_results = $stmt_count->fetchColumn();
+			$more = $total_results > ($page * $results_per_page);
+			$stmt_count = null;
+			$resp = array(['items' => array_map(function($row) {
+				return [
+					'id' => $row['TerDocId'], 
+					'text' => $row['TerNombr']];
+			}, $results), 'pagination' => ['more' => $more]]);
+		} else {
+			$resp = array(['items' => [
+					[
+						'id' => '0', 
+						'text' => 'Sin Resultados'
+					]
+				], 'pagination' => ['more' => false]
+			]);
+		}
+		return $resp;
+	}
 
 
    //******************************************************************************************
