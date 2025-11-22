@@ -109,7 +109,6 @@ document.addEventListener("DOMContentLoaded", async function() {
       });
 
 
-
       let CompteBco = paramsList.find(param => param.ParCodig === "BA3");
       document.getElementById('CompteBco').value = CompteBco.ParValor;
       var listWhere = [];

@@ -209,6 +209,59 @@ class ChequesModel {
 
 
    //**************************************************************************************
+	static public function placomisi($data) {
+      $connection = Database::getConnection();
+      $query = "SELECT a.*, c.TerNombr, g.TabNive6 as TerTiDoc, c.TerDirec, c.TerTele1, c.TerEmail, m.nivel_riezgo, 
+         m.valor_cupo, m.valor_cupotemporal, l.codigo AS banco_codigo,
+         l.nombre AS banco_nombre, k.sucursal AS banco_sucursal, k.numero_cuenta AS banco_num_cuenta 
+         FROM DvCheque a 
+         LEFT JOIN companies b ON a.id_empresa = b.id_empresa
+         LEFT JOIN CoTercer  c ON c.EmpCodig = b.EmpCodig AND c.TerDocId = a.TerDocId 
+         LEFT JOIN GrTablas  g ON g.EmpCodig = '1' AND g.TabCodig = '01' AND c.TerTiDoc = g.TabNive1 
+         LEFT JOIN DvBanCli  k ON a.id_empresa = k.id_empresa AND a.id_bancli = k.id_bancli 
+         LEFT JOIN DvBancos  l ON k.id_empresa = l.id_empresa AND k.id_banco = l.id_banco 
+         LEFT JOIN DvClient  m ON a.id_empresa = m.id_empresa AND a.id_dvcliente = m.id_dvcliente
+         WHERE a.id_empresa = :id_empresa AND a.fecha = :repFecPlanilla";
+
+      $stmt = $connection->prepare($query);
+      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":repFecPlanilla", $data["fecCambioSearchFrom"], PDO::PARAM_INT);
+      $stmt->execute();
+      $response = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $stmt = null;
+      $connection = null;
+      return $response;
+   }
+
+
+   //**************************************************************************************
+   static public function rephiscliente($data) {
+      $connection = Database::getConnection();
+      $query = "SELECT a.*, c.TerNombr, g.TabNive6 as TerTiDoc, c.TerDirec, c.TerTele1, c.TerEmail, m.nivel_riezgo, 
+         m.valor_cupo, m.valor_cupotemporal, l.codigo AS banco_codigo,
+         l.nombre AS banco_nombre, k.sucursal AS banco_sucursal, k.numero_cuenta AS banco_num_cuenta, 
+         COALESCE((SELECT MAX(n.fecha) FROM DvAplaza n WHERE a.id_empresa = n.id_empresa AND a.id_cheque = n.id_cheque), a.vencimiento) as UltVenci 
+         FROM DvCheque a 
+         LEFT JOIN companies b ON a.id_empresa = b.id_empresa
+         LEFT JOIN CoTercer  c ON b.EmpCodig = c.EmpCodig AND a.TerDocId = c.TerDocId 
+         LEFT JOIN GrTablas  g ON c.TerTiDoc = g.TabNive1 AND g.TabCodig = '01'
+         LEFT JOIN DvBanCli  k ON a.id_empresa = k.id_empresa AND a.id_bancli = k.id_bancli 
+         LEFT JOIN DvBancos  l ON k.id_empresa = l.id_empresa AND k.id_banco = l.id_banco 
+         LEFT JOIN DvClient  m ON a.id_empresa = m.id_empresa AND a.id_dvcliente = m.id_dvcliente
+         WHERE a.id_empresa = :id_empresa AND a.TerDocId = :TerDocId AND a.fecha between :repFecIniHisCli AND :repFecFinHisCli";
+      $stmt = $connection->prepare($query);
+      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":TerDocId", $data["TerDocId"], PDO::PARAM_INT);
+      $stmt->bindParam(":repFecIniHisCli", $data["repFecIniHisCli"]);
+      $stmt->bindParam(":repFecFinHisCli", $data["repFecFinHisCli"]);
+      $stmt->execute();
+      $response = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $stmt = null;
+      $connection = null;
+      return $response;
+   }
+
+   //**************************************************************************************
    static public function getAplaza($dataApl) {
       $connection = Database::getConnection();
       $sql = "SELECT a.id_empresa, a.id_aplaza, a.id_cheque, a.fecha, a.dias_cobrar, a.valor_aplaza, 

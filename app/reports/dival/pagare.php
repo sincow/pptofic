@@ -13,17 +13,17 @@ unset($_SESSION['reportPath']);
 $token = $_GET['token'] ?? '';
 if (empty($token) || !isset($_SESSION['report_temp_' . $token])) {
    echo "<script>
-      alert('Token inválido la ventana se cerrará;');
+      alert('Token inválido');
       window.close();
    </script>";
    exit;
 }
 $reportData = $_SESSION['report_temp_' . $token];
 // Validar expiración (15 minutos)
-if (time() - $reportData['timestamp'] > 1200) {
+if (time() - $reportData['timestamp'] > 585) {
    unset($_SESSION['report_temp_' . $token]);
    echo "<script>
-      alert('Token inválido la ventana se cerrará;');
+      alert('Token inválido');
       window.close();
    </script>";
    exit;

@@ -1,13 +1,63 @@
+<style>
+	.hover-border-info:hover .card {
+    border-color: #25B0D3 !important;
+    box-shadow: 0 0 0 1px #25B0D3;
+	}
+
+	.hover-border-info:hover .text-900 {
+		color: #25B0D3 !important;
+	}
+
+	.phoenix-hover-info .phoenix-card-hover {
+		transition: all 0.2s ease-in-out;
+	}
+
+	/*****/
+	.phoenix-hover-info:hover .phoenix-card-hover {
+		background-color: var(--badge-phoenix-primary) !important;
+		border-color: var(--badge-phoenix-primary) !important;
+		/* background-color: #25B0D3 !important; */
+		/* border-color: #25B0D3 !important; */
+	}
+
+	/*
+	.phoenix-hover-info:hover .text-900,
+	.phoenix-hover-info:hover .text-700,
+	.phoenix-hover-info:hover .fw-semi-bold {
+		color: white !important;
+	}
+
+	.phoenix-hover-info:hover .reportsby {
+		color: rgba(255, 255, 255, 0.9) !important;
+	}
+	*/
+
+	/* Agregar este CSS */
+	.hover-info:hover .hover-bg-info {
+		background-color: var(--phoenix-info) !important;
+		border-color: var(--phoenix-info) !important;
+	}
+
+	.hover-info:hover .text-900,
+	.hover-info:hover .text-700 {
+		color: white !important;
+	}
+
+	.hover-info:hover .reportsby {
+		color: white !important;
+	}
+</style>
+
 <?php
 	$table = "reports";
-	$order = "priority_report, category_report, name_report";
+	$order = "priority_report, last_generate_report DESC, name_report";
 	$where = "status_report = '1'";
 	$reports = GeneralModel::getAll($table, $order, $where);
 ?>
 <div class="content pt-10">
 	<div class="row mb-3">
 		<div class="col-lg-8">
-			<h3 class="mb-0">Reportes</h3>
+			<h4 class="mb-0">Reportes</h4>
 		</div>
 		<div class="col-lg-4">
 			<nav class="mb-2" aria-label="breadcrumb">
@@ -19,7 +69,6 @@
 		</div>
 	</div>
 	<div class="pb-2">
-		<!-- <h2 class="mb-4">Reports</h2> -->
 		<div id="reports" data-list='{"valueNames":["title","text","priority","reportsby","reports","date"],"page":9,"pagination":true}'>
 			<div class="row g-3 justify-content-between mb-2">
 				<div class="col-12">
@@ -31,7 +80,7 @@
 									<span class="fas fa-search search-box-icon"></span>
 								</form>
 							</div>
-							<button class="btn px-3 py-2 btn-phoenix-secondary" type="button" data-bs-toggle="modal" data-bs-target="#reportsFilterModal" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent"><span class="fa-solid fa-filter text-primary" data-fa-transform="down-3"></span></button>
+							<!-- <button class="btn px-3 py-2 btn-phoenix-secondary" type="button" data-bs-toggle="modal" data-bs-target="#reportsFilterModal" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent"><span class="fa-solid fa-filter text-primary" data-fa-transform="down-3"></span></button> -->
 							<div class="modal fade" id="reportsFilterModal" tabindex="-1">
 								<div class="modal-dialog modal-dialog-centered">
 									<div class="modal-content border">
@@ -80,7 +129,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="row gy-2 list" id="reportsList">
+			<div class="row g-3 list" id="reportsList">
 				<?php
 					foreach ($reports as $report => $value) {
 						$opcion = array_search($value["link_report"], array_column($_SESSION['permissionssin'], 'OpcLink'));
@@ -90,7 +139,6 @@
 							  continue;
 							}
 						}
-
 						$category = $value["category_report"];
 						switch ($category) {
 							case '1':
@@ -134,7 +182,7 @@
 								$genFormName = "Descargar PDF";
 								break;
 							case '2':
-								$genFormName = "PDF o Hoja de Cálculo";
+								$genFormName = "PDF / Hoja de Cálculo";
 								break;
 							default:
 								$genFormName = "";
@@ -144,24 +192,18 @@
 							$value["last_generate_report"] = "No Generado";
 						}
 						echo '
-							<div class="col-12 col-md-6 col-xl-4">
-								<div class="card h-100">
-									<div class="card-body">
+							<div class="col-12 col-md-6 col-xl-3"><a class="text-decoration-none fw-bold fs-0 lh-sm title line-clamp-1 me-sm-0 phoenix-hover-info" href="'.$value["link_report"].'">
+					        <div class="card h-100 phoenix-card-hover">
+									<div class="card-body p-3">
 										<div class="border-bottom">
 											<div class="d-flex align-items-start mb-1">
-												<div class="d-sm-flex align-items-center ps-0"><a class="fw-bold fs-1 lh-sm title line-clamp-1 me-sm-4" href="'.$value["link_report"].'">'.$value["name_report"].'</a>
-													<div class="d-flex align-items-center"><span class="fa-solid fa-circle me-1 '.$priorityClass.'" data-fa-transform="shrink-6 up-1"></span><span class="fw-bold priority fs--1 text-900 lh-2">'.$priorityName.'</span></div>
-												</div>
+												<div class="col-9 d-sm-flex align-items-center ps-0">'.$value["name_report"].'</div>
+												<div class="d-flex align-items-center"><span class="fa-solid fa-circle me-1 '.$priorityClass.'" data-fa-transform="shrink-6 up-1"></span><span class="fw-bold priority fs--1 text-900 lh-2 '.$priorityClass.'">'.$priorityName.'</span></div>
 											</div>
 											<p class="fs--1 fw-semi-bold text-900 ms-1 text mb-4 ps-0">'.$value["description_report"].'</p>
 										</div>
 										<div class="row g-1 g-sm-3 mt-2 lh-1">
 											<div class="col-12 col-sm-auto flex-1 text-truncate fs--1"><span class="fa-regular fa-folder me-2 reportsby"></span>'.$genFormName.'</div>
-											<div class="col-12 col-sm-auto">
-												<div class="d-flex align-items-center"><span class="me-2" data-feather="grid" style="stroke-width:2;"></span>
-													<p class="mb-0 fs--1 fw-semi-bold text-700 reports">'.$categoryName.'</p>
-												</div>
-											</div>
 											<div class="col-12 col-sm-auto">
 												<div class="d-flex align-items-center"><span class="me-2" data-feather="clock" style="stroke-width:2;"></span>
 													<p class="mb-0 fs--1 fw-semi-bold text-700 date">'.substr($value["last_generate_report"],0,16).'</p>
@@ -169,9 +211,14 @@
 											</div>
 										</div>
 									</div>
-								</div>
+								</div></a>
 							</div>
 						';
+							// <div class="col-12 col-sm-auto">
+							// 	<div class="d-flex align-items-center"><span class="me-2" data-feather="grid" style="stroke-width:2;"></span>
+							// 		<p class="mb-0 fs--1 fw-semi-bold text-700 reports">'.$categoryName.'</p>
+							// 	</div>
+							// </div>
 					}
 				?>
 				<!--
@@ -220,6 +267,6 @@
 		</div>
 	</div>
 	<?php
-	include APP_PATH."/views/layouts/footer.php";
+		include APP_PATH."/views/layouts/footer.php";
 	?>
 </div>
