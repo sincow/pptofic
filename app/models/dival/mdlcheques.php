@@ -209,6 +209,34 @@ class ChequesModel {
 
 
    //**************************************************************************************
+   static public function getPorConfig() {
+      $fecha = date("Y-m-d");
+      $fecha = '2025-10-18';
+      $connection = Database::getConnection();
+      $sql = "SELECT a.*, c.TerNombr, l.codigo, l.nombre AS banco_nombre, k.sucursal AS banco_sucursal, 
+         k.numero_cuenta AS banco_num_cuenta, 
+         COALESCE((SELECT MAX(n.fecha) FROM DvAplaza n WHERE a.id_empresa = n.id_empresa AND a.id_cheque = n.id_cheque), a.vencimiento) as UltVenci 
+         FROM DvCheque a 
+         LEFT JOIN companies b ON a.id_empresa = b.id_empresa
+         LEFT JOIN CoTercer  c ON b.EmpCodig = c.EmpCodig AND a.TerDocId = c.TerDocId 
+         LEFT JOIN DvBanCli  k ON a.id_empresa = k.id_empresa AND a.id_bancli = k.id_bancli 
+         LEFT JOIN DvBancos  l ON k.id_empresa = l.id_empresa AND k.id_banco = l.id_banco 
+         WHERE a.id_empresa = :id_empresa AND clase = '1' AND (a.status = '1' OR a.status = 'D') AND COALESCE(
+         (SELECT MAX(n.fecha) FROM DvAplaza n 
+            WHERE a.id_empresa = n.id_empresa AND a.id_cheque = n.id_cheque), a.vencimiento) = :vencimiento";
+      $stmt = $connection->prepare($sql);
+      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":vencimiento", $fecha);
+      $stmt->execute();
+      $response = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $connection = null;
+      $stmt = null;
+      return $response;
+   }
+
+
+
+   //**************************************************************************************
 	static public function placomisi($data) {
       $connection = Database::getConnection();
       $query = "SELECT a.*, c.TerNombr, g.TabNive6 as TerTiDoc, c.TerDirec, c.TerTele1, c.TerEmail, m.nivel_riezgo, 
@@ -248,7 +276,7 @@ class ChequesModel {
          LEFT JOIN DvBanCli  k ON a.id_empresa = k.id_empresa AND a.id_bancli = k.id_bancli 
          LEFT JOIN DvBancos  l ON k.id_empresa = l.id_empresa AND k.id_banco = l.id_banco 
          LEFT JOIN DvClient  m ON a.id_empresa = m.id_empresa AND a.id_dvcliente = m.id_dvcliente
-         WHERE a.id_empresa = :id_empresa AND a.TerDocId = :TerDocId AND a.fecha between :repFecIniHisCli AND :repFecFinHisCli";
+         WHERE a.id_empresa = :id_empresa AND a.id_dvcliente = :TerDocId AND a.fecha between :repFecIniHisCli AND :repFecFinHisCli";
       $stmt = $connection->prepare($query);
       $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
       $stmt->bindParam(":TerDocId", $data["TerDocId"], PDO::PARAM_INT);
@@ -260,6 +288,34 @@ class ChequesModel {
       $connection = null;
       return $response;
    }
+
+
+   //**************************************************************************************
+   static public function reppreliqui($data) {
+      $connection = Database::getConnection();
+      $query = "SELECT a.*, c.TerNombr, g.TabNive6 as TerTiDoc, c.TerDirec, c.TerTele1, c.TerEmail, m.nivel_riezgo, 
+         m.valor_cupo, m.valor_cupotemporal, l.codigo AS banco_codigo,
+         l.nombre AS banco_nombre, k.sucursal AS banco_sucursal, k.numero_cuenta AS banco_num_cuenta, 
+         COALESCE((SELECT MAX(n.fecha) FROM DvAplaza n WHERE a.id_empresa = n.id_empresa AND a.id_cheque = n.id_cheque), a.vencimiento) as UltVenci 
+         FROM DvCheque a 
+         LEFT JOIN companies b ON a.id_empresa = b.id_empresa
+         LEFT JOIN CoTercer  c ON b.EmpCodig = c.EmpCodig AND a.TerDocId = c.TerDocId 
+         LEFT JOIN GrTablas  g ON c.TerTiDoc = g.TabNive1 AND g.TabCodig = '01'
+         LEFT JOIN DvBanCli  k ON a.id_empresa = k.id_empresa AND a.id_bancli = k.id_bancli 
+         LEFT JOIN DvBancos  l ON k.id_empresa = l.id_empresa AND k.id_banco = l.id_banco 
+         LEFT JOIN DvClient  m ON a.id_empresa = m.id_empresa AND a.id_dvcliente = m.id_dvcliente
+         WHERE a.id_empresa = :id_empresa AND a.id_dvcliente = :id_dvcliente AND a.valor_cheque > 0 AND 
+         a.valor_cheque >  a.capital_pagado AND a.status <> 'A'";
+      $stmt = $connection->prepare($query);
+      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_dvcliente", $data["id_dvcliente"], PDO::PARAM_INT);
+      $stmt->execute();
+      $response = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $stmt = null;
+      $connection = null;
+      return $response;
+   }
+
 
    //**************************************************************************************
    static public function getAplaza($dataApl) {
@@ -305,6 +361,23 @@ class ChequesModel {
 
 
    //**************************************************************************************
+   static public function getLastConsigna() {
+      $connection = Database::getConnection();
+      $sql = "SELECT * FROM DvConsigna 
+         WHERE consecutivo = (SELECT MAX(consecutivo) FROM DvConsigna 
+         WHERE id_empresa = :idEmpresa)
+      ";
+      $stmt = $connection->prepare($sql);
+      $stmt->bindParam(":idEmpresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->execute();
+      $response = $stmt->fetch(PDO::FETCH_ASSOC);
+      $connection = null;
+      $stmt = null;
+      return $response;
+   }
+
+
+   //**************************************************************************************
    static public function getLastDevol() {
       $connection = Database::getConnection();
       $sql = "SELECT * FROM DvDevolu 
@@ -336,7 +409,6 @@ class ChequesModel {
       $stmt = null;
       return $response;
    }
-
 
 
    //**************************************************************************************

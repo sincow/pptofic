@@ -188,7 +188,9 @@ class ClientesModel {
    //******************************************************************************************
    static public function getSaldo($id) {
       $connection = Database::getConnection();
-      $stmt = $connection->prepare("SELECT a.*, d.TerNombr, IFNULL(e.nombre,'') as BanNombr, b.valor_cupo, b.valor_cupotemporal  
+      $stmt = $connection->prepare("SELECT a.*, d.TerNombr, IFNULL(e.nombre,'') as BanNombr, b.valor_cupo, 
+         b.valor_cupotemporal, 
+         COALESCE((SELECT MAX(n.fecha) FROM DvAplaza n WHERE a.id_empresa = n.id_empresa AND a.id_cheque = n.id_cheque), a.vencimiento) as UltVenci 
          FROM DvCheque a 
          LEFT JOIN DvClient  b ON a.id_empresa = b.id_empresa AND a.id_dvcliente = b.id_dvcliente 
          LEFT JOIN companies c ON b.id_empresa = c.id_empresa
@@ -196,7 +198,7 @@ class ClientesModel {
          LEFT JOIN DvBanCli  f ON a.id_empresa = f.id_empresa AND a.id_bancli = f.id_bancli
          LEFT JOIN DvBancos  e ON f.id_empresa = e.id_empresa AND f.id_banco = e.id_banco 
          WHERE a.id_empresa = :id_empresa AND a.id_dvcliente = :id AND a.valor_cheque > a.capital_pagado AND 
-         a.status = '1'"
+         a.status = '1' OR a.status = 'D'"
       );
       $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
       $stmt->bindParam(":id", $id, PDO::PARAM_INT);

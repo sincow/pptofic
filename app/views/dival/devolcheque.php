@@ -124,7 +124,7 @@
                      <div class="col-sm-6 col-lg-3 mb-3">
                         <div class="form-group">
                            <label for="numero" class="text-label fs-0 ps-1">Nro Cheque *</label>
-                           <input type="text" class="form-control" id="numero" name="numero" onchange="queryDocument(this.value)" required>
+                           <input type="text" class="form-control" id="numero" name="numero" onchange="queryDocument(this.value)" autofocus required>
                         </div>
                      </div>
 

@@ -535,13 +535,6 @@ function formatDate(dateString) {
 
 
 //*********************************************************************************************
-function formatCurrency(amount, simbol, decimals = 0) {
-   return (simbol == 1)? '$':'' + amount.toLocaleString('es-MX', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
-   //return (simbol == 1)? '$':'' + parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-}
-
-
-//*********************************************************************************************
 function displayActiveFilters(filters) {
    const activeFiltersContainer = $('#activeFilters');
    activeFiltersContainer.empty();

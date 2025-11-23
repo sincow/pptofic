@@ -79,7 +79,7 @@
                      <div class="col-12 mb-3">
                         <label class="text-label">Buscar Cliente</label>
                         <div class="d-flex align-items-end">
-                           <input type="text" class="form-control flex-grow-1 client-search" id="idCliente" name="idCliente" autocomplete="off" required
+                           <input type="text" class="form-control flex-grow-1 client-search" id="idCliente" name="idCliente" autocomplete="off" autofocus required
                               placeholder="Escribe nombre, email o doc Identidad...">
                            <button type="button" class="btn btn-phoenix-secondary btn-sm clear-search ms-2"
                               id="clearSearch" style="height: 38px;">

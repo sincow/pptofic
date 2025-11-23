@@ -184,7 +184,8 @@ class imprimirDocumento {
          $pdf->Output('I', "HIS-CLIENTE-".$this->TerDocId.'.pdf', true);
          return;
       }
-      $pdf->TerDocId = $this->TerDocId;
+      $TerDocId = $this->informe[0]["TerDocId"];
+      $pdf->TerDocId = $this->informe[0]["TerDocId"];
       $pdf->TerNombr = $this->informe[0]["TerNombr"];
       $pdf->repFecIniHisCli = $this->repFecIniHisCli;
       $pdf->repFecFinHisCli = $this->repFecFinHisCli;
@@ -210,6 +211,10 @@ class imprimirDocumento {
          $intPendiente = $item['intereses_cobrados'] - $item['intereses_pagados'];
          if ($item['valor_cheque'] > $valMaximo ) {
             $valMaximo = $item['valor_cheque'];
+            $datetime1 = new DateTime($item['UltVenci']);
+            $datetime2 = new DateTime($item['fecha']);
+            $diferencia = $datetime1->diff($datetime2);
+            $diaMaximo = $diferencia->days;
          }
          switch ($item['status']) {
             case '1':
@@ -235,7 +240,7 @@ class imprimirDocumento {
             default:
                break;
          }
-         if ($item['valor_cheque'] <= $item['capital_pagado']) {
+         if ($item['valor_cheque'] <= $item['capital_pagado'] && $item['status'] != 'C') {
             $estado = 'Recogido';
             $totRecogido = $totRecogido + 1;
             $totPorConsig = $totPorConsig - 1;
@@ -253,7 +258,7 @@ class imprimirDocumento {
          $x_axis = $pdf->getx();
          $pdf->vcell($w[5], $w[5], $c_height, $x_axis, number_format($item["comision"], 0), 'R');
          $x_axis = $pdf->getx();
-         $pdf->vcell($w[8], $w[6], $c_height, $x_axis, number_format($item["capital_pagado"], 0), 'R');
+         $pdf->vcell($w[6], $w[6], $c_height, $x_axis, number_format($item["capital_pagado"], 0), 'R');
          $x_axis = $pdf->getx();
          $pdf->vcell($w[7], $w[7], $c_height, $x_axis, number_format($intPendiente, 0), 'R');
          $x_axis = $pdf->getx();
@@ -279,6 +284,9 @@ class imprimirDocumento {
       $pdf->Cell(10);
       $pdf->Cell(23, 0, 'Valor Más Alto:', 0, 0, 'L');
       $pdf->Cell(24, 0, number_format($valMaximo, 0), 0, 0, 'R');
+      $pdf->Cell(10);
+      $pdf->Cell(20, 0, 'Días Utilizados:', 0, 0, 'L');
+      $pdf->Cell(12, 0, number_format($diaMaximo, 0), 0, 0, 'R');
       $pdf->Ln(3);
       $pdf->Cell(23, 0, 'Total Cheques Consignados:', 0, 0, 'L');
       $pdf->Cell(24, 0, number_format($totConsign, 0), 0, 0, 'R');
@@ -286,7 +294,7 @@ class imprimirDocumento {
       $pdf->Cell(23, 0, 'Total Cheques Recogidos:', 0, 0, 'L');
       $pdf->Cell(24, 0, number_format($totRecogido, 0), 0, 0, 'R');
 
-      $pdf->Output('I', "HIS-CLIENTE-".$this->TerDocId.'.pdf', true);
+      $pdf->Output('I', "HIS-CLIENTE-".$TerDocId.'.pdf', true);
       // $pdfData = $pdf->Output('S'); // 'S' para devolver como string
       // $pdfContent = ob_get_clean();
 

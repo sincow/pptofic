@@ -40,6 +40,17 @@ class ChequesController {
 
 
    //******************************************************************************************
+   static public function getPorConfig() {
+      if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+         $response = array("success" => false, "message" => 'Método inválido');
+         return $response;
+      }
+      $response = ChequesModel::getPorConfig();
+      return $response;
+   }
+
+
+   //******************************************************************************************
    static public function getByNum() {
       $required = ['id_cheque'];
       $verification = GeneralController::verifyRequiredFields($required, $_POST);
@@ -73,7 +84,6 @@ class ChequesController {
       $response = array("cheque" => $responseOne, "consignacion" => $responseCon, "devolucion" => $responseDev, "aplaza" => $responseApl); ;
       return $response;
    }
-
 
 
    //******************************************************************************************
@@ -340,6 +350,69 @@ class ChequesController {
 		}
 		return array("success" => $response["success"], "message" =>  $response["message"], "reportUrl" => $reportUrl);
       //return $response;
+   }
+
+
+   //******************************************************************************************
+   static public function consigna() {
+      $required = ['id_cheque', 'motivo'];
+      $verification = GeneralController::verifyRequiredFields($required, $_POST);
+      if ($verification["success"] == false) {
+         return $verification;
+      }
+      $data = $_POST;
+      $data["consecutivo"] = 1;
+      $lastRecord = ChequesModel::getLastConsigna();
+      if ($lastRecord != null ) {
+         $data["consecutivo"] = $lastRecord["consecutivo"] + 1;
+      }
+      $DevConta = '1';
+
+      $tabla = "DvConsigna";
+      $dataUpdt = array(
+         'id_empresa'  => $_SESSION["id_empresa"],
+         'consecutivo' => $data["consecutivo"],
+         'id_cheque'   => $data["id_cheque"],
+         'BanCodig'    => $data["cuenta"],
+         'fecha'       => $data["fechaActual"],
+         'status'      => '1',
+         'ConConta'    => $DevConta,
+         'id_user'     => $_SESSION["id_user"]
+         // 'creado_el'   => date("Y-m-d H:i:s"),
+         // 'actualizado_el' => date("Y-m-d H:i:s")
+      );
+      try {
+         $connection = Database::getConnection();
+         $connection->beginTransaction();
+         $response = GeneralModel::save($tabla, $dataUpdt, $connection);
+         if ($response["success"] === false) {
+            throw new PDOException($response["message"], $response["code"]);
+         }
+         $AsiDocum = $response["lastId"];
+         $tabla = "DvCheque";
+         $dataUpdt = array(
+            'status'  => "C"
+         );
+
+         $where = array(
+            'id_empresa' => $_SESSION["id_empresa"],
+            'id_cheque'  => $data["id_cheque"]
+         );
+         $response = GeneralModel::update($tabla, $dataUpdt, $where, $connection);
+         if ($response["success"] === false) {
+            throw new PDOException($response["message"], $response["code"]);
+         }
+
+
+
+         $connection->commit();
+         $response = array("success" => true, "message" => "Registro guardado exitosamente", "lastId" => $AsiDocum);
+      } catch (PDOException $ex) {
+         $connection->rollBack();
+         $response = array("success" => false, "message" => $ex->getMessage(), "code" => $ex->getCode());
+      }
+
+      return $response;
    }
 
 

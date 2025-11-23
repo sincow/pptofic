@@ -154,6 +154,7 @@ class ReportsController {
    }
 
 
+   //**************************************************************************************
    static public function rephiscliente() {
       $required = ['repIdCliente', 'repFecIniHisCli', 'repFecFinHisCli'];
       $verification = GeneralController::verifyRequiredFields($required, $_POST);
@@ -191,6 +192,65 @@ class ReportsController {
          'url' => $reportUrl,
          'message' => 'Informe generado correctamente'
       );
+   }
+
+
+   //**************************************************************************************
+   static public function reppreliqui() {
+      $required = ['repIdCliente', 'repFecPreliq', 'diasHabiles', 'documPreliqList'];
+      $verification = GeneralController::verifyRequiredFields($required, $_POST);
+      if ($verification["success"] == false) {
+         return $verification;
+      }
+      if (!isset($_POST["GenHojCal"])) {
+         $_POST["GenHojCal"] = 0;
+      }
+      if (!isset($_POST["mostrarEstCta"])) {
+         $_POST["mostrarEstCta"] = 0;
+      } else {
+         $_POST["mostrarEstCta"] = 1;
+      }
+      $data = $_POST;
+
+      $dateTime = new DateTime();
+      $fechaHora = $dateTime->format('Y-m-d H:i:s');
+      $table = "reports";
+      $dataUpt = array(
+         "last_generate_report" => $fechaHora
+      );
+      $where = array("link_report" => 'reppreliqui');
+      $userupdt = GeneralModel::update($table, $dataUpt, $where);
+      if ($userupdt["success"] == false) {
+         // throw new PDOException($userupdt["message"], $userupdt["code"]);
+      }
+      $tabla = "NoFestiv";
+      $order = "FecFesti";
+      $fecha = date('Y-m-d', strtotime('-1 years'));
+      $where = "EmpCodig = '".$_SESSION["empdef"]."' AND FecFesti >= '".$fecha."' AND FecEstad = 1";
+      $diasFestivos = GeneralModel::getAll($tabla, $order, $where);
+      // var_dump($diasFestivos);
+
+      $token = bin2hex(random_bytes(16));
+      $_SESSION['report_temp_' . $token] = [
+         'tipo' => 'Preliquidacion',
+         'id_dvcliente' => $data['repIdCliente'],
+         'repFecPreliq' => $data['repFecPreliq'],
+         'diasHabiles' => $data['diasHabiles'],
+         'mostrarEstCta' => $data['mostrarEstCta'],
+         'obserPreliq' => $data['obserPreliq'],
+         'documPreliqList' => $data['documPreliqList'],
+         'diasFestivos' => $diasFestivos,
+         'GenHojCal' => $_POST['GenHojCal'],
+         'token' => $token,
+         'timestamp' => time()
+      ];
+      $reportUrl = "app/reports/dival/preliqui.php?token=" . urlencode($token);
+      return array(
+         'success' => true,
+         'url' => $reportUrl,
+         'message' => 'Informe generado correctamente'
+      );
+
    }
 
 }
