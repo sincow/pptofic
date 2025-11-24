@@ -226,12 +226,16 @@ function createAcounting(paramsList) {
    const acountingList = [];
    const CompteParam = paramsList.find(param => param.ParCodig === "CO4");
    const Compte = CompteParam.ParValor;
+   const TerDocId = document.getElementById('TerDocId').value;
    if (Compte != "") {
       let AsiDescr = "Pago de capital del documento Nro " + document.getElementById('numero').value;
       document.getElementById('compte').value = Compte;
       const intCob = paramsList.find(param => param.ParCodig === "CU2").ParValor;
       acountingList.push({
          "CueCodig": intCob,
+         "TerDocId": TerDocId,
+         "CenCodig": "",
+         "CenCodAu": "",
          "AsiDescr": AsiDescr,
          "AsiNatur": "D",
          "AsiValor": parseFloat(document.getElementById('capital_pagar').value.replace(/,/g, '')).toFixed(2),
@@ -240,6 +244,9 @@ function createAcounting(paramsList) {
       const ingInt = paramsList.find(param => param.ParCodig === "CU1").ParValor;
       acountingList.push({
          "CueCodig": ingInt,
+         "TerDocId": TerDocId,
+         "CenCodig": "",
+         "CenCodAu": "",
          "AsiDescr": AsiDescr,
          "AsiNatur": "C",
          "AsiValor": parseFloat(document.getElementById('capital_pagar').value.replace(/,/g, '')).toFixed(2),

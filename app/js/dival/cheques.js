@@ -2,29 +2,6 @@
 document.addEventListener("DOMContentLoaded", function() {
    cargarCheques();
 
-
-   /*
-   //*********************************************************************************************
-   // $("#btnaddBanco").on('click', function(e) {
-   document.getElementById('btnaddBanco').addEventListener('click', function(e) {
-      e.preventDefault();
-      $('#modalBancoAdd').modal('show');
-      document.getElementById('formBancoAdd').classList.remove('was-validated');
-      document.getElementById('formBancoAdd').reset();
-   });
-
-   // Manejar el evento de clic en el botón de agregar
-   //*********************************************************************************************
-   // $('#formBancoAdd').on('submit', function(e) {
-   document.getElementById('formBancoAdd').addEventListener('submit', function(e) {
-      e.preventDefault();
-      // var formData = $(this).serialize();
-      const formData = new FormData(this);
-      if (execQueryUpd(formData, 'cargarBancos', '#modalBancoAdd')) {
-      }
-   });
-   */
-
    var listWhere = [];
    listWhere.push({
       "id": "status",
@@ -311,7 +288,6 @@ document.addEventListener("DOMContentLoaded", function() {
    });
 
    document.getElementById('fecVencimSearch').setAttribute('min', fechaMinima.toISOString().split('T')[0]);
-
 
 });
 

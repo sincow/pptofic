@@ -194,8 +194,6 @@ class ClientesController {
          "UsuCodig" => $_SESSION["user_id"]
       );
       $dataUpdt = array(
-         // "EmpCodig" => $_SESSION["empdef"],
-         // "TerDocId" => $data["TerDocId"], 
          "TerNombr" => $TerNombr,
          "TerTiDoc" => $data["TerTiDoc"],
          "TerRetie" => $data["TerRetie"] ?? 0, 
@@ -335,8 +333,6 @@ class ClientesController {
          "UsuCodig" => $_SESSION["user_id"]
       );
       $dataUpdt = array(
-         // "EmpCodig" => $_SESSION["empdef"],
-         // "TerDocId" => $data["TerDocId"], 
          "TerNombr" => $TerNombr,
          "TerTiDoc" => $data["TerTiDoc"],
          "TerRetie" => $data["TerRetie"] ?? 0, 

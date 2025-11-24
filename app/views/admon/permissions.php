@@ -23,7 +23,7 @@
    <div class="row mb-1">
 		<div class="col-md-7">
          <div class="d-flex justify-content-between align-items-center">
-            <h3 class="h3 text-900">Gestionar Permisos</h3>
+            <h4 class="h4 text-900">Gestionar Permisos</h4>
          </div>
          <p class="text-muted mb-0" id="userName">
             <?= $user["name"] ?>

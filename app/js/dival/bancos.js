@@ -37,8 +37,9 @@ document.addEventListener("DOMContentLoaded", function() {
       document.getElementById('modalBancoEdit').classList.remove('was-validated');
    });
 
+
    // Manejar el evento de envío del formulario de edición
-   // $('#formBancoEdit').on('submit', function(e) {
+   //******************************************************************************************
    document.getElementById('formBancoEdit').addEventListener('submit', function(e) {
       e.preventDefault();
       // var formData = $(this).serialize();

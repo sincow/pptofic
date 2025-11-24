@@ -1,24 +1,22 @@
 <div class="content p-2 pt-10">
    <div class="row mb-3">
       <div class="col-lg-8">
-         <h4 class="mb-0">Planilla de Comisiones</h4>
+         <h4 class="mb-0">Planilla de Efectivo</h4>
       </div>
       <div class="col-lg-4 pt-1">
          <nav class="mb-0" aria-label="breadcrumb">
             <ol class="breadcrumb mb-0 float-sm-end">
          		<li class="breadcrumb-item"><a href="./">Dashboard</a></li>
                <li class="breadcrumb-item"><a href="reports">Reportes</a></li>
-               <li class="breadcrumb-item active">>Planilla de Comisiones</li>
+               <li class="breadcrumb-item active">>Planilla de Efectivo</li>
             </ol>
          </nav>
       </div>
    </div>
-
    <form class="needs-validation frmReports" role="form" id="frmReports" method="post" action="" novalidate>
       <input type="hidden" id="modulo" name="modulo" value="dival">
       <input type="hidden" id="option" name="option" value="reports">
-      <input type="hidden" id="action" name="action" value="repplacomisi">
-      <input type="hidden" id="clase" name="clase" value="5">
+      <input type="hidden" id="action" name="action" value="repplafectivo">
       <div class="row g-3">
          <div class="col-12 mb-lg-3">
             <div class="row g-3 g-xxl-0 h-90">

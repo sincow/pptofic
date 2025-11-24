@@ -209,7 +209,7 @@ class ChequesModel {
 
 
    //**************************************************************************************
-   static public function getPorConfig() {
+   static public function getPorConsig() {
       $fecha = date("Y-m-d");
       $fecha = '2025-10-18';
       $connection = Database::getConnection();
@@ -235,7 +235,6 @@ class ChequesModel {
    }
 
 
-
    //**************************************************************************************
 	static public function placomisi($data) {
       $connection = Database::getConnection();
@@ -250,7 +249,6 @@ class ChequesModel {
          LEFT JOIN DvBancos  l ON k.id_empresa = l.id_empresa AND k.id_banco = l.id_banco 
          LEFT JOIN DvClient  m ON a.id_empresa = m.id_empresa AND a.id_dvcliente = m.id_dvcliente
          WHERE a.id_empresa = :id_empresa AND a.fecha = :repFecPlanilla";
-
       $stmt = $connection->prepare($query);
       $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
       $stmt->bindParam(":repFecPlanilla", $data["fecCambioSearchFrom"], PDO::PARAM_INT);
@@ -340,7 +338,7 @@ class ChequesModel {
 
 
    //**************************************************************************************
-   static public function getConsignacion($data) {
+   static public function getConsigDocum($data) {
       $connection = Database::getConnection();
       $sql = "SELECT a.*, c.*, d.CueCodig 
          FROM DvConsig a 
@@ -361,10 +359,37 @@ class ChequesModel {
 
 
    //**************************************************************************************
+   static public function getConsignacion($data) {
+      $connection = Database::getConnection();
+      $sql = "SELECT a.id_empresa, a.id_consigna, a.consecutivo, a.id_cheque, a.BanCodig, d.BanNombr, a.fecha, 
+         a.status, a.ConConta, a.id_user, a.creado_el, a.actualizado_el, c.numero, c.consecutivo AS consecutivo_cheque, 
+         c.valor_cheque, c.comision, l.codigo AS banco_codigo, e.TerDocId, f.TerNombr 
+         FROM DvConsig a 
+         LEFT JOIN companies b ON a.id_empresa = b.id_empresa 
+         LEFT JOIN DvCheque  c ON a.id_empresa = c.id_empresa AND a.id_cheque = c.id_cheque 
+         LEFT JOIN BaCuenta  d ON b.EmpCodig = d.EmpCodig AND a.BanCodig = d.BanCodig 
+         LEFT JOIN DvClient  e ON a.id_empresa = e.id_empresa AND c.id_dvcliente = e.id_dvcliente 
+         LEFT JOIN DvBanCli  k ON c.id_empresa = k.id_empresa AND c.id_bancli = k.id_bancli 
+         LEFT JOIN DvBancos  l ON k.id_empresa = l.id_empresa AND k.id_banco = l.id_banco 
+         LEFT JOIN CoTercer  f ON b.EmpCodig = f.EmpCodig AND e.TerDocId = f.TerDocId 
+         WHERE a.id_empresa = :idEmpresa AND a.consecutivo = :consecutivo AND a.status = '1'
+      ";
+      $stmt = $connection->prepare($sql);
+      $stmt->bindParam(":idEmpresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":consecutivo", $data["consecutivo"], PDO::PARAM_INT);
+      $stmt->execute();
+      $response = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $connection = null;
+      $stmt = null;
+      return $response;
+   }
+
+
+   //**************************************************************************************
    static public function getLastConsigna() {
       $connection = Database::getConnection();
-      $sql = "SELECT * FROM DvConsigna 
-         WHERE consecutivo = (SELECT MAX(consecutivo) FROM DvConsigna 
+      $sql = "SELECT * FROM DvConsig 
+         WHERE consecutivo = (SELECT MAX(consecutivo) FROM DvConsig 
          WHERE id_empresa = :idEmpresa)
       ";
       $stmt = $connection->prepare($sql);
@@ -494,6 +519,92 @@ class ChequesModel {
 			$connection = null;
 		}
 		return $response;
+   }
+
+
+   //**************************************************************************************
+   static public function repplafectivo($data) {
+      $connection = Database::getConnection();
+      $stmt = $connection->prepare("SELECT '1' AS CtoCodig, c.numero, 'Pago Capital' AS CtoNombr, 
+         a.consecutivo AS CtoConse, a.fecha AS CtoFecha, a.valor AS CtoValor, d.TerNombr 
+         FROM DvPagCap a 
+         LEFT JOIN companies b ON a.id_empresa = b.id_empresa 
+         LEFT JOIN DvCheque  c ON a.id_empresa = c.id_empresa AND a.id_cheque = c.id_cheque 
+         LEFT JOIN CoTercer  d ON b.EmpCodig = d.EmpCodig AND c.TerDocId = d.TerDocId 
+         WHERE a.id_empresa = :id_empresa AND a.fecha = :repFecPlanilla AND a.status <> 'A'"
+      );
+      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":repFecPlanilla", $data["repFecPlanilla"], PDO::PARAM_STR);
+      $stmt->execute();
+      $responsePC = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+      $stmt = $connection->prepare("SELECT '2' AS CtoCodig, c.numero, 'Pago Intereses' AS CtoNombr, 
+         a.consecutivo AS CtoConse, a.fecha AS CtoFecha, a.valor AS CtoValor, d.TerNombr 
+         FROM DvPagInt a 
+         LEFT JOIN companies b ON a.id_empresa = b.id_empresa 
+         LEFT JOIN DvCheque  c ON a.id_empresa = c.id_empresa AND a.id_cheque = c.id_cheque 
+         LEFT JOIN CoTercer  d ON b.EmpCodig = d.EmpCodig AND c.TerDocId = d.TerDocId 
+         WHERE a.id_empresa = :id_empresa AND a.fecha = :repFecPlanilla AND a.status <> 'A'"
+      );
+      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":repFecPlanilla", $data["repFecPlanilla"], PDO::PARAM_STR);
+      $stmt->execute();
+      $responsePI = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+      $stmt = $connection->prepare("SELECT '3' AS CtoCodig, a.consecutivo AS numero, 
+         CONCAT(a.CueCodig, ' ', a.descripcion) AS CtoNombr, a.consecutivo AS CtoConse, a.fecha AS CtoFecha, 
+         a.valor_entrada AS CtoValor, d.TerNombr 
+         FROM DvMovCaj a 
+         LEFT JOIN companies b ON a.id_empresa = b.id_empresa 
+         LEFT JOIN CoTercer  d ON b.EmpCodig = d.EmpCodig AND a.TerDocId = d.TerDocId 
+         WHERE a.id_empresa = :id_empresa AND a.fecha = :repFecPlanilla AND a.status <> 'A'"
+      );
+      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":repFecPlanilla", $data["repFecPlanilla"], PDO::PARAM_STR);
+      $stmt->execute();
+      $responseMC = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+      $stmt = $connection->prepare("SELECT '0' AS CtoCodig, '' AS numero, 
+         'EFECTIVO ANTERIOR' AS CtoNombr, '' AS CtoConse, a.fecha AS CtoFecha, 
+         a.valor_contado AS CtoValor, '' AS TerNombr 
+         FROM DvArcCaj a 
+         WHERE a.id_empresa = :id_empresa AND a.fecha < :repFecPlanilla AND a.status <> 'A'
+         ORDER BY a.fecha DESC LIMIT 1"
+      );
+      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":repFecPlanilla", $data["repFecPlanilla"], PDO::PARAM_STR);
+      $stmt->execute();
+      $responseSE = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      if ($responseSE == false) {
+         $responseSE = array(
+            "CtoCodig" => "0",
+            "numero" => "",
+            "CtoNombr" => "EFECTIVO ANTERIOR",
+            "CtoConse" => "",
+            "CtoFecha" => $data["repFecPlanilla"],
+            "CtoValor" => 0,
+            "TerNombr" => ""
+         );
+         $responseSE = array($responseSE);
+      }
+      $valSaldo = $responseSE[0]["CtoValor"];
+      $cero = 0;
+      $stmtAct = $connection->prepare("INSERT INTO DvArcCaj (id_empresa, fecha, valor_contado, valor_saldo, 
+         status, id_user) VALUES (:id_empresa, :fecha, 0, :valor_saldo, '1', :id_user) 
+         ON DUPLICATE KEY UPDATE valor_saldo = :valor_saldo2"
+      );
+      $stmtAct->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmtAct->bindParam(":fecha", $data["repFecPlanilla"], PDO::PARAM_STR);
+      // $stmtAct->bindParam(":valor_contado", $cero, PDO::PARAM_INT);
+      $stmtAct->bindParam(":valor_saldo", $valSaldo, PDO::PARAM_INT);
+      $stmtAct->bindParam(":id_user", $_SESSION["user_id"], PDO::PARAM_INT);
+      $stmtAct->bindParam(":valor_saldo2", $valSaldo, PDO::PARAM_STR);
+      $stmtAct->execute();
+
+      $response = array_merge($responseSE, $responsePC, $responsePI, $responseMC);
+      $connection = null;
+      $stmt = null;
+      return $response;
    }
 
 

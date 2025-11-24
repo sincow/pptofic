@@ -102,7 +102,6 @@ document.addEventListener("DOMContentLoaded", function() {
    document.getElementById('porcentaje_comision').addEventListener('change', function() {
       const dias = calcularSubtotal();
    });
-
    document.getElementById('porcentaje_comision').addEventListener('input', function() {
       const value = this.value;
       if (value.includes('.') && value.split('.')[0].length > 2) {
@@ -134,7 +133,6 @@ document.addEventListener("DOMContentLoaded", function() {
       document.getElementById('idCliente2').value = "";
       document.getElementById('TerDocId2').value = "";
    });
-
    //*********************************************************************************************
    document.getElementById('clearSearch3').addEventListener('click', function() {
       document.getElementById('idCliente3').value = "";
@@ -440,8 +438,12 @@ function createAcounting(paramsList) {
       let asiDes = "";
       let asiCue = "";
       const ctaCliente = paramsList.find(param => param.ParCodig === "CU1").ParValor;
+      const TerDocId = document.getElementById('TerDocId').value;
       acountingList.push({
          "CueCodig": ctaCliente,
+         "TerDocId": TerDocId,
+         "CenCodig": "",
+         "CenCodAu": "",
          "AsiDescr": clase == "1" ? "Cambio de Cheque Número: " + document.getElementById('numero').value : AsiDescr,
          "AsiNatur": "D",
          "AsiValor": parseFloat(document.getElementById('valor_cheque').value.replace(/,/g, '')).toFixed(2),
@@ -450,6 +452,9 @@ function createAcounting(paramsList) {
       const ctaCaja = paramsList.find(param => param.ParCodig === "CU2").ParValor;
       acountingList.push({
          "CueCodig": ctaCaja,
+         "TerDocId": TerDocId,
+         "CenCodig": "",
+         "CenCodAu": "",
          "AsiDescr": clase == "1" ? "Valor Entregado por Cambio de Cheque Número: " + document.getElementById('numero').value : AsiDescr,
          "AsiNatur": "C",
          "AsiValor": parseFloat(document.getElementById('valEntregar').value.replace(/,/g, '')).toFixed(2),

@@ -2,25 +2,25 @@
    <div class="row g-3 mb-2">
       <div class="col-12">
          <div class="d-flex flex-wrap justify-content-between align-items-center">
-            <h3 class="mb-0">Dashboard</h3>
+            <h4 class="mb-0">Dashboard</h4>
          </div>
       </div>
    </div>
 
    <div class="row g-2 mb-2">
-      <div class="col-xl-3 col-md-6">
+      <div class="col-md-6 col-xl-3">
          <div class="card h-100">
             <div class="card-body">
                <div class="d-flex justify-content-between">
                   <div class="d-flex flex-column">
                      <div class="d-flex align-items-center">
-                        <h4 class="mb-1" id="totalPets"></h4>
+                        <h4 class="mb-1" id="totalPets">123</h4>
                      </div>
-                     <span class="text-900 fw-semi-bold"><?= 'Clientes Registrados' ?></span>
+                     <span class="text-900 fw-semi-bold">Clientes Registrados</span>
                   </div>
                   <div class="avatar">
                      <div class="avatar-name rounded-circle bg-soft-primary">
-                        <span class="fs-4 text-primary"><i class="fs-0 fa-solid fa-paw"></i></span>
+                        <span class="fs-4 text-primary"><i class="fs-0 fa-solid fa-user"></i></span>
                         <!-- <span class="fs-4 text-primary" data-feather="thumb-up"></span> -->
                      </div>
                   </div>
@@ -29,7 +29,7 @@
          </div>
       </div>
 
-      <div class="col-xl-3 col-md-6">
+      <div class="col-md-6 col-xl-3">
          <div class="card h-100">
             <div class="card-body">
                <div class="d-flex justify-content-between">
@@ -37,7 +37,7 @@
                      <div class="d-flex align-items-center">
                         <h4 class="mb-1" id="totalAppointments"></h4>
                      </div>
-                     <span class="text-900 fw-semi-bold">Cheque Hoy</span>
+                     <span class="text-900 fw-semi-bold">Cheques Hoy</span>
                   </div>
                   <div class="avatar">
                      <div class="avatar-name rounded-circle bg-soft-info">
@@ -50,7 +50,7 @@
          </div>
       </div>
 
-      <div class="col-xl-3 col-md-6">
+      <div class="col-md-6 col-xl-3">
          <div class="card h-100">
             <div class="card-body">
                <div class="d-flex justify-content-between">
@@ -72,7 +72,7 @@
          </div>
       </div>
 
-      <div class="col-xl-3 col-md-6">
+      <div class="col-md-6 col-xl-3">
          <div class="card h-100">
             <div class="card-body">
                <div class="d-flex justify-content-between">
@@ -92,19 +92,21 @@
             </div>
          </div>
       </div>
-
    </div>
 
    <div class="row g-2">
       <div class="col-12 col-xl-8">
          <div class="card">
-            <div class="card-header bg-100 py-3">
+            <div class="card-header fw-bold py-1 fs-0 text-start text-white bg-primary" style="opacity: 70%;">
+               <i class="fa-solid fa-calendar-plus me-2"></i>Cheques a Consignar Hoy
+            </div>
+            <!-- <div class="card-header bg-100 py-3">
                <h5 class="mb-0">
                   <i class="fas fa-calendar-plus me-2"></i>
-                  <?= 'servicios.appointments_today' ?>
+                  Cheques a Consignar Hoy
                </h5>
-            </div>
-            <div class="card-body p-2">
+            </div> -->
+            <div class="card-body p-0">
                <?php
                   $permiModsw = "0";
                   $opcion = array_search("appointmentedit", array_column($_SESSION['permissionssin'], 'OpcLink'));
@@ -116,16 +118,17 @@
                   }
                ?>
                <input type="hidden" id="permiModsw" value="<?php echo $permiModsw; ?>">
-               <div class="table-responsive">
-                  <table class="table table-sm table-hover fs--1 mb-0 border-top border-200" style="position: relative; border-collapse: collapse; width: 99%;">
+               <!-- <div class="table-responsive"> -->
+               <div class="table-responsive scrollbar" style="min-height: 250px; max-height: 490px; overflow-y: auto;">
+                  <table class="table table-sm table-hover fs--1 mb-0 border-top border-200" style="position: relative; border-collapse: collapse; width: 100%;">
                      <thead id="appointmentsTable">
                         <tr>
-                           <th class="align-middle ps-2" scope="col" style="width: 10%%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;"><?= 'general.time' ?></th>
-                           <th class="align-middle ps-2" scope="col" style="width: 15%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;"><?= 'pacientes.pet' ?></th>
-                           <th class="align-middle ps-2" scope="col" style="width: 20%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;"><?= 'pacientes.owner' ?></th>
-                           <th class="align-middle ps-2" scope="col" style="width: 30%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;"><?= 'general.reason' ?></th>
-                           <th class="align-middle ps-2" scope="col" style="width: 20%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;"><?= 'catalogos.staff' ?></th>
-                           <th class="align-middle ps-2" scope="col" style="width: 5%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;"><?= 'general.actions' ?></th>
+                           <th class="align-middle ps-2" scope="col" style="width: 10%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;">Consecutivo</th>
+                           <th class="align-middle ps-0" scope="col" style="width: 15%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;"><?= 'pacientes.pet' ?></th>
+                           <th class="align-middle ps-0" scope="col" style="width: 20%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;"><?= 'pacientes.owner' ?></th>
+                           <th class="align-middle ps-0" scope="col" style="width: 30%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;"><?= 'general.reason' ?></th>
+                           <th class="align-middle ps-0" scope="col" style="width: 20%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;"><?= 'catalogos.staff' ?></th>
+                           <th class="align-middle pe-2" scope="col" style="width: 5%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;"><?= 'general.actions' ?></th>
                         </tr>
                      </thead>
                      <tbody>
@@ -148,33 +151,47 @@
       <div class="col-12 col-xl-4">
          <div class="col-12 mb-2">
             <div class="card">
-					<div class="card-header bg-100 py-3">
+               <div class="card-header fw-bold py-1 fs-0 text-start text-white bg-primary" style="opacity: 70%;">
+                  <i class="fa-solid fa-binoculars me-2"></i>Atajos
+               </div>
+               <!-- <div class="card-header bg-100 py-3">
                   <h5 class="mb-0">
                      <i class="fa-solid fa-binoculars"></i>
-                     <?= 'general.shortcuts' ?>
+                     Atajos
                   </h5>
-               </div>
+               </div> -->
                <div class="card-body p-3">
-                  <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+                  <div class="d-flex flex-wrap justify-content-between align-items-center mb-0">
                      <?php
-                        $opcion = array_search("appointmentadd", array_column($_SESSION['permissionssin'], 'OpcLink'));
+                        $opcion = array_search("crearcheque", array_column($_SESSION['permissionssin'], 'OpcLink'));
                         if ($opcion !== NULL && $opcion !== FALSE) {
                            $permi = $_SESSION['permissionssin'][$opcion]["UsuPermi"];
                            if ($permi != 0) {
-                              echo '<a class="btn btn-phoenix-primary btn-sm p-2" href="appointmentadd"><span class="fas fa-calendar-plus me-2"></span>' . 'servicios.schedule_appointment' . '</a>';
+                              echo '<a class="btn btn-sm btn-phoenix-primary p-2 mb-2" href="crearcheque"><span class="fas fa-file-signature me-2"></span>Crear Cheque</a>';
                            }
                         }
 
-                        $opcion = array_search("petdetails", array_column($_SESSION['permissionssin'], 'OpcLink'));
+                        $opcion = array_search("crearletra", array_column($_SESSION['permissionssin'], 'OpcLink'));
                         if ($opcion !== NULL && $opcion !== FALSE) {
                            $permi = $_SESSION['permissionssin'][$opcion]["UsuPermi"];
                            if ($permi != 0) {
-                              echo '<a class="btn btn-sm btn-phoenix-primary btn-sm p-2" href="petdetails"><span class="fas fa-paw me-2"></span>' . 'pacientes.consult_pet' . '</a>';
-                              echo '<a class="btn btn-sm btn-phoenix-primary btn-sm p-2" href="petdetails"><span class="fas fa-plus me-2"></span>' . 'pacientes.consult_pet' . '</a>';
+                              echo '<a class="btn btn-sm btn-phoenix-primary p-2 mb-2" href="crearletra"><span class="fas fa-plus me-2"></span>Crear Letra</a>';
                            }
                         }
-
-
+                        $opcion = array_search("crearpagare", array_column($_SESSION['permissionssin'], 'OpcLink'));
+                        if ($opcion !== NULL && $opcion !== FALSE) {
+                           $permi = $_SESSION['permissionssin'][$opcion]["UsuPermi"];
+                           if ($permi != 0) {
+                              echo '<a class="btn btn-sm btn-phoenix-primary p-2 mb-2" href="crearpagare"><span class="fas fa-plus me-2"></span>Crear Pagaré</a>';
+                           }
+                        }
+                        $opcion = array_search("consigcheque", array_column($_SESSION['permissionssin'], 'OpcLink'));
+                        if ($opcion !== NULL && $opcion !== FALSE) {
+                           $permi = $_SESSION['permissionssin'][$opcion]["UsuPermi"];
+                           if ($permi != 0) {
+                              echo '<a class="btn btn-sm btn-phoenix-primary p-2 mb-2" href="consigcheque"><span class="fas fa-plus me-2"></span>Consignar Cheques</a>';
+                           }
+                        }
                      ?>
                   </div>
                </div>
@@ -183,13 +200,17 @@
 
          <div class="col-12">
             <div class="card">
-					<div class="card-header bg-100 py-3">
-                  <h5 class="mb-0">
-                     <!-- <i class="fa-solid fa-alarm-clock"></i> -->
-                     <i class="fa-solid fa-bell"></i>
-                     <?= 'general.reminders' ?>
-                  </h5>
+               <div class="card-header fw-bold py-1 fs-0 text-start text-white bg-primary" style="opacity: 70%;">
+                  <i class="fa-solid fa-bell me-2"></i>Recordatorios
                </div>
+
+               <!-- <div class="card-header bg-100 py-3">
+                  <h5 class="mb-0">
+                     <i class="fa-solid fa-alarm-clock"></i>
+                     <i class="fa-solid fa-bell"></i>
+                     Recordatorios
+                  </h5>
+               </div> -->
                <div class="card-body p-3">
                   <div class="d-flex align-items-start mb-2">
                      <span class="fas fa-bell text-warning me-2 mt-1"></span>
@@ -304,10 +325,7 @@
          }
       });
 
-
-
    });
-
 
 
    /****************************************************************************************/

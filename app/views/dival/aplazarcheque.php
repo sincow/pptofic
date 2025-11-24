@@ -61,7 +61,7 @@
       <input type="hidden" id="ivaIncluido" name="ivaIncluido" value=<?= $_SESSION['ivaIncluido']?>>
       <input type="hidden" id="valor_cheque" name="valor_cheque" value=0>
       <input type="hidden" id="valorIva" name="valorIva" value=<?= $_SESSION['valorIva']?>>
-      <input type="hidden" id="TerDocId" name="TerDocId">
+      <input type="hidden" id="TerDocId" name="TerDocId" value=0>
       <input type="hidden" id="id_consigna" name="id_consigna" value=0>
       <input type="hidden" id="BanCodig" name="BanCodig" value="">
       <input type="hidden" id="CueCodig" name="CueCodig" value="">

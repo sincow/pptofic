@@ -250,6 +250,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
    // $('#modalClienteEdit').on('hidden.bs.modal', function () {
+   //******************************************************************************************
    document.getElementById('modalClienteEdit').addEventListener('hidden.bs.modal', function () {
       $(this).attr('aria-hidden', 'true');
    });
@@ -307,6 +308,7 @@ document.addEventListener("DOMContentLoaded", function() {
       this.value = this.value.replace(/\,/g, '');
    });
 
+   //**************************************************************************************
    document.getElementById('newvalor_cupotemporal').addEventListener('input', function() {
       this.value = this.value.replace(/[^\d]/g, '');
    });
@@ -321,7 +323,7 @@ document.addEventListener("DOMContentLoaded", function() {
       this.value = this.value.replace(/\,/g, '');
    });
 
-
+   //**************************************************************************************
    document.getElementById('editvalor_cupo').addEventListener('input', function() {
       this.value = this.value.replace(/[^\d]/g, '');
    });
@@ -336,6 +338,7 @@ document.addEventListener("DOMContentLoaded", function() {
       this.value = this.value.replace(/\,/g, '');
    });
 
+   //**************************************************************************************
    document.getElementById('editvalor_cupotemporal').addEventListener('input', function() {
       this.value = this.value.replace(/[^\d]/g, '');
    });

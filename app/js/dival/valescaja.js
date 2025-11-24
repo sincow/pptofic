@@ -107,8 +107,6 @@ document.addEventListener("DOMContentLoaded", async function() {
       .catch(error => {
          console.error('Error:', error);
       });
-
-
       let CompteBco = paramsList.find(param => param.ParCodig === "BA3");
       document.getElementById('CompteBco').value = CompteBco.ParValor;
       var listWhere = [];
@@ -136,8 +134,6 @@ document.addEventListener("DOMContentLoaded", async function() {
       .catch(error => {
          console.error('Error:', error);
       });
-
-
       // const selectBanco = document.getElementById('BancoCodig');
       // getSelects('bancos', 'cuentas', selectBanco, 'BanCodig', textOpt = ['BanCodig', 'BanNombr'], listWhere);
    }
@@ -208,9 +204,9 @@ document.addEventListener("DOMContentLoaded", async function() {
          !isValid ? isRun = false : "";
    
          isValid = document.getElementById('terceroVale').value != "" && document.getElementById('terceroVale').value !== null;
-         document.getElementById('terceroVale').classList.remove('is-invalid');
-         document.getElementById('terceroVale').classList.add(isValid ? 'is-valid' : 'is-invalid');
-         document.getElementById('terceroVale').classList.contains('is-invalid') ? document.getElementById('terceroVale').focus() : "";
+         document.getElementById('terceroVale').nextElementSibling.classList.remove('is-invalid');
+         document.getElementById('terceroVale').nextElementSibling.classList.add(isValid ? 'is-valid' : 'is-invalid');
+         document.getElementById('terceroVale').nextElementSibling.classList.contains('is-invalid') ? document.getElementById('terceroVale').focus() : "";
          !isValid ? isRun = false : "";
       }
 
@@ -265,6 +261,7 @@ function createAcounting(paramsList) {
    if (document.getElementById('tipoDoc').value == '1') {
       Compte = document.getElementById('compte').value;
    }
+   const TerDocId = document.getElementById('terceroVale').value;
    if (Compte != "") {
       let AsiDescr = document.getElementById('valDetalle').value;
       let AsiValor = parseFloat(document.getElementById('valeValor').value.replace(/,/g, '')).toFixed(2);
@@ -286,6 +283,9 @@ function createAcounting(paramsList) {
       }
       acountingList.push({
          "CueCodig": CueCodig,
+         "TerDocId": TerDocId,
+         "CenCodig": "",
+         "CenCodAu": "",
          "AsiDescr": AsiDescr,
          "AsiNatur": AsiNatur,
          "AsiValor": AsiValor,
@@ -298,6 +298,9 @@ function createAcounting(paramsList) {
       }
       acountingList.push({
          "CueCodig": CueCodig,
+         "TerDocId": TerDocId,
+         "CenCodig": "",
+         "CenCodAu": "",
          "AsiDescr": AsiDescr,
          "AsiNatur": AsiNatur,
          "AsiValor": AsiValor,

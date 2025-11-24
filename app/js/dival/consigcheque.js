@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", async function() {
    const formDataDoc = new FormData();
    formDataDoc.append('modulo', 'dival');
    formDataDoc.append('option', 'cheques');
-   formDataDoc.append('action', 'getPorConfig');
+   formDataDoc.append('action', 'getPorConsig');
    fetch('helpers/ajaxRouter.php', {
       method: 'POST',
       body: formDataDoc
@@ -80,8 +80,6 @@ document.addEventListener("DOMContentLoaded", async function() {
    .then(response => response.json())
    .then(data => {
       cargarDocumentos(data);
-      if (data.length > 0) {
-      }
    })
    .catch(error => {
       console.error('Error loading calendar config:', error);
@@ -136,25 +134,52 @@ document.addEventListener("DOMContentLoaded", async function() {
       let isValid = "";
       let isRun = true;
 
-      isValid = document.getElementById('BancoCodig').value != "" && document.getElementById('BancoCodig').value !== null;
-      document.getElementById('BancoCodig').classList.remove('is-invalid');
-      document.getElementById('BancoCodig').classList.add(isValid ? 'is-valid' : 'is-invalid');
-      document.getElementById('BancoCodig').classList.contains('is-invalid') ? document.getElementById('BancoCodig').focus() : "";
+      isValid = document.getElementById('BancoCodig').value !== '' && document.getElementById('BancoCodig').value !== null;
+      document.getElementById('BancoCodig').nextElementSibling.classList.remove('is-invalid');
+      document.getElementById('BancoCodig').nextElementSibling.classList.add(isValid ? 'is-valid' : 'is-invalid');
+      document.getElementById('BancoCodig').nextElementSibling.classList.contains('is-invalid') ? document.getElementById('BancoCodig').focus() : "";
       !isValid ? isRun = false : "";
 
+      if (document.getElementById('canConsig').value == 0) {
+         isRun = false;
+         alert("Debe seleccionar Cheques a Consignar");
+      }
       if (!isRun) {
-         alert("Debe seleccionar un banco");
          document.getElementById('consignaForm').classList.remove('was-validated');
          return;
       }
 
-      alert(document.getElementById('canConsig').value );
-      if (document.getElementById('canConsig').value == 0) {
-         alert("Debe seleccionar Cheques a Consignar");
-      }
-
+      const formData = new FormData(this);
+      fetch('helpers/ajaxRouter.php', {
+         method: 'POST',
+         body: formData
+      }).then(response => response.json())
+      .then(response => {
+         if (response.success === true) {
+            Swal.fire({
+               icon: "success",
+               title: "Éxito",
+               text: response.message,
+               showConfirmButton: true
+            }).then(() => {
+               if (response.reportUrl != null) {
+                  window.open(response.reportUrl, '_blank');
+               }
+               //location.reload();
+               // window.location.href = "/dashboard";
+            });
+         } else {
+            Swal.fire({
+               icon: "error",
+               title: "Error",
+               text: response.message
+            });
+         }
+      })
+      .catch(error => {
+         console.error('Error:', error);
+      });
    });
-
 
 });
 
@@ -223,7 +248,8 @@ function createDocumConsig() {
       if (element.checked) {
          canDocum++;
          documList.push({
-            "id_cheque": element.value
+            "id_cheque": element.value,
+            "valor_cheque": element.getAttribute('valor')
          });
       }
    });
@@ -240,7 +266,8 @@ function createAcounting(paramsList) {
    const CueClien = paramsList.find(param => param.ParCodig === "CU1").ParValor;
    const BancoCodig = document.getElementById("BancoCodig");
    const CueBanco = BancoCodig.options[BancoCodig.selectedIndex].getAttribute('data-cuecodig');
-   let ConConsig = paramsList.find(param => param.ParCodig === "BA1").ParValor;
+   const ConConsig = paramsList.find(param => param.ParCodig === "BA1").ParValor;
+   document.getElementById('CompteBco').value = ConConsig;
    let AsiValor = 0;
    let TerDocId = 0;
    if (Compte != "") {
@@ -251,6 +278,8 @@ function createAcounting(paramsList) {
             acountingList.push({
                "CueCodig": CueBanco,
                'TerDocId': 0,
+               "CenCodig": "",
+               "CenCodAu": "",
                "AsiDescr": "CONSIGNACION CHEQUES",
                "AsiNatur": 'D',
                "AsiValor": AsiValor,
@@ -259,6 +288,8 @@ function createAcounting(paramsList) {
             acountingList.push({
                "CueCodig": CueClien,
                'TerDocId': TerDocId,
+               "CenCodig": "",
+               "CenCodAu": "",
                "AsiDescr": "CONSIGNACION CHEQUES",
                "AsiNatur": 'C',
                "AsiValor": AsiValor,

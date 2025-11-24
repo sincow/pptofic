@@ -32,17 +32,17 @@ class MovimientosController {
                throw new PDOException("La Cuenta contable ".$CueCod." de la partida ".$conse." No existe", 400);
             }
             if ($cuenta["CueTerce"] == 1) {
-               if ($data["TerDocId"] == 0 || $data["TerDocId"] == "") {
+               if ($acounting["TerDocId"] == 0 || $acounting["TerDocId"] == "") {
                   throw new PDOException("La Cuenta contable ".$CueCod." de la partida ".$conse." debe tener un Tercero", 400);
                }
-               $TerDocId = $data["TerDocId"];
+               $TerDocId = $acounting["TerDocId"];
             }
             if ($cuenta["CueCenCo"] == 1) {
-               if ($data["CenCodig"] == 0 || $data["CenCodig"] == "") {
+               if ($acounting["CenCodig"] == 0 || $acounting["CenCodig"] == "") {
                   throw new PDOException("La Cuenta contable ".$CueCod." de la partida ".$conse." debe tener un Centro de Costos", 400);
                }
-               $CenCodig = $data["CenCodig"] ?? "";
-               $CenCodAu = $data["CenCodAu"] ?? "";
+               $CenCodig = $acounting["CenCodig"] ?? "";
+               $CenCodAu = $acounting["CenCodAu"] ?? "";
             }
             $ImpCodig = $cuenta["ImpCodig"];
             $compteList[] = [

@@ -69,10 +69,7 @@
          <div class="col-lg-7 mt-0">
             <div class="card mb-3 h-lg-100">
                <div class="card-header fw-bold py-1 fs-0 text-start text-white bg-primary" style="opacity: 70%;">
-               <!-- <div class="card-header bg-100 py-3"> -->
-                  <!-- <h5 class="mb-0 text-800"> -->
                   <i class="fa-solid fa-user me-2"></i>Información del Cliente
-                  <!-- </h5> -->
                </div>
                <div class="card-body">
                   <div class="row">

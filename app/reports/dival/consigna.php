@@ -2,7 +2,6 @@
 if (!isset($_SESSION)) {
 	session_start();
 }
-// require_once '../../../config/Database.php';
 $_SESSION['reportPath'] = '../../';
 require_once "../../models/numaletras.php";
 require_once "../../models/dival/mdlcheques.php";
@@ -30,8 +29,8 @@ if (time() - $reportData['timestamp'] > 585) {
 }
 
 // Obtener datos para el informe
-$repFecPlanilla = $reportData['fecCambioSearchFrom'];
-$informe = ChequesModel::placomisi($reportData);
+$consecutivo = $reportData['consecutivo'];
+$informe = ChequesModel::getConsignacion($reportData);
 
 
 //**************************************************************************************
@@ -42,12 +41,10 @@ class PDF extends FPDF{
 	protected $HREF = '';
 	protected $angle = 0;
 
-   public $repFecPlanilla = '';
-   public $po_number = '';
-   public $wh_name = '';
-   public $vendor = '';
-   public $dateGrn = '';
-   public $session_status = '';
+   public $repFecConsig = '';
+   public $consecutivo = '';
+   public $BanCodig = '';
+   public $BanNombr = '';
    public $w = '';
 	public $fecha = '';
 
@@ -60,31 +57,31 @@ class PDF extends FPDF{
       $this->SetFillColor(43, 114, 171);
 		$this->SetTextColor(255, 255, 255);
 		$this->SetTextColor(0, 0, 0);
-      $this->Cell(160, 0, isset($_SESSION['companyname']) ? $_SESSION["companyname"] : 'DEMOSTRACION' ,0, 0, 'L');
+      $this->Cell(150, 0, isset($_SESSION['companyname']) ? $_SESSION["companyname"] : 'DEMOSTRACION' ,0, 0, 'L');
 		$this->SetFont('Arial', '', 9);
-      $this->Cell(10);
+      $this->Cell(6);
 		$this->Cell(20, 0,'Fecha: ' . date('Y-m-d'), 0, 0, 'L');
       $this->Ln(4);
 		$this->SetFont('Arial', '', 9);
-		$this->Cell(160, 0, 'PLANILLA DE COMISIONES', 0, 0, 'L', false);
-      $this->Cell(10);
+		$this->Cell(150, 0, 'CHEQUES CONSIGNADOS', 0, 0, 'L', false);
+      $this->Cell(6);
 		$this->Cell(20, 0, 'Página: ' . $this->PageNo() . '/{nb}', 0, 0, 'L');
       $this->Ln(4);
-      $this->Cell(100, 0, 'Fecha Planilla: '.$this->repFecPlanilla, 0, 0, 'L');
+      $this->Cell(55, 0, 'Fecha Consignación: '.$this->repFecConsig, 0, 0, 'L');
+      $this->Cell(50, 0, 'Compte Consignación: '.$this->consecutivo, 0, 0, 'L');
+      $this->Ln(4);
+      $this->Cell(170, 0, 'Para Consignar en: '.$this->BanCodig." ".$this->BanNombr, 0, 0, 'L');
       $this->Ln(5);
       $this->SetFillColor(43, 114, 171);
 		$this->SetTextColor(255, 255, 255);
 		$this->SetFont('Arial', '', 8);
-		$this->Cell($this->w[0], 5, "Doc Ident", 0, 0, 'R', true);
-		$this->Cell($this->w[1], 5, "Nombre Cliente", 0, 0, 'L', true);
-		$this->Cell($this->w[2], 5, "Bco", 0, 0, 'L', true);
+		$this->Cell($this->w[0], 5, "Compte", 0, 0, 'L', true);
+		$this->Cell($this->w[1], 5, "Doc Identidad", 0, 0, 'R', true);
+		$this->Cell($this->w[2], 5, "Nombre Cliente", 0, 0, 'L', true);
 		$this->Cell($this->w[3], 5, "Cheque", 0, 0, 'L', true);
-		$this->Cell($this->w[4], 5, "Dias", 0, 0, 'R', true);
-		$this->Cell($this->w[5], 5, "%Comisión", 0, 0, 'R', true);
-		$this->Cell($this->w[6], 5, "Vlr Cheque", 0, 0, 'R', true);
-		$this->Cell($this->w[7], 5, "Comisión", 0, 0, 'R', true);
-		$this->Cell($this->w[8], 5, "Vlr Entergado", 0, 0, 'R', true);
-		$this->Cell($this->w[9], 5, "Compte", 0, 0, 'L', true);
+		$this->Cell($this->w[4], 5, "Bco", 0, 0, 'L', true);
+		$this->Cell($this->w[5], 5, "Vlr Cheque", 0, 0, 'R', true);
+		$this->Cell($this->w[6], 5, "Comisión", 0, 0, 'R', true);
       $this->SetTextColor(0, 0, 0);
 		$this->Ln(6);
 		$this->SetFont('Arial', '', 8);
@@ -152,23 +149,23 @@ class PDF extends FPDF{
 
 //**************************************************************************************
 class imprimirDocumento {
-	public $informe, $repFecPlanilla, $numero, $token, $tiempoRestante;
+	public $informe, $consecutivo, $token;
 	public function traerImpresionDocumento() {
       $pdf = new PDF('P', 'mm', 'letter');
-      $pdf->repFecPlanilla = $this->repFecPlanilla;
-      $w = array(18, 55, 8, 13, 10, 17, 23, 21, 23, 15);
+      $pdf->consecutivo = $this->consecutivo;
+      $w = array(18, 18, 80, 18, 8, 23, 23);
       $pdf->w = $w;
-      $title = 'Planilla diaria de Comisiones';
+      $title = 'Cheques Consignados';
 		$pdf->SetTitle($title,true);
 		// $icon = "../views/img/favicons/favicon-32x32.png";
 		$icon = "../../../assets/img/favicons/favicon.ico";
 		$pdf->SetIcon($icon);
 		$pdf->SetAuthor("Tincolsas", true);
 		$pdf->SetAutoPageBreak(true, 0);
-		$pdf->SetMargins(7, 14, 7);
+		$pdf->SetMargins(13, 14, 10);
 		$pdf->AliasNbPages();
-		$pdf->AddPage();
       if ($this->informe == null) {
+         $pdf->AddPage();
 			$pdf->SetFont('Arial', 'B', 35);
 			$pdf->SetTextColor(203, 203, 203);
 			$pdf->Rotate(45, 55, 230);
@@ -176,44 +173,41 @@ class imprimirDocumento {
 			$pdf->Rotate(0);
 			$pdf->SetTextColor(0, 0, 0);
 			$pdf->SetFont('Arial', '', 8);
-         $pdf->Output('I', "PLA-COMISIONES".$this->repFecPlanilla.'.pdf', true);
+         $pdf->Output('I', "CHE-CONSIGNADOS".$this->consecutivo.'.pdf', true);
          return;
       }
+      $pdf->repFecConsig = $this->informe[0]["fecha"];
+      $repFecConsig = $this->informe[0]["fecha"];
+      $pdf->consecutivo = $this->informe[0]["consecutivo"];
+      $pdf->BanCodig = $this->informe[0]["BanCodig"];
+      $pdf->BanNombr = $this->informe[0]["BanNombr"];
+      $pdf->AddPage();
       $c_height = 3;
-      $pdf->SetDrawColor(190, 190, 190);
-      $pdf->SetFillColor(43, 114, 171);
-		$pdf->SetTextColor(255, 255, 255);
+      // $pdf->SetDrawColor(190, 190, 190);
+      // $pdf->SetFillColor(43, 114, 171);
+		// $pdf->SetTextColor(255, 255, 255);
 		$pdf->SetTextColor(0, 0, 0);
       $canCheques = count($this->informe);
       $ValCheques = 0;
       $valComisio = 0;
-      $valImpBcos = 0;
-      $ValEntrega = 0;
       foreach ($this->informe as $key => $item) {
          $vlrImptoBaco = $item["valor_cheque"] * $item["impuesto_banco"] / 1000;
          $x_axis = $pdf->getx();
-         $pdf->vcell($w[0], $w[0], $c_height, $x_axis, $item["TerDocId"], 'R');
+         $pdf->vcell($w[0], $w[0], $c_height, $x_axis, $item["consecutivo_cheque"], 'L');
+         $x_axis = $pdf->getx();
+         $pdf->vcell($w[1], $w[1], $c_height, $x_axis, $item["TerDocId"], 'R');
          $x_axis = $pdf->getx();
          $start_y = $pdf->GetY();
-         $pdf->MultiCell($w[1], $c_height, $item["TerNombr"], 0, 'L');
-         // $pdf->vcell(24, $w[1], $c_height, $x_axis, $item["pet_name"]." ".$item["first_name"]." ".$item["last_name"], 'L');
-         $pdf->SetXY($x_axis + $w[1], $start_y);
-         $x_axis = $pdf->getx();
-         $pdf->vcell($w[2], $w[2], $c_height, $x_axis, $item["banco_codigo"], 'L');
+         $pdf->MultiCell($w[2], $c_height, $item["TerNombr"], 0, 'L');
+         $pdf->SetXY($x_axis + $w[2], $start_y);
          $x_axis = $pdf->getx();
          $pdf->vcell($w[3], $w[3], $c_height, $x_axis, $item["numero"], 'L');
          $x_axis = $pdf->getx();
-         $pdf->vcell($w[4], $w[4], $c_height, $x_axis, $item["dias_cobrados"], 'R');
+         $pdf->vcell($w[4], $w[4], $c_height, $x_axis, $item["banco_codigo"], 'L');
          $x_axis = $pdf->getx();
-         $pdf->vcell($w[5], $w[5], $c_height, $x_axis, $item["porcentaje_comision"], 'R');
+         $pdf->vcell($w[5], $w[5], $c_height, $x_axis, number_format($item["valor_cheque"], 0), 'R');
          $x_axis = $pdf->getx();
-         $pdf->vcell($w[6], $w[6], $c_height, $x_axis, number_format($item["valor_cheque"], 0), 'R');
-         $x_axis = $pdf->getx();
-         $pdf->vcell($w[7], $w[7], $c_height, $x_axis, number_format($item["comision"], 0), 'R');
-         $x_axis = $pdf->getx();
-         $pdf->vcell($w[8], $w[8], $c_height, $x_axis, number_format($item["valor_cheque"] - $item["comision"] - $vlrImptoBaco, 0), 'R');
-         $x_axis = $pdf->getx();
-         $pdf->vcell($w[9], $w[9], $c_height, $x_axis, $item["id_cheque"], 'L');
+         $pdf->vcell($w[6], $w[6], $c_height, $x_axis, number_format($item["comision"], 0), 'R');
          if (strlen(trim($item["TerNombr"])) > 0) {
             $len = ceil(strlen(trim($item["TerNombr"])) / 41) * 3;
          } else $len = 3;
@@ -221,8 +215,6 @@ class imprimirDocumento {
          $pdf->Ln($len);
          $ValCheques += $item["valor_cheque"];
          $valComisio += $item["comision"];
-         $valImpBcos += $vlrImptoBaco;
-         $ValEntrega += $item["valor_cheque"] - $item["comision"] - $vlrImptoBaco;
       }
       $pdf->Ln(6);
       $pdf->Cell(23, 0, 'Cantidad Cheques:', 0, 0, 'L');
@@ -233,89 +225,8 @@ class imprimirDocumento {
       $pdf->Ln(3);
       $pdf->Cell(23, 0, 'Comisiones:', 0, 0, 'L');
       $pdf->Cell(24, 0, number_format($valComisio, 0), 0, 0, 'R');
-      $pdf->Ln(3);
-      $pdf->Cell(23, 0, 'Impto Banco:', 0, 0, 'L');
-      $pdf->Cell(24, 0, number_format($valImpBcos, 0), 0, 0, 'R');
-      $pdf->Ln(3);
-      $pdf->Cell(23, 0, 'Valor Entregado:', 0, 0, 'L');
-      $pdf->Cell(24, 0, number_format($ValEntrega, 0), 0, 0, 'R');
-
-      $pdf->Output('I', "PLA-COMISIONES-".$this->repFecPlanilla.'.pdf', true);
-      // $pdfData = $pdf->Output('S'); // 'S' para devolver como string
-      // $pdfContent = ob_get_clean();
-
-      // header('Content-Type: application/pdf');
-      // header('Content-Disposition: inline; filename="PLA-COMISIONES'.$this->repFecPlanilla.'.pdf"');
-      // // header('Content-Length: ' . strlen($pdfContent));
-      
-      // // Enviar el PDF
-      // // echo $pdfContent;
-      // echo $pdfData;
-
-      // echo "<script>
-      //    setTimeout(() => {
-      //       window.close();
-      //    }, " . ($this->tiempoRestante * 1) . ");
-      // </script>";
+      $pdf->Output('I', "PLA-COMISIONES-".$repFecConsig.'.pdf', true);
       exit;
-
-      /*
-      echo "
-      <html><body>
-      <script>
-         console.log('Programando cierre en " . ($this->tiempoRestante * 1000) . " ms');
-         
-         // Cerrar después del tiempo restante
-         setTimeout(function() {
-               console.log('Cerrando ventana...');
-               if (window.opener && !window.opener.closed) {
-                  window.close();
-               } else {
-                  // Fallback: intentar cerrar de todas formas
-                  window.close();
-               }
-         }, " . ($this->tiempoRestante * 1000) . ");
-         
-         // Contador en consola
-         let tiempo = " . $this->tiempoRestante . ";
-         setInterval(function() {
-               tiempo--;
-               console.log('Tiempo restante: ' + tiempo + 's');
-               if (tiempo <= 0) {
-                  window.close();
-               }
-         }, 1000);
-      </script>
-      </body></html>";
-      */
-
-      /*
-      $tiempoRestanteMs = $this->tiempoRestante * 1000;
-      echo "<script>
-         // Cerrar automáticamente
-         const timerCierre = setTimeout(() => {
-            console.log('Cerrando ventana por expiración');
-            window.close();
-         }, $tiempoRestanteMs);
-         
-         // Opcional: Prevenir que el usuario evite el cierre
-         window.addEventListener('beforeunload', (e) => {
-            // Si se intenta recargar/navegar, forzar cierre
-            if (timerCierre) {
-                  window.close();
-            }
-         });
-         const contador = setInterval(() => {
-            tiempoRestante--;
-            document.title = 'Informe - Expira en: ' + tiempoRestante + 's';
-            if (tiempoRestante <= 0) {
-                  clearInterval(contador);
-                  window.close();
-            }
-         }, 1000);
-      </script>";
-      */
-
    }
 
 
@@ -327,9 +238,8 @@ class imprimirDocumento {
 
 $documento = new imprimirDocumento();
 $documento->informe   = $informe;
-$documento->repFecPlanilla = $repFecPlanilla;
+$documento->consecutivo = $consecutivo;
 $documento->token     = $token;
-$documento->tiempoRestante = $tiempoRestante;
 if ($reportData["GenHojCal"] == '1') {
 	$documento->traerHojaCalculo();
 } else $documento->traerImpresionDocumento();

@@ -175,11 +175,15 @@ function createAcounting(paramsList) {
    document.getElementById('CompteBco').value = CompteBco.ParValor;
    const Compte = CompteParam.ParValor;
    let AsiDescr = "Devolución de Cheque ";
+   const TerDocId = document.getElementById('TerDocId').value;
    if (Compte != "") {
       document.getElementById('compte').value = Compte;
       const ctaCliente = paramsList.find(param => param.ParCodig === "CU1").ParValor;
       acountingList.push({
          "CueCodig": ctaCliente,
+         "TerDocId": TerDocId,
+         "CenCodig": "",
+         "CenCodAu": "",
          "AsiDescr": AsiDescr + document.getElementById('numero').value,
          "AsiNatur": "D",
          "AsiValor": parseFloat(document.getElementById('valor_cheque').value.replace(/,/g, '')).toFixed(2),
@@ -189,6 +193,9 @@ function createAcounting(paramsList) {
       const CueCodig = document.getElementById('CueCodig').value;
       acountingList.push({
          "CueCodig": CueCodig,
+         "TerDocId": TerDocId,
+         "CenCodig": "",
+         "CenCodAu": "",
          "AsiDescr": AsiDescr + document.getElementById('numero').value,
          "AsiNatur": "C",
          "AsiValor": parseFloat(document.getElementById('valor_cheque').value.replace(/,/g, '')).toFixed(2),

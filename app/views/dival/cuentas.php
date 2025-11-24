@@ -23,7 +23,7 @@
 <div class="content p-2 pt-10">
 	<div class="row mb-2">
    	<div class="col-lg-8">
-      	<h3 class="mb-0">Cuentas Bancarias</h3>
+      	<h4 class="mb-0">Cuentas Bancarias</h4>
    	</div>
    	<div class="col-lg-4">
    		<nav class="mb-0" aria-label="breadcrumb">

@@ -1,7 +1,7 @@
 <div class="content ps-2 pt-10">
 	<div class="row mb-0">
 		<div class="col-lg-8">
-			<h3 class="mb-2">Usuarios</h3>
+			<h4 class="mb-0">Usuarios</h4>
 		</div>
 		<div class="col-lg-4">
 			<nav class="mb-2" aria-label="breadcrumb">
