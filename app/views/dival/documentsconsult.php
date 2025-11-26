@@ -292,5 +292,4 @@
 		</form>
 	</div>
 </div>
-
 <script src="app/js/dival/cheques.js?v=1.0.0"></script>

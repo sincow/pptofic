@@ -44,7 +44,7 @@ class GeneralController {
       // var_dump($post);
       foreach ($required as $field) {
          if (!isset($post[$field]) || $post[$field] === "") {
-            $response = array("success" => false, "message" => 'Por favor, completa todos los campos obligatorios'.$field);
+            $response = array("success" => false, "message" => 'Por favor, completa todos los campos obligatorios '.$field);
             return $response;
          }
       }

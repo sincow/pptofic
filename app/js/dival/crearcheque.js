@@ -471,6 +471,9 @@ function createAcounting(paramsList) {
          const ctaMensa = paramsList.find(param => param.ParCodig === asiCue).ParValor;
          acountingList.push({
             "CueCodig": ctaMensa,
+            "TerDocId": TerDocId,
+            "CenCodig": "",
+            "CenCodAu": "",
             "AsiDescr": clase == "1" ? asiDes : AsiDescr,
             "AsiNatur": "C",
             "AsiValor": parseFloat(document.getElementById('valComision').value.replace(/,/g, '')).toFixed(2),
@@ -481,6 +484,9 @@ function createAcounting(paramsList) {
          const ctaImBco = paramsList.find(param => param.ParCodig === "CU4").ParValor;
          acountingList.push({
             "CueCodig": ctaImBco,
+            "TerDocId": TerDocId,
+            "CenCodig": "",
+            "CenCodAu": "",
             "AsiDescr": clase == "1" ? "Impuesto Bancario por Cambio de Cheque Número: " + document.getElementById('numero').value : AsiDescr,
             "AsiNatur": "C",
             "AsiValor": parseFloat(document.getElementById('valImptoBco').value.replace(/,/g, '')).toFixed(2),
@@ -491,6 +497,9 @@ function createAcounting(paramsList) {
          const ctaIVA = paramsList.find(param => param.ParCodig === "CU3").ParValor;
          acountingList.push({
             "CueCodig": ctaIVA,
+            "TerDocId": TerDocId,
+            "CenCodig": "",
+            "CenCodAu": "",
             "AsiDescr": clase == "1" ? "IVA por Cambio de Cheque Número: " + document.getElementById('numero').value : AsiDescr,
             "AsiNatur": "C",
             "AsiValor": parseFloat(document.getElementById('valIVA').value.replace(/,/g, '')).toFixed(2),

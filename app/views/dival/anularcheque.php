@@ -1,12 +1,24 @@
-<div id="modalChequeDetails" class="modal fade" tabindex="-1" role="dialog">
-	<div class="modal-dialog modal-lg" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h4 class="modal-title fw-bolder" id="modalCtaclienAddTit">Detalles de un Documento</h4>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" ara-label="Close"></button>
-			</div>
-			<form class="needs-validation form-search" role="form" id="formCtaclienAdd" method="post" novalidate>
-				<div class="modal-body h-100 p-0">
+<div class="content p-2 pt-10">
+	<div class="row mb-0">
+   	<div class="col-lg-8">
+      	<h4 class="mb-0">Anular Cheque de Cliente</h4>
+   	</div>
+   	<div class="col-lg-4">
+   		<nav class="mb-0" aria-label="breadcrumb">
+      		<ol class="breadcrumb mb-2 float-sm-end">
+         		<li class="breadcrumb-item"><a href="./">Dashboard</a></li>
+         		<li class="breadcrumb-item active">Anular Cheque</li>
+      		</ol>
+      	</nav>
+   	</div>
+	</div>
+
+   <form class="needs-validation form-search" role="form" id="formChequeAnu" method="post" action="" novalidate>
+		<input type="hidden" class="dateFormat" id="dateFormat" value='<?php echo DATE_DISPLAY ?>'>
+      <input type="hidden" id="id_cheque" name="id_cheque" value="">
+      <div class="row">
+         <div class="col-12 col-xl-8">
+            <div class="modal-body h-100 p-0">
                <div class="card mb-0">
                   <div class="card-body p-3">
                      <div class="row g-3">
@@ -16,27 +28,18 @@
                                  <span class="fa-solid fa-home fa-lg me-0"></span>
                               </a>
                            </li>
-
                            <li class="nav-item" id="nav-profile">
                               <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#tab-profile">
                                  Aplazamientos
-                                 <!-- <button class="btn btn-sm btn-white ps-2 close-tab-btn" style="line-height: 1;">
-                                    <i class="fas fa-times fs-0"></i>
-                                 </button> -->
                               </a>
                            </li>
-
-                           <!-- <li class="nav-item" style="display:none;" id="nav-contact"> -->
+      
                            <li class="nav-item" id="nav-contact">
                               <a class="nav-link" id="contact-tab" data-bs-toggle="tab" href="#tab-contact">
                                  Devoluciones
-                                 <!-- <button class="btn btn-sm btn-white ps-2 close-tab-btn" style="line-height: 1;">
-                                    <i class="fas fa-times fs-0"></i>
-                                 </button> -->
                               </a>
                            </li>
                         </ul>
-
                         <div class="tab-content mt-1" id="myTabContent">
                            <div class="tab-pane fade show active" id="tab-home" role="tabpanel" aria-labelledby="home-tab">
                               <div class="row g-2">
@@ -64,7 +67,6 @@
                                                    </div>
                                                 </div>
                                              </div>
-
                                              <div class="col-12 px-0">
                                                 <div class="card-header fw-bold py-1 fs--1 text-start text-white bg-primary" style="opacity: 70%;">
                                                    <i class="fa-solid fa-file-pen me-2"></i>Observaciones
@@ -90,6 +92,15 @@
                                        </div>
                                        <div class="card-body p-2">
                                           <div class="mb-0">
+                                             <div class="row mb-1 p-1">
+                                                <div class="col-6 col-xl-3 mb-0 mx-3 p-1">
+                                                   <label for="numDocAnu" class="text-label fs-0 ps-1">Nro Docum</label>
+                                                   <input type="text" class="form-control py-2" id="numDocAnu" name="numDocAnu" autocomplete="off" value="" autofocus required>
+                                                </div>
+                                                <div class="col-6 col-xl-3 ms-3 mb-0 p-1">
+                                                   <button class="btn btn-danger py-2 mt-4 d-none" type="button" id="btnAnularDocum"><span class="fas fa-trash me-2"></span>Anular</button>
+                                                </div>
+                                             </div>
                                              <div class="col-12 mb-1 p-1">
                                                 <p class="text-label mb-0 fs-0" id="datDocument">
                                                 </p>
@@ -98,10 +109,9 @@
                                        </div>
                                     </div>
                                  </div>
-
                               </div>
                            </div>
-
+      
                            <div class="tab-pane fade" id="tab-profile" role="tabpanel" aria-labelledby="profile-tab">
                               <div class="table-responsive scrollbar mx-n1 px-0" style="min-height:210px; max-height: 278px; overflow-y: auto;">
                                  <table class="table table-striped table-sm fs--1 mb-0 documentsTable" id="documentsTable">
@@ -122,7 +132,7 @@
                                  </table>
                               </div>
                            </div>
-
+      
                            <div class="tab-pane fade" id="tab-contact" role="tabpanel" aria-labelledby="contact-tab">
                               <div class="table-responsive scrollbar mx-n1 px-0" style="min-height:210px; max-height: 278px; overflow-y: auto;">
                                  <table class="table table-striped table-sm fs--1 mb-0 documentsTable" id="documentsTable">
@@ -140,12 +150,16 @@
                               </div>
                            </div>
                         </div>
-
+      
                      </div>
                   </div>
                </div>
             </div>
-         </form>
+         </div>
       </div>
-   </div>
+   </form>
+	<?php
+		include APP_PATH.'/views/layouts/footer.php';
+	?>
 </div>
+<script src="app/js/dival/anularcheque.js?v=1.0.0"></script>

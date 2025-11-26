@@ -55,4 +55,31 @@ class CajasModel {
       $stmt = null;
       return $response;
    }
+
+
+   //*********************************************************************************************
+   static public function getByNum($data) {
+      $connection = Database::getConnection();
+      $sql = "SELECT a.*, c.TerNombr, d.CueNombr, ifnull(e.BanNombr, '') as BanNombr, f.name 
+         FROM DvMovCaj a 
+         LEFT JOIN companies b ON a.id_empresa = b.id_empresa
+         LEFT JOIN CoTercer  c ON b.EmpCodig = c.EmpCodig AND a.TerDocId = c.TerDocId 
+         LEFT JOIN CoPlaCue  d ON b.EmpCodig = d.EmpCodig AND a.CueCodig = d.CueCodig 
+         LEFT JOIN BaCuenta  e ON b.EmpCodig = e.EmpCodig AND a.BanCodig = e.BanCodig
+         LEFT JOIN users     f ON a.id_empresa = f.id_empresa AND a.id_user = f.id_user
+         WHERE a.id_empresa = :idEmpresa AND a.tipo_movimiento = :tipo_movimiento AND a.consecutivo = :consecutivo
+      ";
+      $stmt = $connection->prepare($sql);
+      $stmt->bindParam(":idEmpresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":tipo_movimiento", $data["tipoDoc"], PDO::PARAM_INT);
+      $stmt->bindParam(":consecutivo", $data["numDocum"], PDO::PARAM_INT);
+      $stmt->execute();
+      $response = $stmt->fetch(PDO::FETCH_ASSOC);
+      $connection = null;
+      $stmt = null;
+      return $response;
+   }
+
+
+
 }

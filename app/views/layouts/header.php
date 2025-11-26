@@ -56,6 +56,7 @@
 
 
 		<ul class="navbar-nav navbar-nav-icons flex-row ms-auto">
+			<!--
 			<li class="nav-item">
 				<a class="card setting-toggle d-none d-lg-block pt-4" style="position:relative; transform:none; border:none;" href="#settings-offcanvas" data-bs-toggle="offcanvas">
 					<div class="card-body d-flex align-items-center px-2 py-1">
@@ -71,15 +72,17 @@
 									</span>
 								</span>
 							</div>
-						</div><small class="text-uppercase text-700 fw-bold py-2 pe-2 ps-1 rounded-end d-none d-xl-block">Pers</small>
+						</div>
+						<small class="text-uppercase text-700 fw-bold py-2 pe-2 ps-1 rounded-end d-none d-xl-block">Pers</small>
 					</div>
 				</a>
 			</li>
+			-->
 			<li class="nav-item">
 				<div class="theme-control-toggle fa-icon-wait px-2">
 					<input class="form-check-input ms-0 theme-control-toggle-input" type="checkbox" data-theme-control="phoenixTheme" value="dark" id="themeControlToggle" />
-					<label class="mb-0 theme-control-toggle-label theme-control-toggle-light" for="themeControlToggle" data-bs-toggle="tooltip" data-bs-placement="left" title="Change theme"><span class="icon" data-feather="moon"></span></label>
-					<label class="mb-0 theme-control-toggle-label theme-control-toggle-dark"  for="themeControlToggle" data-bs-toggle="tooltip" data-bs-placement="left" title="Change theme"><span class="icon" data-feather="sun"></span></label>
+					<label class="mb-0 theme-control-toggle-label theme-control-toggle-light" for="themeControlToggle" data-bs-toggle="tooltip" data-bs-placement="left" title="Cambiar tema"><span class="icon" data-feather="moon"></span></label>
+					<label class="mb-0 theme-control-toggle-label theme-control-toggle-dark"  for="themeControlToggle" data-bs-toggle="tooltip" data-bs-placement="left" title="Cambiar tema"><span class="icon" data-feather="sun"></span></label>
 				</div>
 			</li>
 			<li class="nav-item dropdown">
@@ -88,8 +91,8 @@
 					<div class="card position-relative border-0">
 						<div class="card-header p-2">
 							<div class="d-flex justify-content-between">
-								<h5 class="text-black mb-0">Notifications</h5>
-								<button class="btn btn-link p-0 fs--1 fw-normal" type="button">Mark all as read</button>
+								<h5 class="text-black mb-0">Notificaciones</h5>
+								<button class="btn btn-link p-0 fs--1 fw-normal" type="button">Marcar todo como leído</button>
 							</div>
 						</div>
 						<div class="card-body p-0">
@@ -244,21 +247,21 @@
 								<h7 class="mt-2 text-black"><?php echo $_SESSION["user_email"]; ?></h7>
 							</div>
 							<div class="mb-3 mx-3">
-								<input class="form-control form-control-sm" id="statusUpdateInput" type="text" placeholder="Update your status" />
+								<input class="form-control form-control-sm" id="statusUpdateInput" type="text" placeholder="Actualizar tu estado" />
 							</div>
 						</div>
 						<div class="overflow-auto scrollbar" style="height: 10rem;">
 							<ul class="nav d-flex flex-column mb-2 pb-1">
-								<li class="nav-item"><a class="nav-link px-3" href="userprofile"> <span class="me-2 text-900" data-feather="user"></span><span>Profile</span></a></li>
+								<li class="nav-item"><a class="nav-link px-3" href="userprofile"> <span class="me-2 text-900" data-feather="user"></span><span>Perfil</span></a></li>
 								<li class="nav-item"><a class="nav-link px-3" href="./"><span class="me-2 text-900" data-feather="pie-chart"></span>Dashboard</a></li>
-								<li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="settings"></span>Settings &amp; Privacy</a></li>
-								<li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="help-circle"></span>Help Center</a></li>
-								<li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="globe"></span>Language</a></li>
+								<li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="settings"></span>Configuración y privacidad</a></li>
+								<li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="help-circle"></span>Centro de ayuda</a></li>
+								<li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="globe"></span>Idioma</a></li>
 							</ul>
 						</div>
 						<div class="card-footer p-0 border-top">
-							<div class="px-3 pt-3"> <a class="btn btn-outline-danger d-flex flex-center w-100" href="app/views/auth/signout.php"> <span class="me-2" data-feather="log-out"> </span>Log Out</a></div>
-							<div class="my-2 text-center fw-bold fs--2 text-600"><a class="text-600 me-1" href="#!">Privacy Policy</a>&bull;<a class="text-600 mx-1" href="#!">Terms</a>&bull;<a class="text-600 ms-1" href="#!">Cookies</a></div>
+							<div class="px-3 py-3"> <a class="btn btn-outline-danger d-flex flex-center w-100" href="app/views/auth/signout.php"> <span class="me-2" data-feather="log-out"> </span>Cerrar sesión</a></div>
+							<!-- <div class="my-2 text-center fw-bold fs--2 text-600"><a class="text-600 me-1" href="#!">Privacy Policy</a>&bull;<a class="text-600 mx-1" href="#!">Terms</a>&bull;<a class="text-600 ms-1" href="#!">Cookies</a></div> -->
 						</div>
 					</div>
 				</div>

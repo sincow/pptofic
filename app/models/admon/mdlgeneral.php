@@ -28,7 +28,9 @@ class GeneralModel {
 			$connection = Database::getConnection();
 		}
 		if ($tabla != null) {
-			$stmt = $connection->prepare("SELECT * FROM $tabla WHERE $where ORDER BY $order");
+			$query = "SELECT * FROM $tabla WHERE $where ORDER BY $order";
+			$stmt = $connection->prepare($query);
+			// $stmt = $connection->prepare("SELECT * FROM $tabla WHERE $where ORDER BY $order");
 			$stmt->execute();
 			$resp = $stmt->fetchAll(PDO::FETCH_ASSOC);
 			// }else{

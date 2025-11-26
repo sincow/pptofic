@@ -36,6 +36,33 @@ document.addEventListener("DOMContentLoaded", async function() {
       });
    }
 
+
+   //*********************************************************************************************
+   const repValContado = document.getElementById('repValContado')
+   if (repValContado) {
+      document.getElementById('repValContado').addEventListener('change', function() {
+         const diasMax = $(this).attr('valMax');
+         if (parseFloat(this.value) > parseFloat(diasMax)) {
+            this.value = diasMax;
+         }
+         const dias = calcularSubtotal();
+      });
+      document.getElementById('repValContado').addEventListener('input', function() {
+         this.value = this.value.replace(/[^\d]/g, '');
+      });
+      document.getElementById('repValContado').addEventListener('blur', function() {
+         if (this.value) {
+            const number = parseInt(this.value);
+            this.value = number.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+         }
+      });
+      document.getElementById('repValContado').addEventListener('focus', function() {
+         this.value = this.value.replace(/\,/g, '');
+      });
+   }
+
+
+   //*********************************************************************************************
    const incluirEstCta = document.getElementById('incluirEstCta');
    if (incluirEstCta) {
       incluirEstCta.addEventListener('change', function(e) {

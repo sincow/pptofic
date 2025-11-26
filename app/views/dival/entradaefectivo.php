@@ -18,6 +18,7 @@
       <input type="hidden" id="action" name="action" value="addDocumCaja">
       <input type="hidden" id="fechaActual" name="fechaActual" value="<?php echo date('Y-m-d'); ?>">
       <input type="hidden" id="TerDocId" name="TerDocId" >
+      <input type="hidden" id="BancoCodig" name="BancoCodig" value="">
       <input type="hidden" id="CueCodig" name="CueCodig" value="">
       <input type="hidden" id="compte" name="compte" value="">
       <input type="hidden" id="CompteBco" name="CompteBco" value = "">

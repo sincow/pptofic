@@ -12,17 +12,11 @@
          <div class="card h-100">
             <div class="card-body">
                <div class="d-flex justify-content-between">
-                  <div class="d-flex flex-column">
-                     <div class="d-flex align-items-center">
-                        <h4 class="mb-1" id="totalPets">123</h4>
-                     </div>
-                     <span class="text-900 fw-semi-bold">Clientes Registrados</span>
+                  <div>
+                     <span class="fs-0 text-primary me-2"><i class="fs-0 fa-solid fa-file-signature"></i></span>
+                     <span class="text-900 fw-semi-bold">Documentos Mes</span>
                   </div>
-                  <div class="avatar">
-                     <div class="avatar-name rounded-circle bg-soft-primary">
-                        <span class="fs-4 text-primary"><i class="fs-0 fa-solid fa-user"></i></span>
-                        <!-- <span class="fs-4 text-primary" data-feather="thumb-up"></span> -->
-                     </div>
+                  <div class="d-flex flex-column" id="totalDocumentsMonth">
                   </div>
                </div>
             </div>
@@ -33,17 +27,11 @@
          <div class="card h-100">
             <div class="card-body">
                <div class="d-flex justify-content-between">
-                  <div class="d-flex flex-column">
-                     <div class="d-flex align-items-center">
-                        <h4 class="mb-1" id="totalAppointments"></h4>
-                     </div>
-                     <span class="text-900 fw-semi-bold">Cheques Hoy</span>
+                  <div>
+                     <span class="fs-0 text-primary me-2"><i class="fs-0 fa-solid fa-calendar"></i></span>
+                     <span class="text-900 fw-semi-bold">Documentos Hoy</span>
                   </div>
-                  <div class="avatar">
-                     <div class="avatar-name rounded-circle bg-soft-info">
-                        <span class="fs-4 text-primary"><i class="fs-0 fa-solid fa-calendar"></i></span>
-                        <!-- <span class="fs-4 text-info" data-feather="calendar"></span> -->
-                     </div>
+                  <div class="d-flex flex-column" id="totalADocumentsToday">
                   </div>
                </div>
             </div>
@@ -54,18 +42,11 @@
          <div class="card h-100">
             <div class="card-body">
                <div class="d-flex justify-content-between">
-                  <div class="d-flex flex-column">
-                     <div class="d-flex align-items-center">
-                        <h4 class="mb-1" id="totalAppointmentsMonth"></h4>
-                     </div>
+                  <div>
+                     <span class="fs-0 text-primary me-2"><i class="fs-0 fa-solid fa-dollar"></i></span>
                      <span class="text-900 fw-semi-bold">Por Cobrar</span>
                   </div>
-                  <div class="avatar">
-                     <div class="avatar-name rounded-circle bg-soft-success">
-                        <span class="fs-4 text-primary"><i class="fs-0 fa-solid fa-calendar"></i></span>
-                        <!-- <span class="fs-4 text-primary"><i class="fs-0 fa-solid fa-dollar-sign"></i></span> -->
-                        <!-- <span class="fs-4 text-success" data-feather="dollar-sign"></span> -->
-                     </div>
+                  <div class="d-flex flex-column" id="totalDocumentsOpen">
                   </div>
                </div>
             </div>
@@ -76,17 +57,11 @@
          <div class="card h-100">
             <div class="card-body">
                <div class="d-flex justify-content-between">
-                  <div class="d-flex flex-column">
-                     <div class="d-flex align-items-center">
-                        <h4 class="mb-1" id="totalVaccinations"></h4>
-                     </div>
-                     <span class="text-900 fw-semi-bold">Consignnaciones</span>
+                  <div>
+                     <span class="fs-0 text-primary me-2"><i class="fs-0 fa-solid fa-file-signature"></i></span>
+                     <span class="text-900 fw-semi-bold">Vencidos hasta hoy</span>
                   </div>
-                  <div class="avatar">
-                     <div class="avatar-name rounded-circle bg-soft-warning">
-                        <span class="fs-4 text-primary"><i class="fs-0 fa-solid fa-syringe"></i></span>
-                        <!-- <span class="fs-4 text-warning" data-feather="activity"></span> -->
-                     </div>
+                  <div class="d-flex flex-column" id="totalVencimiento">
                   </div>
                </div>
             </div>
@@ -123,15 +98,16 @@
                   <table class="table table-sm table-hover fs--1 mb-0 border-top border-200" style="position: relative; border-collapse: collapse; width: 100%;">
                      <thead id="appointmentsTable">
                         <tr>
-                           <th class="align-middle ps-2" scope="col" style="width: 10%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;">Consecutivo</th>
-                           <th class="align-middle ps-0" scope="col" style="width: 15%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;"><?= 'pacientes.pet' ?></th>
-                           <th class="align-middle ps-0" scope="col" style="width: 20%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;"><?= 'pacientes.owner' ?></th>
-                           <th class="align-middle ps-0" scope="col" style="width: 30%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;"><?= 'general.reason' ?></th>
-                           <th class="align-middle ps-0" scope="col" style="width: 20%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;"><?= 'catalogos.staff' ?></th>
-                           <th class="align-middle pe-2" scope="col" style="width: 5%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;"><?= 'general.actions' ?></th>
+                           <th class="align-middle ps-2" scope="col" style="width: 7%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;">Consecutivo</th>
+                           <th class="align-middle ps-0" scope="col" style="width: 40%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;">Cliente</th>
+                           <th class="align-middle ps-0" scope="col" style="width: 8%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;"># Cheque</th>
+                           <th class="align-middle ps-0" scope="col" style="width: 5%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;">Banco</th>
+                           <th class="align-middle ps-0" scope="col" style="width: 8%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;">Fecha</th>
+                           <th class="align-middle ps-0" scope="col" style="width: 8%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;">Vencimiento</th>
+                           <th class="align-middle ps-0" scope="col" style="width: 8%; white-space: nowrap; position: sticky; top:-1px; background: #e3e6ed;">Vlr Documento</th>
                         </tr>
                      </thead>
-                     <tbody>
+                     <tbody id="ConsigTable-body">
                         <!-- <tr>
                            <td>10:30 AM</td>
                            <td>Luna</td>
@@ -230,7 +206,6 @@
             </div>
          </div>
       </div>
-
    </div>
 
    <!-- Modal para detalles de cita -->
@@ -260,15 +235,86 @@
          </form>
       </div>
    </div>
-
-
 	<?php
 		include APP_PATH.'/views/layouts/footer.php';
 	?>
-
 </div>
 <script>
    document.addEventListener('DOMContentLoaded', function() {
+      const formDataDash = new FormData();
+      formDataDash.append('modulo', 'dival');
+      formDataDash.append('option', 'cheques');
+      formDataDash.append('action', 'getDashborad');
+      fetch('helpers/ajaxRouter.php', {
+         method: 'POST',
+         body: formDataDash
+      })
+      .then(response => response.json())
+      .then(data => {
+         if (data) {
+            document.getElementById('totalDocumentsMonth').innerHTML = `
+               <span class="mb-0">$${formatCurrency(parseFloat(data.valor_month,0))}</span>
+               <span class="mb-0">${data.count_month}</span>
+            `;
+            document.getElementById('totalADocumentsToday').innerHTML = `
+               <span class="mb-0">$${formatCurrency(parseFloat(data.valor_today,0))}</span>
+               <span class="mb-0">${data.count_today}</span>
+            `;
+            document.getElementById('totalDocumentsOpen').innerHTML = `
+               <span class="mb-0">$${formatCurrency(parseFloat(data.valor_pendiente,0))}</span>
+               <span class="mb-0">${data.count_pendiente}</span>`;
+            document.getElementById('totalVencimiento').innerHTML = `
+               <span class="mb-0">$${formatCurrency(parseFloat(data.valor_vencim,0))}</span>
+               <span class="mb-0">${data.count_vencim}</span>`;
+         } else {
+            document.getElementById('totalADocumentsToday').textContent = 0;
+         }
+      })
+      .catch(error => {
+         console.error('Error loading calendar config:', error);
+      });
+
+
+      const formDataDoc = new FormData();
+      formDataDoc.append('modulo', 'dival');
+      formDataDoc.append('option', 'cheques');
+      formDataDoc.append('action', 'getPorConsig');
+      fetch('helpers/ajaxRouter.php', {
+         method: 'POST',
+         body: formDataDoc
+      })
+      .then(response => response.json())
+      .then(data => {
+         // tbody.innerHTML = "";
+         let innerHtml = ``;
+         if (data.length > 0) {
+            data.forEach(element => {
+               innerHtml += `
+               <tr>
+                  <td class="text-start ps-2">${element.consecutivo}</td>
+                  <td>${element.TerNombr}</td>
+                  <td>${element.numero}</td>
+                  <td>${element.codigo}</td>
+                  <td>${element.fecha}</td>
+                  <td class="text-start">${element.UltVenci}</td>
+                  <td class="text-end pe-2">${formatCurrency(parseFloat(element.valor_cheque),0)}</td>
+               </tr>
+               `; 
+            });
+         } else {
+            innerHtml += `
+               <tr>
+                  <td class="text-center ps-0" colspan="7">No hay Documentos para consignar el día de hoy</td>
+               </tr>
+            `; 
+         }
+         document.getElementById('ConsigTable-body').innerHTML = innerHtml;
+      })
+      .catch(error => {
+         console.error('Error loading calendar config:', error);
+      });
+
+
       /*
       const formDataTipDoc = new FormData();
       const permiModsw = $("#permiModsw").val();

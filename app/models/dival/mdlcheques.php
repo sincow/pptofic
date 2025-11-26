@@ -223,7 +223,7 @@ class ChequesModel {
          LEFT JOIN DvBancos  l ON k.id_empresa = l.id_empresa AND k.id_banco = l.id_banco 
          WHERE a.id_empresa = :id_empresa AND clase = '1' AND (a.status = '1' OR a.status = 'D') AND COALESCE(
          (SELECT MAX(n.fecha) FROM DvAplaza n 
-            WHERE a.id_empresa = n.id_empresa AND a.id_cheque = n.id_cheque), a.vencimiento) = :vencimiento";
+            WHERE a.id_empresa = n.id_empresa AND a.id_cheque = n.id_cheque), a.vencimiento) <= :vencimiento";
       $stmt = $connection->prepare($sql);
       $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
       $stmt->bindParam(":vencimiento", $fecha);
@@ -335,6 +335,28 @@ class ChequesModel {
       $stmt = null;
       return $response;
    }
+
+
+   //******************************************************************************************
+   static public function getAplById($data) {
+      $connection = Database::getConnection();
+      $sql = "SELECT a.id_empresa, a.id_aplaza, a.id_cheque, a.fecha, a.dias_cobrar, a.valor_aplaza, 
+         a.intereses, a.valor_interes, ifnull(a.motivo, '') as motivo, a.AplConta, a.status, a.id_user, 
+         a.creado_el, a.actualizado_el 
+         FROM DvAplaza a 
+         LEFT JOIN companies b ON a.id_empresa = b.id_empresa 
+         WHERE a.id_empresa = :idEmpresa AND a.id_aplaza = :id_aplaza 
+      ";
+      $stmt = $connection->prepare($sql);
+      $stmt->bindParam(":idEmpresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_aplaza", $data["id_aplaza"], PDO::PARAM_INT);
+      $stmt->execute();
+      $response = $stmt->fetch(PDO::FETCH_ASSOC);
+      $connection = null;
+      $stmt = null;
+      return $response;
+   }
+
 
 
    //**************************************************************************************
@@ -607,5 +629,186 @@ class ChequesModel {
       return $response;
    }
 
+
+   //**************************************************************************************
+   static public function repplaarqueo($data) {
+      $connection = Database::getConnection();
+      $stmt = $connection->prepare("SELECT '3' AS CtoCodig, a.consecutivo AS numero, 
+         CONCAT(a.CueCodig, ' ', a.descripcion) AS CtoNombr, a.consecutivo AS CtoConse, a.fecha AS CtoFecha, 
+         a.valor_salida AS CtoValor, d.TerNombr 
+         FROM DvMovCaj a 
+         LEFT JOIN companies b ON a.id_empresa = b.id_empresa 
+         LEFT JOIN CoTercer  d ON b.EmpCodig = d.EmpCodig AND a.TerDocId = d.TerDocId 
+         WHERE a.id_empresa = :id_empresa AND a.fecha = :repFecPlanilla AND a.tipo_movimiento = '3' 
+         AND a.status <> 'A'"
+      );
+      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":repFecPlanilla", $data["repFecPlanilla"], PDO::PARAM_STR);
+      $stmt->execute();
+      $responseVC = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $valCon00 = $data["repValContado"];
+      $valCon11 = 0;
+      if ($responseVC) {
+         foreach ($responseVC as $key => $value) {
+            $valCon00 += $value["CtoValor"];
+         }
+      }
+      
+      $stmt = $connection->prepare("SELECT '0' AS CtoCodig, '' AS numero, 
+         'EFECTIVO ANTERIOR' AS CtoNombr, '' AS CtoConse, a.fecha AS CtoFecha, 
+         a.valor_contado AS CtoValor, a.valor_saldo AS ValorSaldo, '' AS TerNombr 
+         FROM DvArcCaj a 
+         WHERE a.id_empresa = :id_empresa AND a.fecha = :repFecPlanilla AND a.status <> 'A'
+         ORDER BY a.fecha DESC LIMIT 1"
+      );
+      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":repFecPlanilla", $data["repFecPlanilla"], PDO::PARAM_STR);
+      $stmt->execute();
+      $responsePE = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      if ($responsePE == false) {
+         return array("success" => false, "message" => "Debe generar primero la planilla de efectivo");
+      }
+      if ($responsePE) {
+         $valCon11 += $responsePE[0]["ValorSaldo"];
+      }
+
+      $stmt = $connection->prepare("SELECT sum(valor_cheque) AS CheValor, 
+         sum(round(valor_cheque * porcentaje_comision / 100 * dias_cobrados,0)) AS CheComis, 
+	      sum(round(valor_cheque * impuesto_banco / 100,0)) AS CheImpBa 
+         FROM DvCheque 
+         WHERE id_empresa = :id_empresa AND fecha = :repFecPlanilla AND status <> 'A'"
+      );
+      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":repFecPlanilla", $data["repFecPlanilla"], PDO::PARAM_STR);
+      $stmt->execute();
+      $responseDO = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+      if ($responseDO) {
+         $valCon00 += $responseDO[0]["CheValor"];
+         $valCon11 += $responseDO[0]["CheComis"];
+         $valCon11 += $responseDO[0]["CheImpBa"];
+      }
+      if ($valCon00 == $valCon11) {
+         $valActua = $data["repValContado"];
+      } else {
+         $valActua = 0;
+      }
+      if ($valCon00 != 0 || $valCon11 != 0) {
+         $stmtAct = $connection->prepare("UPDATE DvArcCaj SET valor_contado = :valor_contado 
+            WHERE id_empresa = :id_empresa AND fecha = :fecha"
+         );
+         $stmtAct->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+         $stmtAct->bindParam(":fecha", $data["repFecPlanilla"], PDO::PARAM_STR);
+         $stmtAct->bindParam(":valor_contado", $valActua, PDO::PARAM_INT);
+         $stmtAct->execute();
+      }
+
+      // $stmt = $connection->prepare("SELECT sum(valor_entrada) as EnEValor 
+      //    FROM DvMovCaj 
+	   //    WHERE id_empresa = :id_empresa AND fecha = :repFecPlanilla AND tipo_movimiento <> '3' AND status <> 'A'"
+      // );
+      // $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      // $stmt->bindParam(":repFecPlanilla", $data["repFecPlanilla"], PDO::PARAM_STR);
+      // $stmt->execute();
+      // $responseMC = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+      // $stmt = $connection->prepare("SELECT sum(valor) as PCaValor 
+      //    FROM DvPagCap 
+	   //    WHERE id_empresa = :id_empresa AND fecha = :repFecPlanilla AND status <> 'A'"
+      // );
+      // $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      // $stmt->bindParam(":repFecPlanilla", $data["repFecPlanilla"], PDO::PARAM_STR);
+      // $stmt->execute();
+      // $responsePC = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      // $stmt = $connection->prepare("SELECT sum(valor) as PInValor 
+      //    FROM DvPagInt 
+	   //    WHERE id_empresa = :id_empresa AND fecha = :repFecPlanilla AND status <> 'A'"
+      // );
+      // $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      // $stmt->bindParam(":repFecPlanilla", $data["repFecPlanilla"], PDO::PARAM_STR);
+      // $stmt->execute();
+      // $responsePI = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+      $response = array(
+         "VC" => $responseVC,
+         "PE" => $responsePE,
+         "DO" => $responseDO
+      );
+      // "PC" => $responsePC,
+      // "PI" => $responsePI
+      // "MC" => $responseMC
+      $connection = null;
+      $stmt = null;
+      return $response;
+   }
+
+
+   //******************************************************************************************
+   static public function getDashborad() {
+      $connection = Database::getConnection();
+      /*
+      $query = "SELECT 
+         ifnull((SELECT sum(valor_cheque) FROM DvCheque 
+         WHERE id_empresa = :id_empresa AND month(fecha) = month(CURDATE()) AND status <> 'A'), 0) AS valor_month, 
+         ifnull((SELECT count(id_cheque) FROM DvCheque 
+         WHERE id_empresa = :id_empresa2 AND month(fecha) = month(CURDATE()) AND status <> 'A'), 0) AS count_month, 
+         ifnull((SELECT sum(valor_cheque) FROM DvCheque 
+         WHERE id_empresa = :id_empresa3 AND fecha = CURDATE() AND status <> 'A'), 0) AS valor_today, 
+         ifnull((SELECT count(id_cheque) FROM DvCheque 
+         WHERE id_empresa = :id_empresa4 AND fecha = CURDATE() AND status <> 'A'), 0) AS count_today, 
+         ifnull((SELECT sum(valor_cheque) FROM DvCheque 
+         WHERE id_empresa = :id_empresa5 AND (status = '1' OR status = 'D')), 0) AS valor_pendiente,
+         ifnull((SELECT count(id_cheque) FROM DvCheque 
+         WHERE id_empresa = :id_empresa6 AND (status = '1' OR status = 'D')), 0) AS count_pendiente, 
+         ifnull((SELECT sum(valor_cheque) FROM DvCheque 
+         WHERE id_empresa = :id_empresa7 AND vencimiento <= CURDATE() AND (status = '1' OR status = 'D')), 0) AS valor_vencim,
+         ifnull((SELECT count(id_cheque) FROM DvCheque 
+         WHERE id_empresa = :id_empresa8 AND vencimiento <= CURDATE() AND (status = '1' OR status = 'D')), 0) AS count_vencim";
+      */
+      $query = "SELECT 
+         COALESCE(SUM(CASE WHEN fecha = month(CURDATE()) AND status <> 'A' THEN valor_cheque END), 0) AS valor_month,
+         COALESCE(COUNT(CASE WHEN fecha = month(CURDATE()) AND status <> 'A' THEN id_cheque END), 0) AS count_month,
+         COALESCE(SUM(CASE WHEN fecha = CURDATE() AND status <> 'A' THEN valor_cheque END), 0) AS valor_today,
+         COALESCE(COUNT(CASE WHEN fecha = CURDATE() AND status <> 'A' THEN id_cheque END), 0) AS count_today,
+         COALESCE(SUM(CASE WHEN status IN ('1', 'D') THEN valor_cheque END), 0) AS valor_pendiente,
+         COALESCE(COUNT(CASE WHEN status IN ('1', 'D') THEN id_cheque END), 0) AS count_pendiente,
+         COALESCE(SUM(CASE WHEN vencimiento <= CURDATE() AND status IN ('1', 'D') THEN valor_cheque END), 0) AS valor_vencim,
+         COALESCE(COUNT(CASE WHEN vencimiento <= CURDATE() AND status IN ('1', 'D') THEN id_cheque END), 0) AS count_vencim
+         FROM DvCheque 
+         WHERE id_empresa = :id_empresa";
+      $stmt = $connection->prepare($query);
+      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      // $stmt->bindParam(":id_empresa2", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      // $stmt->bindParam(":id_empresa3", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      // $stmt->bindParam(":id_empresa4", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      // $stmt->bindParam(":id_empresa5", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      // $stmt->bindParam(":id_empresa6", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      // $stmt->bindParam(":id_empresa7", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      // $stmt->bindParam(":id_empresa8", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->execute();
+      $response = $stmt->fetch(PDO::FETCH_ASSOC);
+      $connection = null;
+      $stmt = null;
+      return $response;
+   }
+
+
+   //******************************************************************************************
+   /*
+   static public function anular($data) {
+      $connection = Database::getConnection();
+      $sql = "UPDATE DvCheque SET status = 'A' 
+         WHERE id_empresa = :idEmpresa AND id_cheque = :id_cheque 
+      ";
+      $stmt = $connection->prepare($sql);
+      $stmt->bindParam(":idEmpresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_cheque", $data["id_cheque"], PDO::PARAM_INT);
+      $stmt->execute();
+      $response = array("success" => true, "message" => 'Registro anulado exitosamente');
+      $connection = null;
+      $stmt = null;
+      return $response;
+   }
+   */
 
 }

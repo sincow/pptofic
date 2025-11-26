@@ -78,4 +78,24 @@ class MovimientosController {
       return $response;
    }
 
+
+   //**************************************************************************************
+   static public function cancel($data, $connection = null) {
+		$conn = false;
+		try {
+			if ($connection == null) {
+				$conn = true;
+				$connection = Database::getConnection();
+			}
+         $response = MovimientosModel::cancel($data, $connection);
+      } catch (PDOException $e) {
+         $response = array("success" => false, "message" => $e->getMessage(), "code" => $e->getCode());
+      }
+      if ($conn == true) {
+         $connection = null;
+      }
+      return $response;
+   }
+
+
 }

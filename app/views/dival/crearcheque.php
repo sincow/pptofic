@@ -58,11 +58,12 @@
       <input type="hidden" id="clase" name="clase" value='1'>
       <input type="hidden" id="valorIva" name="valorIva" value=<?= $_SESSION['valorIva']?>>
       <input type="hidden" id="TerDocId" name="TerDocId">
-      <input type="hidden" id="TerDocId2" name="TerDocId2" value="">
-      <input type="hidden" id="TerDocId3" name="TerDocId3" value="">
-      <input type="hidden" id="TerDocId4" name="TerDocId4" value="">
+      <input type="hidden" id="TerDocId2" name="TerDocId2" value=0>
+      <input type="hidden" id="TerDocId3" name="TerDocId3" value=0>
+      <input type="hidden" id="TerDocId4" name="TerDocId4" value=0>
       <input type="hidden" id="clearSearch2" name="clearSearch2" value="">
       <input type="hidden" id="clearSearch3" name="clearSearch3" value="">
+      <input type="hidden" id="clearSearch4" name="clearSearch4" value="">
       <input type="hidden" id="compte" name="compte" value="">
       <input type="hidden" name="acountingList" id="acountingList" value="">
       <div class="row g-3">

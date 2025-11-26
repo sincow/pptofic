@@ -2,7 +2,7 @@
 if (!isset($_POST["option"])) {
 	require_once APP_PATH . '/models/mdlcheques.php';
 }
-if (isset($_POST["action"]) && ($_POST["action"] == "create" || $_POST["action"] == "devolucion" || $_POST["action"] == "aplaza" || $_POST["action"] == "pagocapital" || $_POST["action"] == "pagointeres" || $_POST["action"] == "consigna")) {
+if (isset($_POST["action"]) && ($_POST["action"] == "create" || $_POST["action"] == "devolucion" || $_POST["action"] == "aplaza" || $_POST["action"] == "pagocapital" || $_POST["action"] == "pagointeres" || $_POST["action"] == "consigna" || $_POST["action"] == "anular")) {
    require_once '../'. APP_PATH . '/models/dival/mdlclientes.php';
    require_once '../'. APP_PATH . '/controllers/contabilidad/ctrmovimientos.php';
    require_once '../'. APP_PATH . '/models/contabilidad/mdlmovimientos.php';
@@ -62,6 +62,7 @@ class ChequesController {
    }
 
 
+   //******************************************************************************************
    static public function getDetails() {
       $required = ['idDocument'];
       $verification = GeneralController::verifyRequiredFields($required, $_POST);
@@ -122,6 +123,28 @@ class ChequesController {
       $responseApl = ChequesModel::getAplaza($dataApl);
       $response = array("cheque" => $responseChe, "aplaza" => $responseApl);
       return $response;
+   }
+
+
+   //******************************************************************************************
+   static public function getAplById() {
+      $required = ['id_aplaza'];
+      $verification = GeneralController::verifyRequiredFields($required, $_POST);
+      if ($verification["success"] == false) {
+         return $verification;
+      }
+      $data = $_POST;
+      $dataApl = [];
+      $data["id_aplaza"] = filter_var($data["id_aplaza"], FILTER_SANITIZE_NUMBER_INT);
+      $responseApl = ChequesModel::getAplById($data);
+      if ($responseApl != null ) {
+         $idCehque = $responseApl["id_cheque"];
+         $dataApl = array("id_cheque" => $idCehque);
+      }
+      $responseChe = ChequesModel::getOne($dataApl, 0);
+      $response = array("cheque" => $responseChe, "aplaza" => $responseApl);
+      return $response;
+
    }
 
 
@@ -211,9 +234,9 @@ class ChequesController {
          }
       }
       $consecutivo = $data["numero"];
+      $lastRecord = ChequesModel::getLast($data["clase"]);
       if ($data["clase"] != '1') {
          $data["numero"] = "0000001";
-         $lastRecord = ChequesModel::getLast($data["clase"]);
          if ($lastRecord != null ) {
             $data["numero"] = str_pad(intval(substr($lastRecord["numero"], -7)) + 1, 7, "0", STR_PAD_LEFT);
          }
@@ -230,6 +253,12 @@ class ChequesController {
          }
          $data["acountingList"] = json_encode($acountingList);
          $consecutivo = $data["numero"];
+      } else {
+         if ($lastRecord != null ) {
+            $consecutivo = str_pad(intval($lastRecord["consecutivo"]) + 1, 8, "0", STR_PAD_LEFT);
+         } else {
+            $consecutivo = "00000001";
+         }
       }
       $data["fecha"] = date('Y-m-d');
       $data["valor_cheque"] = str_replace(',', '', $data["valor_cheque"]);
@@ -839,8 +868,10 @@ class ChequesController {
       */
 		return array("success" => $response["success"], "message" =>  $response["message"], "reportUrl" => $reportUrl);
    }
+
+
    //******************************************************************************************
-   static public function repplafectivo() {
+   static public function repplafectivo2() {
       $required = ['repFecPlanilla'];
       $verification = GeneralController::verifyRequiredFields($required, $_POST);
       if ($verification["success"] == false) {
@@ -849,9 +880,78 @@ class ChequesController {
       $data = $_POST;
       $response = ChequesModel::repplafectivo($data);
       return $response;
-      
    }
 
+
+   //******************************************************************************************
+   static public function repplaarqueo2() {
+      $required = ['repFecPlanilla', 'repValContado'];
+      $verification = GeneralController::verifyRequiredFields($required, $_POST);
+      if ($verification["success"] == false) {
+         return $verification;
+      }
+      $data = $_POST;
+      $data["repValContado"] = str_replace(',', '', $data["repValContado"]);
+      $data["repValContado"] = filter_var($data["repValContado"], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+      $response = ChequesModel::repplaarqueo($data);
+      return $response;
+   }
+
+
+   //******************************************************************************************
+   static public function getDashborad() {
+      if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+         $response = array("success" => false, "message" => 'Método inválido');
+         return $response;
+      }
+      $response = ChequesModel::getDashborad();
+      return $response;
+   }
+
+
+   //******************************************************************************************
+   static public function anular() {
+      $required = ['id_cheque', 'clase'];
+      $verification = GeneralController::verifyRequiredFields($required, $_POST);
+      if ($verification["success"] == false) {
+         return $verification;
+      }
+      $data = $_POST;
+      try {
+         $connection = Database::getConnection();
+         $connection->beginTransaction();
+         $tablaDocum = "DvCheque";
+         $dataDocum = array(
+            'valor_cheque' => 0,
+            'comision'     => 0,
+            'status'       => "A"
+         );
+         $where = array(
+            'id_empresa' => $_SESSION["id_empresa"],
+            'id_cheque'  => $data["id_cheque"]
+         );
+         $responseDocum = GeneralModel::update($tablaDocum, $dataDocum, $where, $connection);
+         if ($responseDocum["success"] === false) {
+            throw new PDOException($responseDocum["message"], $responseDocum["code"]);
+         }
+
+         $dataCont = array(
+            "ComCodig" => $data["compte"],
+            "AsiDocum" => $data["id_cheque"],
+            "accion" => "A",
+         );
+         $responCont = MovimientosController::cancel($dataCont, $connection);
+         if ($responCont["success"] === false) {
+            throw new PDOException($responCont["message"], $responCont["code"]);
+         }
+         $connection->commit();
+         $response = array("success" => true, "message" => "Registro anulado exitosamente");
+      } catch (PDOException $ex) {
+         $connection->rollBack();
+         $response = array("success" => false, "message" => $ex->getMessage(), "code" => $ex->getCode());
+      }
+      return $response;
+   }
 
 
 }

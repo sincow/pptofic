@@ -116,14 +116,6 @@ class ReportsController {
          $_POST["GenHojCal"] = 0;
       }
       $data = $_POST;
-      // $placomisi = ReportsModel::repDocument($data);
-      // if ($placomisi == null) {
-      //    return array(
-      //       'success' => false,
-      //       'message' => 'No se encontro la planilla de comisiones'
-      //    );
-      // }
-      // $idCheque = $placomisi["id_cheque"];
       $dateTime = new DateTime();
       $fechaHora = $dateTime->format('Y-m-d H:i:s');
       $table = "reports";
@@ -193,6 +185,46 @@ class ReportsController {
    }
 
 
+   //**************************************************************************************
+   static public function repplaarqueo() {
+      $required = ['repFecPlanilla', 'repValContado'];
+      $verification = GeneralController::verifyRequiredFields($required, $_POST);
+      if ($verification["success"] == false) {
+         return $verification;
+      }
+      if (!isset($_POST["GenHojCal"])) {
+         $_POST["GenHojCal"] = 0;
+      }
+      $data = $_POST;
+      $data["repValContado"] = str_replace(',', '', $data["repValContado"]);
+      $data["repValContado"] = filter_var($data["repValContado"], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+      $dateTime = new DateTime();
+      $fechaHora = $dateTime->format('Y-m-d H:i:s');
+      $table = "reports";
+      $dataUpt = array(
+         "last_generate_report" => $fechaHora
+      );
+      $where = array("link_report" => 'repplaarqueo');
+      $userupdt = GeneralModel::update($table, $dataUpt, $where);
+      if ($userupdt["success"] == false) {
+         // throw new PDOException($userupdt["message"], $userupdt["code"]);
+      }
+      $token = bin2hex(random_bytes(16));
+      $_SESSION['report_temp_' . $token] = [
+         'tipo' => 'Planilla de arqueo',
+         'repFecPlanilla' => $data['repFecPlanilla'],
+         'repValContado' => $data['repValContado'],
+         'GenHojCal' => $_POST['GenHojCal'],
+         'token' => $token,
+         'timestamp' => time()
+      ];
+      $reportUrl = "app/reports/dival/plaarqueo.php?token=" . urlencode($token);
+      return array(
+         'success' => true,
+         'url' => $reportUrl,
+         'message' => 'Informe generado correctamente'
+      );
+   }
 
 
    //**************************************************************************************

@@ -134,8 +134,6 @@ document.addEventListener("DOMContentLoaded", async function() {
       .catch(error => {
          console.error('Error:', error);
       });
-      // const selectBanco = document.getElementById('BancoCodig');
-      // getSelects('bancos', 'cuentas', selectBanco, 'BanCodig', textOpt = ['BanCodig', 'BanNombr'], listWhere);
    }
 
 

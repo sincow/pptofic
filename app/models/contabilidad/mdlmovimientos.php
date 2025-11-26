@@ -10,6 +10,7 @@ if (!isset($_SESSION)) {
 
 class MovimientosModel {
 
+   //**************************************************************************************
    static public function save($data, $connection = null) {
 		$conn = false;
 		try {
@@ -143,5 +144,118 @@ class MovimientosModel {
       return $response;
    }
 
+
+   //**************************************************************************************
+   static public function cancel($data, $connection = null) {
+		$conn = false;
+		try {
+			if ($connection == null) {
+				$conn = true;
+				$connection = Database::getConnection();
+         }
+			$AsiDocum = str_pad((string)($data["AsiDocum"]),10, "0",  STR_PAD_LEFT);
+			$stmtAsi = $connection->prepare("SELECT a.*, b.CueTerce, b.CueCenCo, b.CueImpue
+				FROM Comovimi a
+				LEFT JOIN CoPlaCue b on a.EmpCodig = b.EmpCodig and a.CueCodig = b.CueCodig
+				WHERE a.EmpCodig = :empcod AND a.ComCodig = :ComCodig and AsiDocum = :AsiDocum 
+				ORDER BY AsiDocum, AsiNumer ASC"
+			);
+			$stmtAsi->bindParam(":empcod", $_SESSION["empdef"], PDO::PARAM_STR);
+			$stmtAsi->bindParam(":ComCodig", $data["ComCodig"]);
+			$stmtAsi->bindParam(":AsiDocum", $AsiDocum);
+			$stmtAsi->execute();
+			$asientos = $stmtAsi->fetchAll(PDO::FETCH_ASSOC);
+			$sw = 0;
+			foreach ($asientos as $asiento) {
+				$SdoAno = date("Y", strtotime(str_replace('/','-',$asiento["AsiFecha"])));
+				$SdoMes = date("m", strtotime(str_replace('/','-',$asiento["AsiFecha"])));
+				$SdoValTe = "";
+				$SdoValCe = "";
+				$SdoValCu = "";
+				$SdoValTe = $asiento["AsiNatur"].$SdoMes."Terce";
+				$SenTer = "UPDATE CoSdoTer SET ".$SdoValTe." = ".$SdoValTe." - :SdoValor
+					WHERE EmpCodig = :EmpCodig AND SdoAno = :SdoAno AND CueCodig = :CueCodig AND TerDocId = :TerDocId";
+				$stmtTer = $connection->prepare($SenTer);
+				$stmtTer->bindParam(":EmpCodig", $_SESSION["empdef"], PDO::PARAM_STR);
+				$stmtTer->bindParam(":SdoAno", $SdoAno);
+				$stmtTer->bindParam(":CueCodig", $asiento["CueCodig"]);
+				$stmtTer->bindParam(":TerDocId", $asiento["TerDocId"]);
+				$stmtTer->bindParam(":SdoValor", $asiento["AsiValor"]);
+
+				// var_dump($asiento);
+
+				$SdoValCe = $asiento["AsiNatur"].$SdoMes."CenCo";
+				$SenCen = "UPDATE CoSdoCen SET ".$SdoValCe." = ".$SdoValCe." - :SdoValor
+					WHERE EmpCodig = :EmpCodig AND SdoAno = :SdoAno AND CueCodig = :CueCodig AND CenCodig = :CenCodig";
+				$stmtCen = $connection->prepare($SenCen);
+				$stmtCen->bindParam(":EmpCodig", $_SESSION["empdef"], PDO::PARAM_STR);
+				$stmtCen->bindParam(":SdoAno", $SdoAno);
+				$stmtCen->bindParam(":CueCodig", $asiento["CueCodig"]);
+				$stmtCen->bindParam(":CenCodig", $asiento["CenCodig"]);
+				$stmtCen->bindParam(":SdoValor", $asiento["AsiValor"]);
+
+				$CueDep = $asiento["CueCodig"];
+				$SdoValCu = $asiento["AsiNatur"].$SdoMes."Cuent";
+				$SenImp = "UPDATE CoSdoPla SET ".$SdoValCu." = ".$SdoValCu." - :SdoValor
+					WHERE EmpCodig = :EmpCodig AND SdoAno = :SdoAno AND CueCodig = :CueCodig";
+				$stmtCue = $connection->prepare($SenImp);
+				$stmtCue->bindParam(":EmpCodig", $_SESSION["empdef"], PDO::PARAM_STR);
+				$stmtCue->bindParam(":SdoAno",   $SdoAno);
+				$stmtCue->bindParam(":CueCodig", $CueDep);
+				$stmtCue->bindParam(":SdoValor", $asiento["AsiValor"]);
+				while ($CueDep != "") {
+					$stmtCue->execute();
+					if(strlen($CueDep) == 9){
+						$CueDep = substr($CueDep,0,-3);
+					}else if(strlen($CueDep) == 6){
+						$CueDep = substr($CueDep,0,-2);
+					}else if(strlen($CueDep) == 4){
+						$CueDep = substr($CueDep,0,-2);
+					}else if(strlen($CueDep) == 2){
+						$CueDep = substr($CueDep,0,-1);
+					}else{
+						$CueDep = "";
+					}
+				}
+				if($asiento["CueTerce"] == '1' && $asiento["TerDocId"] != 0){
+					$stmtTer->execute();
+					// var_dump($stmtTer);
+					// var_dump("empdef: ".$_SESSION["empdef"]." - SdoAno: ".$SdoAno." - CueCodig: ".$asiento["CueCodig"]." - TerDocId: ".$asiento["TerDocId"]." - AsiValor: ".$asiento["AsiValor"]);
+				}
+				if($asiento["CueCenCo"] == '1' && $asiento["CenCodig"] != "" && $asiento["CenCodig"] != null){
+					$stmtCen->execute();
+				}
+			}
+			if ($data["accion"] == "E") {
+				$message = "Registro Eliminado exitosamente";
+				$stmtDel = $connection->prepare("DELETE FROM CoMovimi
+					WHERE EmpCodig = :empcod AND ComCodig = :ComCodig and AsiDocum = :AsiDocum"
+				);
+			} else {
+				$message = "Registro Anulado exitosamente";
+				$stmtDel = $connection->prepare("UPDATE CoMovimi SET AsiValor = 0, AsiVBase = 0, AsiEstad = '0'
+					WHERE EmpCodig = :empcod AND ComCodig = :ComCodig and AsiDocum = :AsiDocum"
+				);
+			}
+			$stmtDel->bindParam(":empcod", $_SESSION["empdef"], PDO::PARAM_STR);
+			$stmtDel->bindParam(":ComCodig", $data["ComCodig"]);
+			$stmtDel->bindParam(":AsiDocum", $AsiDocum);
+			$stmtDel->execute();
+			$response = array("success" => true, "message" => $message);
+      } catch (PDOException $e) {
+         // var_dump($e->errorInfo[1]);
+			$errorInfo = GeneralController::handleMySQLerror($e->errorInfo[1], $e->errorInfo[2]);
+			if (ENVIRONMENT == 'development') {
+				$messageError = $errorInfo["error_code"]." ".$errorInfo["technical_message"];
+			} else {
+				$messageError = $errorInfo["error_code"]." ".$errorInfo["error_message"];
+			}
+			$response = array("success" => false, "message" => $messageError, "code" => $errorInfo["error_code"]);
+      }
+      if ($conn == true) {
+         $connection = null;
+      }
+      return $response;
+   }
 
 }

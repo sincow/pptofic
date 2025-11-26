@@ -215,11 +215,8 @@ function queryDocument(idDccument) {
             document.getElementById('vencimiento').value = response.aplaza[0].fecha;
             document.getElementById('fechaAplaza').value = response.aplaza[0].fecha;
             const fechaMinima = new Date(response.aplaza[0].fecha);
-
             document.getElementById('vencimiento').setAttribute('min', fechaMinima.toISOString().split('T')[0]);
-
          }
-
       } else {
          Swal.fire({
             icon: "error",
