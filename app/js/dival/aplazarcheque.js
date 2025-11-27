@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function() {
                if (response.reportUrl != null) {
                   window.open(response.reportUrl, '_blank');
                }
-               //location.reload();
+               location.reload();
                // window.location.href = "/dashboard";
             });
          } else {
@@ -138,6 +138,18 @@ function queryDocument(idDccument) {
    }).then(response => response.json())
    .then(response => {
       if (response != false) {
+         if (response.cheque.status == 'A') {
+            swal.fire({
+               title: 'Error',
+               text: 'Este documento se encuentra anulado',
+               icon: 'error',
+               confirmButtonText: 'Aceptar'
+            }).then(() => {
+               document.getElementById('numero').value = '';
+               document.getElementById('numero').focus();
+               return false;
+            });
+         }
          if (response.cheque.status == 'C') {
             let text = "El cheque está consignado";
             Swal.fire({

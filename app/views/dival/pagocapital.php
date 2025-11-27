@@ -88,7 +88,7 @@
          <div class="col-xl-6 mt-0">
             <div class="card mb-2">
                <div class="card-header fw-bold py-1 fs-0 text-start text-white bg-primary" style="opacity: 70%;">
-                  <i class="fa-solid fa-file-signature me-2"></i>Datos del Cheque
+                  <i class="fa-solid fa-file-signature me-2"></i>Datos del Documento
                </div>
                <div class="card-body">
                   <div class="row g-lg-3">

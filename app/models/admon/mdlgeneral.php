@@ -297,6 +297,7 @@ class GeneralModel {
 			// }
 
 		} catch (PDOException $e) {
+			var_dump($e);
 			$errorInfo = GeneralController::handleMySQLerror($stmt->errorInfo()[1], $stmt->errorInfo()[2]);
 			if (ENVIRONMENT == 'development1') {
 				$messageError = $errorInfo["error_code"]." ".$errorInfo["technical_message"];

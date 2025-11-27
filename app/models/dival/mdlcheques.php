@@ -209,33 +209,6 @@ class ChequesModel {
 
 
    //**************************************************************************************
-   static public function getPorConsig() {
-      $fecha = date("Y-m-d");
-      $fecha = '2025-10-18';
-      $connection = Database::getConnection();
-      $sql = "SELECT a.*, c.TerNombr, l.codigo, l.nombre AS banco_nombre, k.sucursal AS banco_sucursal, 
-         k.numero_cuenta AS banco_num_cuenta, 
-         COALESCE((SELECT MAX(n.fecha) FROM DvAplaza n WHERE a.id_empresa = n.id_empresa AND a.id_cheque = n.id_cheque), a.vencimiento) as UltVenci 
-         FROM DvCheque a 
-         LEFT JOIN companies b ON a.id_empresa = b.id_empresa
-         LEFT JOIN CoTercer  c ON b.EmpCodig = c.EmpCodig AND a.TerDocId = c.TerDocId 
-         LEFT JOIN DvBanCli  k ON a.id_empresa = k.id_empresa AND a.id_bancli = k.id_bancli 
-         LEFT JOIN DvBancos  l ON k.id_empresa = l.id_empresa AND k.id_banco = l.id_banco 
-         WHERE a.id_empresa = :id_empresa AND clase = '1' AND (a.status = '1' OR a.status = 'D') AND COALESCE(
-         (SELECT MAX(n.fecha) FROM DvAplaza n 
-            WHERE a.id_empresa = n.id_empresa AND a.id_cheque = n.id_cheque), a.vencimiento) <= :vencimiento";
-      $stmt = $connection->prepare($sql);
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
-      $stmt->bindParam(":vencimiento", $fecha);
-      $stmt->execute();
-      $response = $stmt->fetchAll(PDO::FETCH_ASSOC);
-      $connection = null;
-      $stmt = null;
-      return $response;
-   }
-
-
-   //**************************************************************************************
 	static public function placomisi($data) {
       $connection = Database::getConnection();
       $query = "SELECT a.*, c.TerNombr, g.TabNive6 as TerTiDoc, c.TerDirec, c.TerTele1, c.TerEmail, m.nivel_riezgo, 
@@ -358,6 +331,45 @@ class ChequesModel {
    }
 
 
+   //******************************************************************************************
+   static public function getPagoCapById($data) {
+      $connection = Database::getConnection();
+      $sql = "SELECT a.id_empresa, a.id_pago, a.consecutivo, a.id_cheque, a.fecha, a.valor, 
+         a.PcaConta, a.status, a.id_user, a.creado_el, a.actualizado_el 
+         FROM DvPagCap a 
+         LEFT JOIN companies b ON a.id_empresa = b.id_empresa 
+         WHERE a.id_empresa = :idEmpresa AND a.id_pago = :id_pago 
+      ";
+      $stmt = $connection->prepare($sql);
+      $stmt->bindParam(":idEmpresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_pago", $data["id_pago"], PDO::PARAM_INT);
+      $stmt->execute();
+      $response = $stmt->fetch(PDO::FETCH_ASSOC);
+      $connection = null;
+      $stmt = null;
+      return $response;
+   }
+
+
+   //******************************************************************************************
+   static public function getPagoIntById($data) {
+      $connection = Database::getConnection();
+      $sql = "SELECT a.id_empresa, a.id_pago, a.consecutivo, a.id_cheque, a.fecha, a.valor, 
+         a.PinConta, a.status, a.id_user, a.creado_el, a.actualizado_el 
+         FROM DvPagInt a 
+         LEFT JOIN companies b ON a.id_empresa = b.id_empresa 
+         WHERE a.id_empresa = :idEmpresa AND a.id_pago = :id_pago 
+      ";
+      $stmt = $connection->prepare($sql);
+      $stmt->bindParam(":idEmpresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_pago", $data["id_pago"], PDO::PARAM_INT);
+      $stmt->execute();
+      $response = $stmt->fetch(PDO::FETCH_ASSOC);
+      $connection = null;
+      $stmt = null;
+      return $response;
+   }
+
 
    //**************************************************************************************
    static public function getConsigDocum($data) {
@@ -372,50 +384,6 @@ class ChequesModel {
       $stmt = $connection->prepare($sql);
       $stmt->bindParam(":idEmpresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
       $stmt->bindParam(":id_cheque", $data["id_cheque"], PDO::PARAM_INT);
-      $stmt->execute();
-      $response = $stmt->fetch(PDO::FETCH_ASSOC);
-      $connection = null;
-      $stmt = null;
-      return $response;
-   }
-
-
-   //**************************************************************************************
-   static public function getConsignacion($data) {
-      $connection = Database::getConnection();
-      $sql = "SELECT a.id_empresa, a.id_consigna, a.consecutivo, a.id_cheque, a.BanCodig, d.BanNombr, a.fecha, 
-         a.status, a.ConConta, a.id_user, a.creado_el, a.actualizado_el, c.numero, c.consecutivo AS consecutivo_cheque, 
-         c.valor_cheque, c.comision, l.codigo AS banco_codigo, e.TerDocId, f.TerNombr 
-         FROM DvConsig a 
-         LEFT JOIN companies b ON a.id_empresa = b.id_empresa 
-         LEFT JOIN DvCheque  c ON a.id_empresa = c.id_empresa AND a.id_cheque = c.id_cheque 
-         LEFT JOIN BaCuenta  d ON b.EmpCodig = d.EmpCodig AND a.BanCodig = d.BanCodig 
-         LEFT JOIN DvClient  e ON a.id_empresa = e.id_empresa AND c.id_dvcliente = e.id_dvcliente 
-         LEFT JOIN DvBanCli  k ON c.id_empresa = k.id_empresa AND c.id_bancli = k.id_bancli 
-         LEFT JOIN DvBancos  l ON k.id_empresa = l.id_empresa AND k.id_banco = l.id_banco 
-         LEFT JOIN CoTercer  f ON b.EmpCodig = f.EmpCodig AND e.TerDocId = f.TerDocId 
-         WHERE a.id_empresa = :idEmpresa AND a.consecutivo = :consecutivo AND a.status = '1'
-      ";
-      $stmt = $connection->prepare($sql);
-      $stmt->bindParam(":idEmpresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
-      $stmt->bindParam(":consecutivo", $data["consecutivo"], PDO::PARAM_INT);
-      $stmt->execute();
-      $response = $stmt->fetchAll(PDO::FETCH_ASSOC);
-      $connection = null;
-      $stmt = null;
-      return $response;
-   }
-
-
-   //**************************************************************************************
-   static public function getLastConsigna() {
-      $connection = Database::getConnection();
-      $sql = "SELECT * FROM DvConsig 
-         WHERE consecutivo = (SELECT MAX(consecutivo) FROM DvConsig 
-         WHERE id_empresa = :idEmpresa)
-      ";
-      $stmt = $connection->prepare($sql);
-      $stmt->bindParam(":idEmpresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
       $stmt->execute();
       $response = $stmt->fetch(PDO::FETCH_ASSOC);
       $connection = null;
@@ -794,21 +762,101 @@ class ChequesModel {
 
 
    //******************************************************************************************
-   /*
-   static public function anular($data) {
-      $connection = Database::getConnection();
-      $sql = "UPDATE DvCheque SET status = 'A' 
-         WHERE id_empresa = :idEmpresa AND id_cheque = :id_cheque 
-      ";
-      $stmt = $connection->prepare($sql);
-      $stmt->bindParam(":idEmpresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
-      $stmt->bindParam(":id_cheque", $data["id_cheque"], PDO::PARAM_INT);
-      $stmt->execute();
-      $response = array("success" => true, "message" => 'Registro anulado exitosamente');
-      $connection = null;
-      $stmt = null;
+   static public function actInteres($data, $connection = null) {
+		$conn = false;
+		try {
+			if ($connection == null) {
+				$conn = true;
+				$connection = Database::getConnection();
+			}
+         $sql = "UPDATE DvCheque SET intereses_cobrados = intereses_cobrados - :interes 
+            WHERE id_empresa = :idEmpresa AND id_cheque = :id_cheque 
+         ";
+         $stmt = $connection->prepare($sql);
+         $stmt->bindParam(":idEmpresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+         $stmt->bindParam(":id_cheque", $data["id_cheque"], PDO::PARAM_INT);
+         $stmt->bindParam(":interes", $data["intereses_cobrados"], PDO::PARAM_INT);
+         $stmt->execute();
+         $response = array("success" => true, "message" => 'Registro actualizado exitosamente');
+		} catch (PDOException $e) {
+			$errorInfo = GeneralController::handleMySQLerror($stmt->errorInfo()[1], $stmt->errorInfo()[2]);
+			if (ENVIRONMENT == 'development1') {
+				$messageError = $errorInfo["error_code"]." ".$errorInfo["technical_message"];
+			} else {
+				$messageError = $errorInfo["error_code"]." ".$errorInfo["error_message"];
+			}
+			$response = array("success" => false, "message" => $messageError, "code" =>  $errorInfo["error_code"]);
+		}
+		if ($conn == true) {
+			$connection = null;
+		}
+		return $response;
+   }
+
+
+   //******************************************************************************************
+   static public function actPagoCap($data, $connection = null) {
+      $conn = false;
+      try {
+         if ($connection == null) {
+            $conn = true;
+            $connection = Database::getConnection();
+         }
+         $sql = "UPDATE DvCheque SET capital_pagado = capital_pagado - :capital 
+            WHERE id_empresa = :idEmpresa AND id_cheque = :id_cheque 
+         ";
+         $stmt = $connection->prepare($sql);
+         $stmt->bindParam(":idEmpresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+         $stmt->bindParam(":id_cheque", $data["id_cheque"], PDO::PARAM_INT);
+         $stmt->bindParam(":capital", $data["capital_pagado"], PDO::PARAM_INT);
+         $stmt->execute();
+         $response = array("success" => true, "message" => 'Registro actualizado exitosamente');
+      } catch (PDOException $e) {
+         $errorInfo = GeneralController::handleMySQLerror($stmt->errorInfo()[1], $stmt->errorInfo()[2]);
+         if (ENVIRONMENT == 'development1') {
+            $messageError = $errorInfo["error_code"]." ".$errorInfo["technical_message"];
+         } else {
+            $messageError = $errorInfo["error_code"]." ".$errorInfo["error_message"];
+         }
+         $response = array("success" => false, "message" => $messageError, "code" =>  $errorInfo["error_code"]);
+      }
+      if ($conn == true) {
+         $connection = null;
+      }
       return $response;
    }
-   */
+
+
+   //******************************************************************************************
+   static public function actPagoInt($data, $connection = null) {
+      $conn = false;
+      try {
+         if ($connection == null) {
+            $conn = true;
+            $connection = Database::getConnection();
+         }
+         $sql = "UPDATE DvCheque SET intereses_pagados = intereses_pagados - :interes 
+            WHERE id_empresa = :idEmpresa AND id_cheque = :id_cheque 
+         ";
+         $stmt = $connection->prepare($sql);
+         $stmt->bindParam(":idEmpresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+         $stmt->bindParam(":id_cheque", $data["id_cheque"], PDO::PARAM_INT);
+         $stmt->bindParam(":interes", $data["intereses_pagados"], PDO::PARAM_INT);
+         $stmt->execute();
+         $response = array("success" => true, "message" => 'Registro actualizado exitosamente');
+      } catch (PDOException $e) {
+         $errorInfo = GeneralController::handleMySQLerror($stmt->errorInfo()[1], $stmt->errorInfo()[2]);
+         if (ENVIRONMENT == 'development1') {
+            $messageError = $errorInfo["error_code"]." ".$errorInfo["technical_message"];
+         } else {
+            $messageError = $errorInfo["error_code"]." ".$errorInfo["error_message"];
+         }
+         $response = array("success" => false, "message" => $messageError, "code" =>  $errorInfo["error_code"]);
+      }
+      if ($conn == true) {
+         $connection = null;
+      }
+      return $response;
+   }
 
 }

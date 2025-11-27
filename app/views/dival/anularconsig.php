@@ -1,18 +1,18 @@
 <div class="content p-2 pt-10">
 	<div class="row mb-3">
    	<div class="col-lg-8">
-      	<h4 class="mb-0">Consignación de Cheques</h4>
+      	<h4 class="mb-0">Anular Consignación de Cheques</h4>
    	</div>
    	<div class="col-lg-4">
    		<nav class="mb-0" aria-label="breadcrumb">
       		<ol class="breadcrumb mb-2 float-sm-end">
          		<li class="breadcrumb-item"><a href="./">Dashboard</a></li>
-         		<li class="breadcrumb-item active">Consignación Cheques</li>
+         		<li class="breadcrumb-item active">Anular Consignación Cheques</li>
       		</ol>
       	</nav>
    	</div>
 	</div>
-	<form class="needs-validation form-search consignaForm" role="form" id="consignaForm" name="consignaForm" enctype="multipart/form-data" method="post" novalidate>
+	<form class="needs-validation form-search formConsigAnu" role="form" id="formConsigAnu" name="formConsigAnu" enctype="multipart/form-data" method="post" novalidate>
       <input type="hidden" id="modulo" name="modulo" value="dival">
       <input type="hidden" id="option" name="option" value="consigna">
       <input type="hidden" id="action" name="action" value="consigna">
@@ -21,7 +21,7 @@
       <input type="hidden" id="CueCodig" name="CueCodig" value="">
       <input type="hidden" id="compte" name="compte" value="">
       <input type="hidden" id="CompteBco" name="CompteBco" value = "">
-      <input type="hidden" id="valeValor" name="valeValor" value = 0>
+      <input type="hidden" id="id_consigna" name="id_consigna" value = 0>
       <input type="hidden" id="tipoDoc" name="tipoDoc" value = '1'>
       <input type="hidden" id="valDetalle" name="valDetalle" value = 'APORTE A ACAJA DE BANCOS'>
       <input type="hidden" id="terceroVale" name="terceroVale" value = '<?= $_SESSION['companyid']?>'>
@@ -34,30 +34,20 @@
             <div class="card mb-2">
                <div class="card-body">
                   <div class="row g-3">
-                     <div class="col-12 col-xl-7 mb-3">
-                        <div class="form-group">
-                           <label for="BancoCodig" class="text-label fs-0 ps-0">Cta Bancaria *</label>
-                           <select class="form-select select2" id="BancoCodig" name="BancoCodig" autofocus required>
-                              <option value="">Seleccionar</option>
-                           </select>
-                        </div>
+                     <label for="numDocAnu" class="text-label fs-0 mb-0 ps-2">Nro Consignación</label>
+                     <div class="col-6 col-xl-2 mt-0 mb-3">
+                        <input type="text" class="form-control" id="numDocAnu" name="numDocAnu" autofocus required>
+                     </div>
+                     <div class="col-6 col-xl-3 ms-3 mt-0 mb-0 p-1">
+                        <button class="btn btn-danger py-2 mt-0 d-none" type="button" id="btnAnularDocum"><span class="fas fa-trash me-2"></span>Anular</button>
                      </div>
                   </div>
 
-                  <div class="row g-3">
+                  <div class="row g-3 mb-4" id="datosCuenta">
                      <div class="col-lg-6 mb-3">
                         <div class="form-group">
-                           <label for="totalesCondig" class="text-label fs-0 ps-0">Totales a Consignar</label>
                            <p id="totalesCondig"></p>
-                           <!-- <input type="date" class="form-control" id="valeFecha" name="valeFecha" placeholder="<?php echo DATE_DISPLAY ?>" data-inputmask="'alias': '<?= DATE_FORMAT ?>'" required> -->
                         </div>
-                     </div>
-                  </div>
-
-                  <div class="row g-3 mt-0 mb-0">
-                     <div class="col-12 mt-0 mb-0 pe-2 text-end">
-                        <label for="incluirDocum" class="text-label fs--1 px-2 fw-bold">Todos</label>
-                        <input type="checkbox" id="incluirDocum" name="incluirDocum">
                      </div>
                   </div>
 
@@ -74,7 +64,6 @@
                                     <th class="sort align-middle text-start ps-0" scope="col" style="width:8%;">Fecha</th>
                                     <th class="sort align-middle text-start ps-0" scope="col" style="width:8%;">Vencimiento</th>
                                     <th class="sort align-middle text-end pe-2"   scope="col" style="width:10%;">Vlr Documento</th>
-                                    <th class="sort align-middle text-start ps-0" scope="col" style="width:5%;">Consig</th>
                                  </tr>
                               </thead>
                               <tbody id="ConsigTable-body">
@@ -100,4 +89,4 @@
 		include APP_PATH.'/views/layouts/footer.php';
 	?>
 </div>
-<script src="app/js/dival/consigcheque.js?v=1.0.0"></script>
+<script src="app/js/dival/anularconsig.js?v=1.0.0"></script>

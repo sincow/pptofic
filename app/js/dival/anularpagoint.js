@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
    //*********************************************************************************************
-   const form = document.getElementById('formAplazaAnu');
+   const form = document.getElementById('formPagoCapAnu');
    const numDocAnu = document.getElementById('numDocAnu');
    if (numDocAnu) {
       if (form) {
@@ -39,14 +39,14 @@ document.addEventListener("DOMContentLoaded", function() {
          const formData = new FormData();
          formData.append("modulo", "dival");
          formData.append("option", "cheques");
-         formData.append("action", "getAplById");
-         formData.append("id_aplaza", document.getElementById('numDocAnu').value);
+         formData.append("action", "getPagoIntById");
+         formData.append("id_pago", document.getElementById('numDocAnu').value);
          const response = fetch('helpers/ajaxRouter.php', {
             method: 'POST',
             body: formData
          }).then(resp => resp.json())
          .then( data => {
-            if (data.aplaza == false) {
+            if (data.pagoInteres == false) {
                swal.fire({
                   title: 'Error',
                   text: 'Documento no encontrado',
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function() {
                });
                return;
             } else {
-               if (data.aplaza.status == 'A') {
+               if (data.pagoInteres.status == 'A') {
                   swal.fire({
                      title: 'Error',
                      text: 'Documento ya se encuentra anulado',
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function() {
    if (btnAnularDocum) {
       document.getElementById('btnAnularDocum').addEventListener('click', () => {
          swal.fire({
-            title: '¿Está seguro de anular el Aplazamiento?',
+            title: '¿Está seguro de anular el Pago Intereses?',
             text: "Esta acción no se puede deshacer.",
             icon: 'warning',
             showCancelButton: true,
@@ -95,15 +95,15 @@ document.addEventListener("DOMContentLoaded", function() {
       })
    }
 
-})
+});
 
 
 //*********************************************************************************************
 function getDocumentDetails(data) {
    document.getElementById('btnAnularDocum').classList.remove('d-none');
-   document.getElementById('id_aplaza').value = data['aplaza'].id_aplaza;
+   document.getElementById('id_pago').value = data['pagoInteres'].id_pago;
    document.getElementById('id_cheque').value = data['cheque'].id_cheque;
-   document.getElementById('valor_interes').value = data['aplaza'].valor_interes;
+   document.getElementById('valor').value = data['pagoInteres'].valor;
    const datCliente = document.getElementById('datCliente');
    datCliente.innerHTML = '';
    const innerHtml = `
@@ -189,6 +189,7 @@ function getDocumentDetails(data) {
       colStatus = 'secondary';
       status = 'LIQUIDADO';                  
    }
+
    const innerHtmlDoc = `
       <div class="row mb-1">
          <div class="col-xl-3 text-label fs--0">
@@ -256,34 +257,31 @@ function getDocumentDetails(data) {
       </div>
 
       <div class="row pt-2 border-top">
-         <div class="col-5 text-label fs--1"><strong>Valor Aplazado:</strong></div>
-         <div class="col-4 col-lg-3 p-0 fs--1 text-end"><strong>${formatCurrency(parseFloat(data['aplaza'].valor_aplaza),0)}</strong></div>
-         <div class="col-9 col-lg-4 ps-0 fs--1 text-end">${data['aplaza'].intereses} %</div>
+         <div class="col-5 text-label fs--1"><strong>Valor Pago:</strong></div>
+         <div class="col-4 col-lg-3 p-0 fs--1 text-end"><strong>${formatCurrency(parseFloat(data['pagoInteres'].valor),0)}</strong></div>
       </div>
       <div class="row">
-         <div class="col-5 text-label fs--1">Valor Interes:</div>
-         <div class="col-4 col-lg-3 p-0 fs--1 text-end">${formatCurrency(parseFloat(data['aplaza'].valor_interes),0)}</div>
-      </div>
-      <div class="row">
-         <div class="col-5 text-label fs--1">Motivo del Aplazamiento:</div>
-         <div class="col-4 col-lg-3 p-0 fs--1 text-end">${data['aplaza'].motivo}</div>
+         <div class="col-5 text-label fs--1">Fecha del Pago:</div>
+         <div class="col-4 col-lg-3 p-0 fs--1 text-end">${data['pagoInteres'].fecha}</div>
       </div>
    `;
    document.getElementById('datDocument').innerHTML = innerHtmlDoc;
+
+
 }
 
 
 //*********************************************************************************************
 function anularDocum(paramsList) {
-   const CompteParam = paramsList.find(param => param.ParCodig === "CO8");
+   const CompteParam = paramsList.find(param => param.ParCodig === "CO5");
    const Compte = CompteParam.ParValor;
    const formData = new FormData();
    formData.append("modulo", "dival");
    formData.append("option", "cheques");
-   formData.append("action", "anularApl");
-   formData.append("id_aplaza", document.getElementById('id_aplaza').value);
+   formData.append("action", "anularPagoInt");
+   formData.append("id_pago", document.getElementById('id_pago').value);
    formData.append("id_cheque", document.getElementById('id_cheque').value);
-   formData.append("valor_interes", document.getElementById('valor_interes').value);
+   formData.append("valor", document.getElementById('valor').value);
    formData.append("compte", Compte);
    const response = fetch('helpers/ajaxRouter.php', {
       method: 'POST',

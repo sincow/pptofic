@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", async function() {
    //*********************************************************************************************
    const formDataDoc = new FormData();
    formDataDoc.append('modulo', 'dival');
-   formDataDoc.append('option', 'cheques');
+   formDataDoc.append('option', 'consigna');
    formDataDoc.append('action', 'getPorConsig');
    fetch('helpers/ajaxRouter.php', {
       method: 'POST',

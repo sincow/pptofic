@@ -29,8 +29,8 @@ if (time() - $reportData['timestamp'] > 585) {
 }
 
 // Obtener datos para el informe
-$consecutivo = $reportData['consecutivo'];
-$informe = ChequesModel::getConsignacion($reportData);
+$idConsigna = $reportData['idConsigna'];
+$informe = ConsignaModel::getConsignacion($reportData);
 
 
 //**************************************************************************************
@@ -42,7 +42,7 @@ class PDF extends FPDF{
 	protected $angle = 0;
 
    public $repFecConsig = '';
-   public $consecutivo = '';
+   public $idConsigna = '';
    public $BanCodig = '';
    public $BanNombr = '';
    public $w = '';
@@ -68,7 +68,7 @@ class PDF extends FPDF{
 		$this->Cell(20, 0, 'Página: ' . $this->PageNo() . '/{nb}', 0, 0, 'L');
       $this->Ln(4);
       $this->Cell(55, 0, 'Fecha Consignación: '.$this->repFecConsig, 0, 0, 'L');
-      $this->Cell(50, 0, 'Compte Consignación: '.$this->consecutivo, 0, 0, 'L');
+      $this->Cell(50, 0, 'Compte Consignación: '.$this->idConsigna, 0, 0, 'L');
       $this->Ln(4);
       $this->Cell(170, 0, 'Para Consignar en: '.$this->BanCodig." ".$this->BanNombr, 0, 0, 'L');
       $this->Ln(5);
@@ -149,10 +149,10 @@ class PDF extends FPDF{
 
 //**************************************************************************************
 class imprimirDocumento {
-	public $informe, $consecutivo, $token;
+	public $informe, $idConsigna, $token;
 	public function traerImpresionDocumento() {
       $pdf = new PDF('P', 'mm', 'letter');
-      $pdf->consecutivo = $this->consecutivo;
+      $pdf->idConsigna = $this->idConsigna;
       $w = array(18, 18, 80, 18, 8, 23, 23);
       $pdf->w = $w;
       $title = 'Cheques Consignados';
@@ -173,12 +173,12 @@ class imprimirDocumento {
 			$pdf->Rotate(0);
 			$pdf->SetTextColor(0, 0, 0);
 			$pdf->SetFont('Arial', '', 8);
-         $pdf->Output('I', "CHE-CONSIGNADOS".$this->consecutivo.'.pdf', true);
+         $pdf->Output('I', "CHE-CONSIGNADOS".$this->idConsigna.'.pdf', true);
          return;
       }
       $pdf->repFecConsig = $this->informe[0]["fecha"];
       $repFecConsig = $this->informe[0]["fecha"];
-      $pdf->consecutivo = $this->informe[0]["consecutivo"];
+      $pdf->idConsigna = $this->informe[0]["id_consigna"];
       $pdf->BanCodig = $this->informe[0]["BanCodig"];
       $pdf->BanNombr = $this->informe[0]["BanNombr"];
       $pdf->AddPage();
@@ -238,7 +238,7 @@ class imprimirDocumento {
 
 $documento = new imprimirDocumento();
 $documento->informe   = $informe;
-$documento->consecutivo = $consecutivo;
+$documento->idConsigna = $idConsigna;
 $documento->token     = $token;
 if ($reportData["GenHojCal"] == '1') {
 	$documento->traerHojaCalculo();

@@ -2,7 +2,7 @@
 if (!isset($_POST["option"])) {
 	require_once APP_PATH . '/models/mdlcheques.php';
 }
-if (isset($_POST["action"]) && ($_POST["action"] == "create" || $_POST["action"] == "devolucion" || $_POST["action"] == "aplaza" || $_POST["action"] == "pagocapital" || $_POST["action"] == "pagointeres" || $_POST["action"] == "consigna" || $_POST["action"] == "anular")) {
+if (isset($_POST["action"]) && ($_POST["action"] == "create" || $_POST["action"] == "devolucion" || $_POST["action"] == "aplaza" || $_POST["action"] == "pagocapital" || $_POST["action"] == "pagointeres" || $_POST["action"] == "anular" || $_POST["action"] == "anularApl" || $_POST["action"] == "anularPagoCap" || $_POST["action"] == "anularPagoInt")) {
    require_once '../'. APP_PATH . '/models/dival/mdlclientes.php';
    require_once '../'. APP_PATH . '/controllers/contabilidad/ctrmovimientos.php';
    require_once '../'. APP_PATH . '/models/contabilidad/mdlmovimientos.php';
@@ -34,17 +34,6 @@ class ChequesController {
       $data = $_POST;
       $data["id_cheque"] = filter_var($data["id_cheque"], FILTER_SANITIZE_NUMBER_INT);
       $response = ChequesModel::getOne($data);
-      return $response;
-   }
-
-
-   //******************************************************************************************
-   static public function getPorConsig() {
-      if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-         $response = array("success" => false, "message" => 'Método inválido');
-         return $response;
-      }
-      $response = ChequesModel::getPorConsig();
       return $response;
    }
 
@@ -144,7 +133,48 @@ class ChequesController {
       $responseChe = ChequesModel::getOne($dataApl, 0);
       $response = array("cheque" => $responseChe, "aplaza" => $responseApl);
       return $response;
+   }
 
+
+   //******************************************************************************************
+   static public function getPagoCapById() {
+      $required = ['id_pago'];
+      $verification = GeneralController::verifyRequiredFields($required, $_POST);
+      if ($verification["success"] == false) {
+         return $verification;
+      }
+      $data = $_POST;
+      $dataApl = [];
+      $data["id_pago"] = filter_var($data["id_pago"], FILTER_SANITIZE_NUMBER_INT);
+      $responseApl = ChequesModel::getPagoCapById($data);
+      if ($responseApl != null ) {
+         $idCehque = $responseApl["id_cheque"];
+         $dataApl = array("id_cheque" => $idCehque);
+      }
+      $responseChe = ChequesModel::getOne($dataApl, 0);
+      $response = array("cheque" => $responseChe, "pagoCapital" => $responseApl);
+      return $response;
+   }
+
+
+   //******************************************************************************************
+   static public function getPagoIntById() {
+      $required = ['id_pago'];
+      $verification = GeneralController::verifyRequiredFields($required, $_POST);
+      if ($verification["success"] == false) {
+         return $verification;
+      }
+      $data = $_POST;
+      $dataApl = [];
+      $data["id_pago"] = filter_var($data["id_pago"], FILTER_SANITIZE_NUMBER_INT);
+      $responseApl = ChequesModel::getPagoIntById($data);
+      if ($responseApl != null ) {
+         $idCehque = $responseApl["id_cheque"];
+         $dataApl = array("id_cheque" => $idCehque);
+      }
+      $responseChe = ChequesModel::getOne($dataApl, 0);
+      $response = array("cheque" => $responseChe, "pagoInteres" => $responseApl);
+      return $response;
    }
 
 
@@ -378,123 +408,6 @@ class ChequesController {
 		}
 		return array("success" => $response["success"], "message" =>  $response["message"], "reportUrl" => $reportUrl);
       //return $response;
-   }
-
-
-   //******************************************************************************************
-   static public function consigna() {
-      $required = ['documConsigList', 'canConsig'];
-      $verification = GeneralController::verifyRequiredFields($required, $_POST);
-      if ($verification["success"] == false) {
-         return $verification;
-      }
-      if ($_POST["canConsig"] == 0) {
-         return array("success" => false, "message" => "No se seleccionaron documentos para consignar");
-      }
-      $data = $_POST;
-      $data["consecutivo"] = 1;
-      $lastRecord = ChequesModel::getLastConsigna();
-      if ($lastRecord != null ) {
-         $data["consecutivo"] = $lastRecord["consecutivo"] + 1;
-      }
-      $ConConta = '1';
-      $valConsig = 0;
-      $documConsigList = json_decode($data["documConsigList"], true);
-      try {
-         $connection = Database::getConnection();
-         $connection->beginTransaction();
-         foreach ($documConsigList as $document) {
-            $tablaConsig = "DvConsig";
-            $dataConsig = array(
-               'id_empresa'  => $_SESSION["id_empresa"],
-               'consecutivo' => $data["consecutivo"],
-               'id_cheque'   => $document["id_cheque"],
-               'BanCodig'    => $data["BancoCodig"],
-               'fecha'       => $data["fechaActual"],
-               'status'      => '1',
-               'ConConta'    => $ConConta,
-               'id_user'     => $_SESSION["user_id"]
-               // 'creado_el'   => date("Y-m-d H:i:s"),
-               // 'actualizado_el' => date("Y-m-d H:i:s")
-            );
-            $responseConsig = GeneralModel::save($tablaConsig, $dataConsig, $connection);
-            if ($responseConsig["success"] === false) {
-               throw new PDOException($responseConsig["message"], $responseConsig["code"]);
-            }
-
-            $valConsig = $valConsig + $document["valor_cheque"];
-            $tablaDocum = "DvCheque";
-            $dataDocum = array(
-               'capital_pagado' => $document["valor_cheque"],
-               'status'  => "C"
-            );
-            $where = array(
-               'id_empresa' => $_SESSION["id_empresa"],
-               'id_cheque'  => $document["id_cheque"]
-            );
-            $responseDocum = GeneralModel::update($tablaDocum, $dataDocum, $where, $connection);
-            if ($responseDocum["success"] === false) {
-               throw new PDOException($responseDocum["message"], $responseDocum["code"]);
-            }
-         }
-         if ($data["CompteBco"] != "") {
-            $tablaBco = "BaMovimi";
-            $dataBco = array(
-               "EmpCodig" => $_SESSION["empdef"],
-               "ConCodig" => $data["CompteBco"],
-               "MovDocum" => $data["consecutivo"],
-               "TipCodig" => "",
-               "MovFecha" => $data["fechaActual"],
-		         "BanCodig" => $data["BancoCodig"],
-               "CheCodig" => "",
-               "TerDocId" => $_SESSION['companyid'],
-               "MovDetal" => "CONSIGNACION",
-               "MovValor" => $valConsig,
-               "MovChequ" => "",
-               "MovEstad" => "1",
-               "UsuCodig" => $_SESSION["user_id"]
-            );
-            $responBco = GeneralModel::save($tablaBco, $dataBco, $connection);
-            if ($responBco["success"] === false) {
-               throw new PDOException($responBco["message"], $responBco["code"]);
-            }
-         }
-         if ($data["compte"] != "") {
-            $dataCont = array(
-               "ComCodig" => $data["compte"],
-               "AsiDocum" => $data["consecutivo"],
-               "AsiDocSo" => "",
-               "TerDocId" => $_SESSION['companyid'],
-               "CenCodig" => "",
-               "CenCodAu" => "",
-               "AsiFecha" => $data["fechaActual"],
-               "origen"   => 2,
-               "partidas" => $data["acountingList"]
-            );
-            $responCont = MovimientosController::save($dataCont, $connection);
-            if ($responCont["success"] === false) {
-               throw new PDOException($responCont["message"], $responCont["code"]);
-            }
-         }
-         $connection->commit();
-         $response = array("success" => true, "message" => "Registro guardado exitosamente", "lastId" => $data["consecutivo"]);
-      } catch (PDOException $ex) {
-         $connection->rollBack();
-         $response = array("success" => false, "message" => $ex->getMessage(), "code" => $ex->getCode());
-      }
-		$reportUrl = null;
-		if ($response["success"] == true) {
-			$token = bin2hex(random_bytes(16));
-			$_SESSION['report_temp_' . $token] = [
-				'consecutivo' => $data["consecutivo"],
-				'GenHojCal'   => 0,
-				'token'       => $token,
-				'timestamp'   => time()
-			];
-         $reportUrl = "app/reports/dival/consigna.php?token=" . urlencode($token);
-		}
-		return array("success" => $response["success"], "message" =>  $response["message"], "reportUrl" => $reportUrl);
-      // return $response;
    }
 
 
@@ -953,5 +866,176 @@ class ChequesController {
       return $response;
    }
 
+
+   //******************************************************************************************
+   static public function anularApl() {
+      $required = ['id_aplaza', 'id_cheque', 'valor_interes'];
+      $verification = GeneralController::verifyRequiredFields($required, $_POST);
+      if ($verification["success"] == false) {
+         return $verification;
+      }
+      $data = $_POST;
+      $data["id_aplaza"] = filter_var($data["id_aplaza"], FILTER_SANITIZE_NUMBER_INT);
+      try {
+         $connection = Database::getConnection();
+         $connection->beginTransaction();
+         $tablaDocum = "DvAplaza";
+         $dataDocum = array(
+            'valor_aplaza'  => 0,
+            'intereses'     => 0,
+            'valor_interes' => 0,
+            'status' => "A"
+         );
+         $where = array(
+            'id_empresa' => $_SESSION["id_empresa"],
+            'id_aplaza'  => $data["id_aplaza"]
+         );
+         $responseDocum = GeneralModel::update($tablaDocum, $dataDocum, $where, $connection);
+         if ($responseDocum["success"] === false) {
+            throw new PDOException($responseDocum["message"], $responseDocum["code"]);
+         }
+
+         $dataChe = array(
+            'intereses_cobrados' => $data["valor_interes"],
+            'id_empresa' => $_SESSION["id_empresa"],
+            'id_cheque'  => $data["id_cheque"]
+         );
+         $responseChe = ChequesModel::actInteres($dataChe, $connection);
+         if ($responseChe["success"] === false) {
+            throw new PDOException($responseChe["message"], $responseChe["code"]);
+         }
+
+         if ($data["compte"] != "") {
+            $dataCont = array(
+               "ComCodig" => $data["compte"],
+               "AsiDocum" => $data["id_aplaza"],
+               "accion" => "A",
+            );
+            $responCont = MovimientosController::cancel($dataCont, $connection);
+            if ($responCont["success"] === false) {
+               throw new PDOException($responCont["message"], $responCont["code"]);
+            }
+         }
+
+         $connection->commit();
+         $response = array("success" => true, "message" => "Registro anulado exitosamente");
+      } catch (PDOException $ex) {
+         $connection->rollBack();
+         $response = array("success" => false, "message" => $ex->getMessage(), "code" => $ex->getCode());
+      }
+      return $response;
+   }
+
+
+   //******************************************************************************************
+   static public function anularPagoCap() {
+      $required = ['id_pago', 'id_cheque', 'valor'];
+      $verification = GeneralController::verifyRequiredFields($required, $_POST);
+      if ($verification["success"] == false) {
+         return $verification;
+      }
+      $data = $_POST;
+      try {
+         $connection = Database::getConnection();
+         $connection->beginTransaction();
+         $tablaDocum = "DvPagCap";
+         $dataDocum = array(
+            'valor'  => 0,
+            'status' => "A"
+         );
+         $where = array(
+            'id_empresa' => $_SESSION["id_empresa"],
+            'id_pago'    => $data["id_pago"]
+         );
+         $responseDocum = GeneralModel::update($tablaDocum, $dataDocum, $where, $connection);
+         if ($responseDocum["success"] === false) {
+            throw new PDOException($responseDocum["message"], $responseDocum["code"]);
+         }
+
+         $dataChe = array(
+            'capital_pagado' => $data["valor"],
+            'id_empresa' => $_SESSION["id_empresa"],
+            'id_cheque'  => $data["id_cheque"]
+         );
+         $responseChe = ChequesModel::actPagoCap($dataChe, $connection);
+         if ($responseChe["success"] === false) {
+            throw new PDOException($responseChe["message"], $responseChe["code"]);
+         }
+
+         if ($data["compte"] != "") {
+            $dataCont = array(
+               "ComCodig" => $data["compte"],
+               "AsiDocum" => $data["id_pago"],
+               "accion" => "A",
+            );
+            $responCont = MovimientosController::cancel($dataCont, $connection);
+            if ($responCont["success"] === false) {
+               throw new PDOException($responCont["message"], $responCont["code"]);
+            }
+         }
+         $connection->commit();
+         $response = array("success" => true, "message" => "Registro anulado exitosamente");
+      } catch (PDOException $ex) {
+         $connection->rollBack();
+         $response = array("success" => false, "message" => $ex->getMessage(), "code" => $ex->getCode());
+      }
+      return $response;
+   }
+
+
+   //******************************************************************************************
+   static public function anularPagoInt() {
+      $required = ['id_pago', 'id_cheque', 'valor'];
+      $verification = GeneralController::verifyRequiredFields($required, $_POST);
+      if ($verification["success"] == false) {
+         return $verification;
+      }
+      $data = $_POST;
+      try {
+         $connection = Database::getConnection();
+         $connection->beginTransaction();
+         $tablaDocum = "DvPagInt";
+         $dataDocum = array(
+            'valor'  => 0,
+            'status' => "A"
+         );
+         $where = array(
+            'id_empresa' => $_SESSION["id_empresa"],
+            'id_pago'    => $data["id_pago"]
+         );
+         $responseDocum = GeneralModel::update($tablaDocum, $dataDocum, $where, $connection);
+         if ($responseDocum["success"] === false) {
+            throw new PDOException($responseDocum["message"], $responseDocum["code"]);
+         }
+
+         $dataChe = array(
+            'intereses_pagados' => $data["valor"],
+            'id_empresa' => $_SESSION["id_empresa"],
+            'id_cheque'  => $data["id_cheque"]
+         );
+         $responseChe = ChequesModel::actPagoInt($dataChe, $connection);
+         if ($responseChe["success"] === false) {
+            throw new PDOException($responseChe["message"], $responseChe["code"]);
+         }
+
+         if ($data["compte"] != "") {
+            $dataCont = array(
+               "ComCodig" => $data["compte"],
+               "AsiDocum" => $data["id_pago"],
+               "accion" => "A",
+            );
+            $responCont = MovimientosController::cancel($dataCont, $connection);
+            if ($responCont["success"] === false) {
+               throw new PDOException($responCont["message"], $responCont["code"]);
+            }
+         }
+         $connection->commit();
+         $response = array("success" => true, "message" => "Registro anulado exitosamente");
+      } catch (PDOException $ex) {
+         $connection->rollBack();
+         $response = array("success" => false, "message" => $ex->getMessage(), "code" => $ex->getCode());
+      }
+      return $response;
+   }
 
 }

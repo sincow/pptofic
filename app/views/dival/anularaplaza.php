@@ -14,7 +14,9 @@
 	</div>
 	<form class="needs-validation form-search formAplazaAnu" role="form" id="formAplazaAnu" name="formAplazaAnu" enctype="multipart/form-data" method="post" novalidate>
 		<input type="hidden" class="dateFormat" id="dateFormat" value='<?php echo DATE_DISPLAY ?>'>
-      <input type="hidden" id="id_cheque" name="id_cheque" value="">
+      <input type="hidden" id="id_aplaza" name="id_aplaza" value="">
+      <input type="hidden" id="id_cheque" name="id_cheque" value=0>
+      <input type="hidden" id="valor_interes" name="valor_interes" value=0>
       <div class="row g-3">
          <div class="col-12 col-xl-9">
             <div class="row g-3">
