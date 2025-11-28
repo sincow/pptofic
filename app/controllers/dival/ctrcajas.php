@@ -9,6 +9,19 @@ require_once '../'. APP_PATH . '/models/contabilidad/mdlcuentas.php';
 
 class CajasController {
 
+
+   //*******************************************************************************************
+   static public function filter(){
+      if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+         $response = array("success" => false, "message" => 'Método inválido');
+         return $response;
+      }
+		$data = filter_input_array(INPUT_POST);
+      $especies = CajasModel::filter($data);
+      return $especies;
+   }
+
+
    //*********************************************************************************************
    static public function addDocumCaja(){
       $required = ['tipoDoc', 'terceroVale', 'valDetalle', 'valeFecha', 'entrValor', 'valeValor', 'cuentaVale'];

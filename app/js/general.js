@@ -512,3 +512,104 @@ function formatCurrency(amount, simbol, decimals = 0) {
    return (simbol == 1)? '$':'' + amount.toLocaleString('es-MX', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
    //return (simbol == 1)? '$':'' + parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
 }
+
+
+//*********************************************************************************************
+function setupPaginationEvents(dataPaginacion, itemsPage = 20) {
+   const prevBtn = document.querySelector('[data-list-pagination="prev"]');
+   const nextBtn = document.querySelector('[data-list-pagination="next"]');
+   const viewAllLink = document.querySelector('[data-list-view="*"]');
+   const viewLessLink = document.querySelector('[data-list-view="less"]');
+   if (prevBtn) {
+      prevBtn.addEventListener('click', (e) => {
+         e.preventDefault();
+         if (dataPaginacion) {
+            let currentPage = 1;
+            const activePage = document.querySelector('.pagination .active');
+            if (activePage) {
+               currentPage = parseInt(activePage.textContent) || 1;
+            }
+            if (currentPage > 1) {
+               const pageSize = dataPaginacion.page;
+               const startIndex = (currentPage - 2) * pageSize + 1;
+               dataPaginacion.show(startIndex, pageSize);
+            }
+         }
+      });
+   }
+
+   if (nextBtn) {
+      nextBtn.addEventListener('click', (e) => {
+         e.preventDefault();
+         if (dataPaginacion) {
+            let currentPage = 1;
+            const activePage = document.querySelector('.pagination .active');
+            if (activePage) {
+               currentPage = parseInt(activePage.textContent) || 1;
+            }
+            const totalPages = Math.ceil(dataPaginacion.items.length / dataPaginacion.page);
+            if (currentPage < totalPages) {
+               const pageSize = dataPaginacion.page;
+               const startIndex = currentPage * pageSize + 1;
+               dataPaginacion.show(startIndex, pageSize);
+            }
+
+         }
+      });
+   }
+
+   if (viewAllLink) {
+      viewAllLink.addEventListener('click', (e) => {
+         e.preventDefault();
+         if (dataPaginacion) {
+            dataPaginacion.page = dataPaginacion.items.length;
+            dataPaginacion.update();
+            viewAllLink.classList.add('d-none');
+            if (viewLessLink) viewLessLink.classList.remove('d-none');
+            // viewLessLink.classList.remove('d-none');
+         }
+      });
+   }
+   if (viewLessLink) {
+      viewLessLink.addEventListener('click', (e) => {
+         e.preventDefault();
+         if (dataPaginacion) {
+            dataPaginacion.page = itemsPage;
+            dataPaginacion.update();
+            viewLessLink.classList.add('d-none');
+            // viewAllLink.classList.remove('d-none');
+            if (viewAllLink) viewAllLink.classList.remove('d-none');
+         }
+      });
+   }
+}
+
+
+//*********************************************************************************************
+// Función para actualizar la información del paginador
+function updatePaginationInfo(dataPaginacion) {
+   if (!dataPaginacion) return;
+   const listInfo = document.querySelector('[data-list-info]');
+   const list = dataPaginacion;
+   const visibleItems = list.visibleItems.length;
+   const totalItems = list.items.length;
+   // const visibleItems = list.items.length;
+   const currentPage = list.i;  // Página actual (comienza en 1)
+   const itemsPerPage = list.page;  // Items por página (20)
+   let start = 0;
+   let end = 0;
+   if (visibleItems > 0) {
+      start = (currentPage - 1) * itemsPerPage + 1;
+      start = (currentPage);
+      if (currentPage == 1) {
+         end = Math.min(currentPage * itemsPerPage, totalItems);
+      } else {
+         end = Number(currentPage) + Number(itemsPerPage) - 1;
+         end = Math.min(end, totalItems);
+      }
+      start = Math.min(start, end);
+   }
+   const infoText = `${start} hasta ${end} de ${totalItems}`;
+   listInfo.textContent = `${infoText}`;
+   //$('[data-list-info]').text(infoText);
+}

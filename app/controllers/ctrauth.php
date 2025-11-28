@@ -28,9 +28,9 @@ class AuthController {
       if ($usuario) {
          $_SESSION['usuario_id'] = $usuario->getId();
          $_SESSION['usuario_nombre'] = $usuario->getNombre();
-         $_SESSION['usuario_rol'] = $usuario->getRol();
-         // Redirigir según rol
-         switch ($usuario->getRol()) {
+         $_SESSION['usuario_role'] = $usuario->getRole();
+         // Redirigir según role
+         switch ($usuario->getRole()) {
             case 'admin':
                header("Location: index.php?controller=dashboard&action=admin");
                break;
@@ -191,7 +191,6 @@ class AuthController {
 					$where = array("id_user" => $_SESSION['user_id']);
 					$userupdt = GeneralModel::update($table, $data, $where, $conn);
 					if ($userupdt["success"] == false) {
-						// throw new PDOException($userupdt[1], $userupdt[0]);
 						throw new PDOException($userupdt["message"], $userupdt["code"]);
 					}
 					$conn->commit();

@@ -27,7 +27,7 @@
          </div>
          <p class="text-muted mb-0" id="userName">
             <?= $user["name"] ?>
-            - <?= 'permissions.roles.' . $user["id_rol"] ?>
+            <!-- - <? //echo 'Prefil:' . $user["description"] ?> -->
          </p>
       </div>
 		<div class="col-md-5">
@@ -65,10 +65,11 @@
                <div class="col-lg-6 col-xl-4 mb-2 p-1">
                   <div class="card h-100">
                      <!-- Header del Módulo -->
-                     <div class="card-header bg-100 py-3">
+                     <!-- <div class="card-header bg-100 py-3"> -->
+                     <div class="card-header fw-bold py-1 fs-0 text-start text-white bg-primary" style="opacity: 70%;">
                         <div class="d-flex align-items-center">
-                           <i class="<?= $module['module']['image'] ?> me-2 text-primary"></i>
-                           <h4 class="mb-0 text-800 flex-grow-1"><?= $module['module']['description'] ?></h4>
+                           <i class="<?= $module['module']['image'] ?> me-2"></i>
+                           <h4 class="mb-0 text-800 flex-grow-1 text-white"><?= $module['module']['description'] ?></h4>
                            <div class="form-check">
                               <input class="form-check-input module-checkbox"
                                  type="checkbox"

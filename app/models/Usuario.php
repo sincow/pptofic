@@ -6,7 +6,7 @@ class Usuario {
    private string $nombre;
    private string $email;
    private string $password;
-   private string $id_rol;
+   private string $id_role;
    private string $status;
 
    // ✅ Constructor
@@ -16,7 +16,7 @@ class Usuario {
          $this->nombre   = $data['nombre'] ?? '';
          $this->email    = $data['email'] ?? '';
          $this->password = $data['password'] ?? '';
-         $this->id_rol   = $data['rol'] ?? '';
+         $this->id_role  = $data['role'] ?? '';
          $this->status   = $data['estado'] ?? 'activo';
       }
    }
@@ -80,14 +80,14 @@ class Usuario {
    public function guardar(): bool {
       $db = Database::getConnection();
       $hash = password_hash($this->password, PASSWORD_BCRYPT);
-      $stmt = $db->prepare("INSERT INTO users (nombre, email, password, id_rol) 
-         VALUES (:nombre, :email, :password, :id_rol)"
+      $stmt = $db->prepare("INSERT INTO users (nombre, email, password, id_role) 
+         VALUES (:nombre, :email, :password, :id_role)"
       );
       return $stmt->execute([
          ':nombre'   => $this->nombre,
          ':email'    => $this->email,
          ':password' => $hash,
-         ':id_rol'      => $this->id_rol
+         ':id_role'  => $this->id_role
       ]);
    }
 
@@ -98,23 +98,23 @@ class Usuario {
       if (!empty($this->password)) {
          $hash = password_hash($this->password, PASSWORD_BCRYPT);
          $stmt = $db->prepare("UPDATE users SET nombre = :nombre, email = :email, 
-            password  = :password, id_rol = :id_rol 
+            password  = :password, id_role = :id_role 
             WHERE id_user = :id_user"
          );
          return $stmt->execute([
             ':nombre'   => $this->nombre,
             ':email'    => $this->email,
             ':password' => $hash,
-            ':rol'      => $this->id_rol,
+            ':role'     => $this->id_role,
             ':id_user'  => $this->id_user
          ]);
       } else {
          $stmt = $db->prepare("UPDATE users SET nombre = :nombre, email = :email, 
-            id_rol = :id_rol WHERE id_user = :id_user");
+            id_role = :id_role WHERE id_user = :id_user");
          return $stmt->execute([
             ':nombre'   => $this->nombre,
             ':email'    => $this->email,
-            ':rol'      => $this->id_rol,
+            ':role'     => $this->id_role,
             ':id_user'  => $this->id_user
          ]);
       }
@@ -141,8 +141,8 @@ class Usuario {
    public function getEmail(): string {
       return $this->email;
    }
-   public function getRol(): string {
-      return $this->id_rol;
+   public function getRole(): string {
+      return $this->id_role;
    }
 
    public function setNombre(string $nombre): void {
@@ -154,7 +154,7 @@ class Usuario {
    public function setPassword(string $password): void {
       $this->password = $password;
    }
-   public function setRol(string $rol): void {
-      $this->id_rol = $rol;
+   public function setRole(string $role): void {
+      $this->id_role = $role;
    }
 }

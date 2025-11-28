@@ -8,6 +8,57 @@ if (!isset($_SESSION)) {
 
 class ReportsController {
 
+
+
+   //**************************************************************************************
+   static public function repliquida(){
+      $required = ['repNroDomum'];
+      $verification = GeneralController::verifyRequiredFields($required, $_POST);
+      if ($verification["success"] == false) {
+         return $verification;
+      }
+      if (!isset($_POST["GenHojCal"])) {
+         $_POST["GenHojCal"] = 0;
+      }
+      $data = $_POST;
+      $letra = ReportsModel::repDocument($data);
+      if ($letra == null) {
+         return array(
+            'success' => false,
+            'message' => 'No se encontro el Documento'
+         );
+      }
+      $idCheque = $letra["id_cheque"];
+      $dateTime = new DateTime();
+      $fechaHora = $dateTime->format('Y-m-d H:i:s');
+      $table = "reports";
+      $dataUpt = array(
+         "last_generate_report" => $fechaHora
+      );
+      $where = array("link_report" => 'repliquida');
+      $userupdt = GeneralModel::update($table, $dataUpt, $where);
+      if ($userupdt["success"] == false) {
+         // throw new PDOException($userupdt["message"], $userupdt["code"]);
+      }
+
+      $token = bin2hex(random_bytes(16));
+      $_SESSION['report_temp_' . $token] = [
+         'tipo' => 'Liquidación',
+         'clase' => $data['clase'],
+         'id_cheque' => $idCheque,
+         'GenHojCal' => $_POST['GenHojCal'],
+         'token' => $token,
+         'timestamp' => time()
+      ];
+      $reportUrl = "app/reports/dival/liquidacion.php?token=" . urlencode($token);
+      return array(
+         'success' => true,
+         'url' => $reportUrl,
+         'message' => 'Informe generado correctamente'
+      );
+   }
+
+
    //**************************************************************************************
    static public function repletra(){
       $required = ['repNroDomum'];

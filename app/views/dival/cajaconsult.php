@@ -19,7 +19,7 @@
 <div class="content ps-2 pe-2 pt-10">
 	<div class="row mb-0">
 		<div class="col-auto">
-			<h4 class="mb-0 ms-1">Documentos</h4>
+			<h4 class="mb-0 ms-1">Consulta Movimientos de Caja</h4>
 		</div>
 		<div class="col-lg-6">
 			<div class="gesAlert">
@@ -29,17 +29,21 @@
 			<nav class="mb-2" aria-label="breadcrumb">
 				<ol class="breadcrumb mb-0 float-sm-end">
 					<li class="breadcrumb-item"><a href="./">Dashboard</a></li>
-					<li class="breadcrumb-item active">Documentos</li>
+					<li class="breadcrumb-item active">Consulta Mov Caja</li>
 				</ol>
 			</nav>
 		</div>
 	</div>
-	<form role="form" class="chequesForm" id="chequesForm" method="post" action="purchasedetail">
+	<form role="form" class="cajaConsulForm" id="cajaConsulForm" method="post" action="purchasedetail">
 		<input type="hidden" class="idPODetail" name="idPODetail" value=''>
 		<input type="hidden" class="dateFormat" id="dateFormat" value='<?php echo DATE_DISPLAY ?>'>
+      <input type="hidden" id="tipoDoc" name="tipoDoc" value="*">
+      <input type="hidden" id="valeValor" name="valeValor" value=0>
+      <input type="hidden" id="entrValor" name="entrValor" value=0>
+      <input type="hidden" id="documcajaForm" name="documcajaForm" value=0>
       <!-- <input type="hidden" name="pyt" value="<?php //getCSRFToken() ?>"> -->
 		<div class="mb-3">
-			<div id="chequesTable" data-list='{"valueNames":["id","numero","cliente","fecha","vencim","valor","saldo","interes","sdoint","status"],"page":20,"pagination":true}'>
+			<div id="cajaTable" data-list='{"valueNames":["id","tipo","fecha","valor","cliente","banco","cuenta","descrip"],"page":15,"pagination":true}'>
 				<div class="mb-1">
 					<div class="d-flex flex-wrap gap-1">
 						<div class="search-box">
@@ -100,23 +104,22 @@
 					<div class="table-responsive scrollbar mx-n1 px-1">
 						<form role="form" class="mb-1 poFormEdit" method="post" action="recsessionadd">
 							<input type="hidden" class="idpoRec" name="idPo" value="">
-							<table class="table table-striped table-sm fs--1 mb-0 documentsTable" id="documentsTable">
+							<table class="table table-striped table-sm fs--1 mb-0 cajaTable" id="cajaTable">
 								<thead style="background-color: var(--phoenix-body-bg); backdrop-filter: blur(8px); opacity: 0.98;">
 									<tr>
-										<th class="sort align-middle text-end white-space-nowrap pe-3" scope="col" data-sort="id" style="width:7%;">Compte #</th>
-										<th class="sort align-middle text-start ps-0" scope="col" data-sort="numero"  style="width:6%;">Nro Cheque</th>
-										<th class="sort align-middle text-start ps-0" scope="col" data-sort="cliente" style="width:18%; min-width: 100px;">Cliente</th>
-										<th class="sort align-middle text-start ps-0" scope="col" data-sort="fecha"   style="width:6%;">Fec.Cheque</th>
-										<th class="sort align-middle text-start ps-0" scope="col" data-sort="vecim"   style="width:7%;">Fec.Vencim</th>
-										<th class="sort align-middle text-end pe-2"   scope="col" data-sort="valor"   style="width:8%;">Vlr Cheque</th>
-										<th class="sort align-middle text-end pe-2"   scope="col" data-sort="saldo"   style="width:8%;">Sdo Capital</th>
-										<th class="sort align-middle text-end pe-2"   scope="col" data-sort="interes" style="width:8%;">Int Cobrado</th>
-										<th class="sort align-middle text-end pe-2"   scope="col" data-sort="sdoint"  style="width:8%;">Sdo Interes</th>
-										<th class="sort align-middle text-start ps-0" scope="col" data-sort="status"  style="width:7%;">Estado</th>
-										<th class="sort align-middle text-start pe-1" scope="col" style="width:3%;">Acciones</th>
+										<th class="sort align-middle text-end white-space-nowrap pe-2" scope="col" data-sort="id" style="width:5%;">Compte</th>
+										<th class="sort align-middle text-start ps-2" scope="col" data-sort="tipo"    style="width:6%;">Tipo</th>
+										<th class="sort align-middle text-start ps-2" scope="col" data-sort="fecha"   style="width:6%;">Fecha</th>
+										<th class="sort align-middle text-end pe-2"   scope="col" data-sort="valor"   style="width:6%;">Valor</th>
+										<th class="sort align-middle text-start ps-2" scope="col" data-sort="cliente" style="width:20%; min-width: 100px;">Tercero</th>
+										<th class="sort align-middle text-start ps-2" scope="col" data-sort="banco"   style="width:18%;">Banco</th>
+										<th class="sort align-middle text-start ps-2" scope="col" data-sort="cuenta"  style="width:18%;">Cuenta</th>
+										<th class="sort align-middle text-start ps-2" scope="col" data-sort="descrip" style="width:20%;">Descripción</th>
+										<!-- <th class="sort align-middle text-start ps-0" scope="col" data-sort="status"  style="width:7%;">Estado</th> -->
+										<!-- <th class="sort align-middle text-start pe-1" scope="col" style="width:3%;">Acciones</th> -->
 									</tr>
 								</thead>
-								<tbody class="list" id="chequesTable-body">
+								<tbody class="list" id="cajaTable-body">
                            <!-- <tr class="hover-actions-trigger btn-reveal-trigger position-static">
                               <td colspan="12" class="order align-middle white-space-nowrap py-2 text-center">
                                  No hay registros para mostrar
@@ -292,4 +295,4 @@
 		</form>
 	</div>
 </div>
-<script src="app/js/dival/cheques.js?v=1.0.0"></script>
+<script src="app/js/dival/valescaja.js?v=1.0.0"></script>

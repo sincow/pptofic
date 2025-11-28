@@ -15,11 +15,19 @@ class ReportsModel {
    //**************************************************************************************
    static public function repDocument($data){
       $connection = Database::getConnection();
-      $sql = "SELECT * FROM DvCheque WHERE id_empresa = :id_empresa AND clase = :clase AND consecutivo = :consecutivo";
+      if ($data['clase'] != 1) {
+         $sql = "SELECT * FROM DvCheque WHERE id_empresa = :id_empresa AND clase = :clase AND consecutivo = :consecutivo";
+      } else {
+         $sql = "SELECT * FROM DvCheque WHERE id_empresa = :id_empresa AND clase = :clase AND id_cheque = :id_cheque";
+      }
       $stmt = $connection->prepare($sql);
       $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
       $stmt->bindParam(":clase", $data["clase"]);
-      $stmt->bindParam(":consecutivo", $data["repNroDomum"]);
+      if ($data['clase'] != 1) {
+         $stmt->bindParam(":consecutivo", $data["repNroDomum"]);
+      } else {
+         $stmt->bindParam(":id_cheque", $data["repNroDomum"]);
+      }
       $stmt->execute();
       $resp = $stmt->fetch(PDO::FETCH_ASSOC);
       $stmt = null;

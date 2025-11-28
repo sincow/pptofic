@@ -1,6 +1,6 @@
 <?php
 if (!isset($_POST["option"])) {
-	require_once APP_PATH . '/models/mdlusers.php';
+	require_once APP_PATH . '/models/admon/mdlusers.php';
 }
 
 class UsersController {
@@ -26,7 +26,7 @@ class UsersController {
          return $response;
       }
       $data = $_POST;
-      $required = ['password', 'nombre', 'email', 'rol'];
+      $required = ['password', 'nombre', 'email', 'role'];
       foreach ($required as $field) {
          if (empty($_POST[$field]) || $_POST[$field] == "") {
             $response = array("success" => false, "message" => "Campo $field es requerido");
@@ -46,9 +46,9 @@ class UsersController {
          return $response;
       }
 
-      $data["rol"] = trim($data["rol"]);
-      $data["rol"] = strip_tags($data["rol"]);
-      $data["rol"] = filter_var($data["rol"], FILTER_SANITIZE_NUMBER_INT);
+      $data["role"] = trim($data["role"]);
+      $data["role"] = strip_tags($data["role"]);
+      $data["role"] = filter_var($data["role"], FILTER_SANITIZE_NUMBER_INT);
 
       $encriptar = crypt($_POST["password"], '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
 
@@ -111,7 +111,7 @@ class UsersController {
          $response = array("success" => false, "message" => "Registro inválido (Id)");
          return $response;
       }
-      $required = ['id', 'nombre', 'email', 'rol'];
+      $required = ['id', 'nombre', 'email', 'role'];
       foreach ($required as $field) {
          if (empty($_POST[$field]) || $_POST[$field] == "") {
             $response = array("success" => false, "message" => "Campo $field es requerido");
@@ -130,9 +130,9 @@ class UsersController {
          $response = array("success" => false, "message" => htmlspecialchars("Campo email es inválido", ENT_QUOTES, 'UTF-8'));
          return $response;
       }
-      $data["rol"] = trim($data["rol"]);
-      $data["rol"] = strip_tags($data["rol"]);
-      $data["rol"] = filter_var($data["rol"], FILTER_SANITIZE_NUMBER_INT);
+      $data["role"] = trim($data["role"]);
+      $data["role"] = strip_tags($data["role"]);
+      $data["role"] = filter_var($data["role"], FILTER_SANITIZE_NUMBER_INT);
 
       $photo = $_POST["photoPrev"];
       if(isset($_FILES["photo"]["tmp_name"]) && $_FILES['photo']['error'] === UPLOAD_ERR_OK){

@@ -45,11 +45,8 @@ class AuthController {
                   define('DB_NAME',  $user["EmpCodig"]);
                   define('DB_CHARSET', 'utf8');
 
-
-
                   //   $_SESSION['user_id'] = $user['id_user'];
                   //   $_SESSION['user_name'] = $user['nombre'];
-                  //   $_SESSION['user_role'] = $user['rol'];
                   //   $_SESSION['empresa_id'] = $user['id_empresa'];
                   //   $_SESSION['user_data'] = $user;
                     

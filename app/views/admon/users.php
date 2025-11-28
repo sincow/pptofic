@@ -14,7 +14,7 @@
 	</div>
 	<form role="form" class="usersFormList" method="post" action="userdetails">
 		<div class="mb-3">
-			<div id="Users" data-list='{"valueNames":["id","nombre","email","telefono","status"],"page":10,"pagination":true}'>
+			<div id="Users" data-list='{"valueNames":["id","name","email","role","last","status"],"page":10,"pagination":true}'>
 				<div class="mb-0">
 					<div class="d-flex flex-wrap gap-3">
 						<div class="search-box">
@@ -85,9 +85,10 @@
 								<thead style="background-color: var(--phoenix-body-bg); backdrop-filter: blur(8px); opacity: 0.98;">
 									<tr>
 										<th class="sort white-space-nowrap align-middle ps-2" scope="col" data-sort="id" style="width:6%;">Foto</th>
-										<th class="sort white-space-nowrap align-middle ps-2" scope="col" data-sort="nombre" style="width:25%;">Nombre</th>
+										<th class="sort white-space-nowrap align-middle ps-2" scope="col" data-sort="name" style="width:25%;">Nombre</th>
 										<th class="sort white-space-nowrap align-middle ps-2" scope="col" data-sort="email" style="width:20%;">Correo Electrónico</th>
-										<th class="sort white-space-nowrap align-middle ps-2" scope="col" data-sort="telefono" style="width:10%;">Perfil</th>
+										<th class="sort white-space-nowrap align-middle ps-2" scope="col" data-sort="role" style="width:10%;">Perfil</th>
+										<th class="sort white-space-nowrap align-middle ps-2" scope="col" data-sort="last" style="width:10%;">Ultima Entrda</th>
 										<th class="sort white-space-nowrap align-middle ps-2" scope="col" data-sort="status" style="width:8%;">Estado</th>
 										<th class="sort align-middle text-start p-0 ps-3" scope="col" style="width:22%;">Acciones</th>
 									</tr>
@@ -109,9 +110,9 @@
 					<input type="hidden" name="idCli" value="" />
 					<div class="row align-items-center justify-content-between py-2 pe-0 fs--1">
 						<div class="col-auto d-flex">
-							<p class="mb-0 d-none d-sm-block me-3 fw-semi-bold text-900" data-list-info="data-list-info"></p>
-							<a class="fw-semi-bold" href="#!" data-list-view="*">View All<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
-							<a class="fw-semi-bold d-none" href="#!" data-list-view="less">View Less<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
+							<p class="mb-0 d-none d-sm-block me-3 fw-semi-bold text-900 ps-2" data-list-info="data-list-info"></p>
+							<a class="fw-semi-bold" href="#!" data-list-view="*">Ver Todos<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
+							<a class="fw-semi-bold d-none" href="#!" data-list-view="less">Ver Menos<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
 						</div>
 						<div class="col-auto d-flex">
 							<button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>

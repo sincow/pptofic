@@ -1,5 +1,13 @@
-//*********************************************************************************************
 document.addEventListener("DOMContentLoaded", async function() {
+   
+   //*********************************************************************************************
+   const cajaConsulForm = document.getElementById('cajaConsulForm');
+   if (cajaConsulForm) {
+      cargaMovCaja();
+   }
+
+
+   //*********************************************************************************************
    const paramsList = [];
    const formData = new FormData();
    formData.append("modulo", "admon");
@@ -37,7 +45,8 @@ document.addEventListener("DOMContentLoaded", async function() {
       "action": "getByQuery",
       "listWhere": JSON.stringify(listWhere)
    })
-   if (document.getElementById('tipoDoc').value != '1') {
+   // if (document.getElementById('tipoDoc').value != '1') {
+   if (document.getElementById('tipoDoc').value == '2' || document.getElementById('tipoDoc').value == '3') {
       initialSelect(selectQuery, paramsQuery);
    }
    // selectQuery = 'cuentaVale';
@@ -59,7 +68,8 @@ document.addEventListener("DOMContentLoaded", async function() {
       "value": '1'
    });
 
-   if (document.getElementById('tipoDoc').value != '1') {
+   // if (document.getElementById('tipoDoc').value != '1') {
+   if (document.getElementById('tipoDoc').value == '2' || document.getElementById('tipoDoc').value == '3') {
       const selectCuenta = document.getElementById('cuentaVale');
       getSelects('contabilidad', 'cuentas', selectCuenta, 'CueCodig', textOpt = ['CueCodig', 'CueNombr'], listWhere);
    }
@@ -306,4 +316,69 @@ function createAcounting(paramsList) {
       })
       document.getElementById('acountingList').value = JSON.stringify(acountingList);
    }
+}
+
+
+//*********************************************************************************************
+function cargaMovCaja() {
+   // Fetch initial data and populate the table
+   const formData = new FormData();
+   formData.append("modulo", "dival");
+   formData.append("option", "cajas");
+   formData.append("action", "filter");
+   fetch('helpers/ajaxRouter.php', {
+      method: 'POST',
+      body: formData
+   }).then(response => response.json())
+   .then(data => {
+      const cajaTableBody = document.getElementById('cajaTable-body');
+      cajaTableBody.innerHTML = ''; // Clear existing rows
+      data["data"].forEach(funcionForEach);
+      function funcionForEach(movimiento, index) {
+         const valor = movimiento["valor_entrada"] != 0 ? parseFloat(movimiento["valor_entrada"]) : parseFloat(movimiento["valor_salida"]);
+         let tipo = "";
+         let colorTipo = ""
+         switch (movimiento["tipo_movimiento"]) {
+            case '1':
+               tipo = "Aporte Caja";
+               colorTipo = "green";
+               break;
+            case '2':
+               tipo = "Ent Efectivo";
+               colorTipo = "blue";
+               break;
+            case '3':
+               tipo = "Vale Caja";
+               colorTipo = "orange";
+               break;
+            default:
+               break;
+         }
+
+         // data["data"].forEach(movimiento => {
+         const row = document.createElement('tr');
+         row.classList.add('hover-actions-trigger', 'btn-reveal-trigger', 'position-static');
+         row.innerHTML = `
+            <td class="id align-middle text-end white-space-nowrap pe-2">${movimiento["id_movimiento"]}</td>
+            <td class="tipo    align-middle text-start ps-2" style="color:${colorTipo};">${tipo}</td>
+            <td class="fecha   align-middle text-start ps-2">${movimiento["fecha"]}</td>
+            <td class="valor   align-middle text-end pe-2">${formatCurrency(valor)}</td>
+            <td class="cliente align-middle text-start ps-2">${movimiento["TerNombr"]}</td>
+            <td class="banco   align-middle text-start ps-2">${movimiento["BanNombr"]}</td>
+            <td class="cuenta  align-middle text-start ps-2">${movimiento["CueNombr"]}</td>
+            <td class="descri  align-middle text-start ps-2">${movimiento["descripcion"]}</td>
+         `;
+            // <td class="status align-middle text-start ps-0">${movimiento["status"]}</td>
+            // <td class="align-middle text-start pe-1">
+            // <button class="btn btn-sm btn-primary view-movimiento" data-id="${movimiento.Id}" title="Ver Movimiento">
+            //    <i class="fas fa-eye"></i>
+            // </button>
+            // </td>
+         cajaTableBody.appendChild(row);
+      };
+      // Re-initialize any table plugins if necessary
+   })
+   .catch(error => {
+      console.error('Error:', error);
+   });
 }

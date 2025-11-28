@@ -6,8 +6,9 @@
 				<button type="button" class="btn-close" data-bs-dismiss="modal" ara-label="Close"></button>
 			</div>
 			<form role="form" id="formUserEdit" method="post">
-            <input type="hidden" id="option" name="option" value="users"/>
-            <input type="hidden" id="action" name="action" value="update"/>
+            <input type="hidden" id="modulo" name="modulo" value="admon">
+            <input type="hidden" id="option" name="option" value="users">
+            <input type="hidden" id="action" name="action" value="update">
             <input type="hidden" id="editId" name="id">
             <input type="hidden" id="photoPrev" name="photoPrev">
             <input type="hidden" id="photoCurrent" name="photoCurrent">
@@ -40,9 +41,9 @@
                               <input type="text" class="form-control" id="editemail" name="email">
                            </div>
                            <div class="col-md-12 mb-3 pe-0">
-                              <label for="editrol" class="text-label fs-0 ps-1">Rol</label>
-                              <select class="select2 form-control" style="width: 100%;" id="editrol" name="rol">
-                                 <option value="0">Seleccione un Rol</option>
+                              <label for="editrole" class="text-label fs-0 ps-1">Perfil</label>
+                              <select class="select2 form-control" style="width: 100%;" id="editrole" name="role">
+                                 <option value="0">Seleccione un Perfil</option>
                               </select>
                            </div>
                         </div>
@@ -70,7 +71,7 @@
 </div>
 <script>
    $(document).ready(function() {
-      $('#editrol').select2({
+      $('#editrole').select2({
          dropdownParent: $('#modalUserEdit'),
          width: '100%'
       });

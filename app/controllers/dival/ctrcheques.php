@@ -394,20 +394,17 @@ class ChequesController {
 				'token' => $token,
 				'timestamp' => time()
 			];
-         if ($data["clase"] == '5') {
-            $reportUrl = "app/reports/dival/letra.php?token=" . urlencode($token);
+         if ($data["clase"] == '1') {
+            $reportUrl = "app/reports/dival/liquidacion.php?token=" . urlencode($token);
          }
          if ($data["clase"] == '3') {
             $reportUrl = "app/reports/dival/pagare.php?token=" . urlencode($token);
          }
-
-			// echo '
-			// <script>
-			// 	window.location = "' . $reportUrl . '";
-			// </script>';
+         if ($data["clase"] == '5') {
+            $reportUrl = "app/reports/dival/letra.php?token=" . urlencode($token);
+         }
 		}
 		return array("success" => $response["success"], "message" =>  $response["message"], "reportUrl" => $reportUrl);
-      //return $response;
    }
 
 

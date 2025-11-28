@@ -161,22 +161,22 @@ async function cargarCtaclien() {
       } else {
         const row = document.createElement('tr');
         const td = document.createElement('td');
-        td.colSpan = 4;
+        td.colSpan = 7;
         td.className = 'text-center text-muted py-4';
         td.textContent = 'No se encontraron cuentas';
         row.appendChild(td);
         tbody.appendChild(row);
       }
       updateListJS();
-      setTimeout(() => {
-         if (window.ctaclienListInstance) {
-            window.ctaclienListInstance.update();
-            window.ctaclienListInstance.reIndex();
-            window.ctaclienListInstance.sort('name', { order: 'asc' });
-            $('[data-list-info]').text(`${window.ctaclienListInstance.visibleItems.length} to ${window.ctaclienListInstance.items.length} Items`);
-            window.ctaclienListInstance.fuzzySearch('');
-         }
-      }, 100);
+      // setTimeout(() => {
+      //    if (window.ctaclienListInstance) {
+      //       window.ctaclienListInstance.update();
+      //       window.ctaclienListInstance.reIndex();
+      //       window.ctaclienListInstance.sort('name', { order: 'asc' });
+      //       $('[data-list-info]').text(`${window.ctaclienListInstance.visibleItems.length} to ${window.ctaclienListInstance.items.length} Items`);
+      //       window.ctaclienListInstance.fuzzySearch('');
+      //    }
+      // }, 100);
    })
    .catch(error => {
       console.error('Error:', error);
@@ -184,7 +184,7 @@ async function cargarCtaclien() {
       tbody.innerHTML = '';
       const row = document.createElement('tr');
       const td = document.createElement('td');
-      td.colSpan = 4;
+      td.colSpan = 7;
       td.className = 'text-center text-danger py-4';
       td.textContent = 'Error al cargar las Cuentas';
       row.appendChild(td);
@@ -238,15 +238,19 @@ function updateListJS() {
       window.ctaclienListInstance = null;
    }
    window.ctaclienListInstance = new List('Ctaclien', {
-      valueNames: [
-         'id', 'name', 'cuenta', 'ctacontable', 'status'
-      ],
-      page: 20,
+      valueNames: ["id", "name", "cuenta", "banco", "sucursal", "status"],
+      page: 15,
       pagination: true,
       indexAsync: true
    });
    window.ctaclienListInstance.sort('name', { order: 'asc' });
    window.ctaclienListInstance.fuzzySearch('');
+
+   setupPaginationEvents(window.ctaclienListInstance, 15);
+   window.ctaclienListInstance.on('updated', function() {
+      updatePaginationInfo(window.ctaclienListInstance);
+   });
+   updatePaginationInfo(window.ctaclienListInstance);
 }
 
 

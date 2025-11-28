@@ -1,13 +1,13 @@
 <?php
 if (!isset($_POST["option"])) {
-	require_once APP_PATH . '/models/mdlcheques.php';
+	require_once APP_PATH . '/models/dival/mdlcheques.php';
 }
 if (isset($_POST["action"]) && ($_POST["action"] == "create" || $_POST["action"] == "consigna" || $_POST["action"] == "anular")) {
-   require_once '../'. APP_PATH . '/models/dival/mdlclientes.php';
-   require_once '../'. APP_PATH . '/controllers/contabilidad/ctrmovimientos.php';
-   require_once '../'. APP_PATH . '/models/contabilidad/mdlmovimientos.php';
-   require_once '../'. APP_PATH . '/controllers/contabilidad/ctrcuentas.php';
-   require_once '../'. APP_PATH . '/models/contabilidad/mdlcuentas.php';
+	require_once '../'.APP_PATH.'/models/dival/mdlcheques.php';
+   require_once '../'.APP_PATH.'/controllers/contabilidad/ctrmovimientos.php';
+   require_once '../'.APP_PATH.'/models/contabilidad/mdlmovimientos.php';
+   require_once '../'.APP_PATH.'/controllers/contabilidad/ctrcuentas.php';
+   require_once '../'.APP_PATH.'/models/contabilidad/mdlcuentas.php';
 }
 
 class ConsignaController {
@@ -56,8 +56,6 @@ class ConsignaController {
                'status'      => '1',
                'ConConta'    => $ConConta,
                'id_user'     => $_SESSION["user_id"]
-               // 'creado_el'   => date("Y-m-d H:i:s"),
-               // 'actualizado_el' => date("Y-m-d H:i:s")
             );
             $responseConsig = GeneralModel::save($tablaConsig, $dataConsig, $connection);
             if ($responseConsig["success"] === false) {
@@ -85,7 +83,7 @@ class ConsignaController {
             $dataBco = array(
                "EmpCodig" => $_SESSION["empdef"],
                "ConCodig" => $data["CompteBco"],
-               "MovDocum" => $idConsigna,
+               "MovDocum" => $data["consecutivo"],
                "TipCodig" => "",
                "MovFecha" => $data["fechaActual"],
 		         "BanCodig" => $data["BancoCodig"],
@@ -105,7 +103,7 @@ class ConsignaController {
          if ($data["compte"] != "") {
             $dataCont = array(
                "ComCodig" => $data["compte"],
-               "AsiDocum" => $idConsigna,
+               "AsiDocum" => $data["consecutivo"],
                "AsiDocSo" => "",
                "TerDocId" => $_SESSION['companyid'],
                "CenCodig" => "",
@@ -120,7 +118,7 @@ class ConsignaController {
             }
          }
          $connection->commit();
-         $response = array("success" => true, "message" => "Registro guardado exitosamente", "lastId" => $idConsigna);
+         $response = array("success" => true, "message" => "Registro guardado exitosamente", "lastId" => $data["consecutivo"]);
       } catch (PDOException $ex) {
          $connection->rollBack();
          $response = array("success" => false, "message" => $ex->getMessage(), "code" => $ex->getCode());
@@ -129,15 +127,14 @@ class ConsignaController {
 		if ($response["success"] == true) {
 			$token = bin2hex(random_bytes(16));
 			$_SESSION['report_temp_' . $token] = [
-				'idConsigna' => $idConsigna,
-				'GenHojCal'   => 0,
-				'token'       => $token,
-				'timestamp'   => time()
+				'idConsigna' => $data["consecutivo"],
+				'GenHojCal'  => 0,
+				'token'      => $token,
+				'timestamp'  => time()
 			];
          $reportUrl = "app/reports/dival/consigna.php?token=" . urlencode($token);
 		}
 		return array("success" => $response["success"], "message" =>  $response["message"], "reportUrl" => $reportUrl);
-      // return $response;
    }
 
 
@@ -156,14 +153,81 @@ class ConsignaController {
 
    //******************************************************************************************
    static public function anular() {
-      $required = ['id_consigna'];
+      $required = ['idConsigna'];
       $verification = GeneralController::verifyRequiredFields($required, $_POST);
       if ($verification["success"] == false) {
          return $verification;
       }
       $data = $_POST;
-      $data["id_consigna"] = filter_var($data["id_consigna"], FILTER_SANITIZE_NUMBER_INT);
-   }
+      $data["idConsigna"] = filter_var($data["idConsigna"], FILTER_SANITIZE_NUMBER_INT);
+      $datConsig = ConsignaModel::getConsignacion($data);
+      if ($datConsig == null) {
+         return array("success" => false, "message" => "La consignación no existe");
+      }
+      try {
+         $connection = Database::getConnection();
+         $connection->beginTransaction();
 
+         $tablaDocum = "DvConsig";
+         $dataDocum = array(
+            'status' => "A"
+         );
+         $where = array(
+            'id_empresa'  => $_SESSION["id_empresa"],
+            'consecutivo' => $data["idConsigna"]
+         );
+         $responseDocum = GeneralModel::update($tablaDocum, $dataDocum, $where, $connection);
+         if ($responseDocum["success"] === false) {
+            throw new PDOException($responseDocum["message"], $responseDocum["code"]);
+         }
+
+         if ($data["CompteBco"] != "") {
+            $tablaBco = "BaMovimi";
+            $dataBco = array(
+               "MovValor" => 0,
+               "MovEstad" => "0"
+            );
+            $whereBco = array(
+               "EmpCodig" => $_SESSION["empdef"],
+               "ConCodig" => $data["CompteBco"],
+               "MovDocum" => $data["idConsigna"]
+            );
+            $responseDocum = GeneralModel::update($tablaBco, $dataBco, $whereBco, $connection);
+            if ($responseDocum["success"] === false) {
+               throw new PDOException($responseDocum["message"], $responseDocum["code"]);
+            }
+         };
+
+         if ($data["compte"] != "") {
+            $dataCont = array(
+               "ComCodig" => $data["compte"],
+               "AsiDocum" => $data["idConsigna"],
+               "accion" => "A",
+            );
+            $responCont = MovimientosController::cancel($dataCont, $connection);
+            if ($responCont["success"] === false) {
+               throw new PDOException($responCont["message"], $responCont["code"]);
+            }
+         }
+
+         foreach ($datConsig as $document) {
+            $dataChe = array(
+               "id_cheque" => $document["id_cheque"],
+               "capital_pagado" => $document["capital_pagado"]
+            );
+            $status = "1";
+            $responDoc = ChequesModel::actPagoCap($dataChe, $connection, $status);
+            if ($responDoc["success"] === false) {
+               throw new PDOException($responDoc["message"], $responDoc["code"]);
+            }
+         }
+         $connection->commit();
+         $response = array("success" => true, "message" => "Registro anulado exitosamente");
+      } catch (PDOException $ex) {
+         $connection->rollBack();
+         $response = array("success" => false, "message" => $ex->getMessage(), "code" => $ex->getCode());
+      }
+      return $response;
+   }
 
 }

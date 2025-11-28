@@ -95,7 +95,7 @@ async function cargarBancos() {
             // Columna Descripción
             const tdDesc = document.createElement('td');
             // tdDesc.className = 'white-space-nowrap align-middle ps-2';
-            tdDesc.className = 'align-middle text-660 ps-2 py-1 iniciales';
+            tdDesc.className = 'align-middle text-660 ps-2 py-1 initials';
             tdDesc.textContent = banco.iniciales;
             row.appendChild(tdDesc);
             
@@ -144,7 +144,7 @@ async function cargarBancos() {
       } else {
         const row = document.createElement('tr');
         const td = document.createElement('td');
-        td.colSpan = 4;
+        td.colSpan = 5;
         td.className = 'text-center text-muted py-4';
         td.textContent = 'No se encontraron bancos';
         row.appendChild(td);
@@ -175,7 +175,7 @@ async function cargarBancos() {
       tbody.innerHTML = '';
       const row = document.createElement('tr');
       const td = document.createElement('td');
-      td.colSpan = 4;
+      td.colSpan = 5;
       td.className = 'text-center text-danger py-4';
       td.textContent = 'Error al cargar los bancos';
       row.appendChild(td);
@@ -228,35 +228,17 @@ function updateListJS() {
       window.bancosListInstance = null;
    }
    window.bancosListInstance = new List('Bancos', {
-      valueNames: [
-         'id', 'name', 'initials', 'status'
-      ],
+      valueNames: ['id', 'name', 'initials', 'status'],
       page: 15,
       pagination: true,
       indexAsync: true
    });
    window.bancosListInstance.sort('name', { order: 'asc' });
    window.bancosListInstance.fuzzySearch('');
+
+   setupPaginationEvents(window.bancosListInstance, 15);
+   window.bancosListInstance.on('updated', function() {
+      updatePaginationInfo(window.bancosListInstance);
+   });
+   updatePaginationInfo(window.bancosListInstance);
 }
-
-
-//*********************************************************************************************
-// Función para actualizar la información del paginador
-function updatePaginationInfo() {
-   if (!window.bancosListInstance) return;
-   const list = window.bancosListInstance;
-   const visibleItems = list.visibleItems.length;
-   const currentPage = list.i;  // Página actual (comienza en 1)
-   const itemsPerPage = list.page;  // Items por página (20)
-   let start = 0;
-   let end = 0;
-   if (visibleItems > 0) {
-      start = (currentPage - 1) * itemsPerPage + 1;
-      end = Math.min(currentPage * itemsPerPage, visibleItems);
-      start = Math.min(start, end); // Asegurar que start <= end
-   }
-   const infoText = `${start} to ${end} of ${visibleItems}`;
-   $('[data-list-info]').text(infoText);
-}
-
-

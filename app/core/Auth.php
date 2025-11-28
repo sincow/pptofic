@@ -38,7 +38,7 @@ class Auth {
                 $this->session->set('user', $user);
                 $this->session->set('user_id', $user['id_user']);
                 $this->session->set('empresa_id', $user['id_empresa']);
-                $this->session->set('user_role', $user['rol']);
+                $this->session->set('user_role', $user['role']);
                 
                 return true;
             }

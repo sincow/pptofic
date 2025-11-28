@@ -171,11 +171,11 @@ class ChequesModel {
    static public function getOne($data, $by = 0) {
       $connection = Database::getConnection();
       $sql = "SELECT a.*, c.TerNombr, g.TabNive6 as TerTiDoc, c.TerDirec, c.TerTele1, c.TerEmail, m.nivel_riezgo, 
-         m.valor_cupo, m.valor_cupotemporal, 
-         l.nombre AS banco_nombre, k.sucursal AS banco_sucursal, k.numero_cuenta AS banco_num_cuenta, 
-         d.TerNombr as TerNombr2, h.TabNive6 as TerTiDoc2, d.TerDirec as TerDirec2, d.TerTele1 as TerTele12, 
-         e.TerNombr as TerNombr3, i.TabNive6 as TerTiDoc3, e.TerDirec as TerDirec3, e.TerTele1 as TerTele13, 
-         f.TerNombr as TerNombr4, j.TabNive6 as TerTiDoc4, f.TerDirec as TerDirec4, f.TerTele1 as TerTele14, 
+         m.valor_cupo, m.valor_cupotemporal, l.nombre AS banco_nombre, k.sucursal AS banco_sucursal, 
+         k.numero_cuenta AS banco_num_cuenta, d.TerNombr as TerNombr2, h.TabNive6 as TerTiDoc2, d.TerDirec as TerDirec2, 
+         d.TerTele1 as TerTele12, e.TerNombr as TerNombr3, i.TabNive6 as TerTiDoc3, e.TerDirec as TerDirec3, 
+         e.TerTele1 as TerTele13, f.TerNombr as TerNombr4, j.TabNive6 as TerTiDoc4, f.TerDirec as TerDirec4, 
+         f.TerTele1 as TerTele14, u.name, 
          COALESCE((SELECT MAX(n.fecha) FROM DvAplaza n WHERE a.id_empresa = n.id_empresa AND a.id_cheque = n.id_cheque), a.vencimiento) as UltVenci 
          FROM DvCheque a 
          LEFT JOIN companies b ON a.id_empresa = b.id_empresa
@@ -190,6 +190,7 @@ class ChequesModel {
          LEFT JOIN DvBanCli  k ON a.id_empresa = k.id_empresa AND a.id_bancli = k.id_bancli 
          LEFT JOIN DvBancos  l ON k.id_empresa = l.id_empresa AND k.id_banco = l.id_banco 
          LEFT JOIN DvClient  m ON a.id_empresa = m.id_empresa AND a.id_dvcliente = m.id_dvcliente
+         LEFT JOIN users     u ON a.id_empresa = u.id_empresa AND a.id_user = u.id_user
          WHERE a.id_empresa = :idEmpresa 
       ";
       if ($by == 0) {
@@ -714,28 +715,9 @@ class ChequesModel {
    //******************************************************************************************
    static public function getDashborad() {
       $connection = Database::getConnection();
-      /*
       $query = "SELECT 
-         ifnull((SELECT sum(valor_cheque) FROM DvCheque 
-         WHERE id_empresa = :id_empresa AND month(fecha) = month(CURDATE()) AND status <> 'A'), 0) AS valor_month, 
-         ifnull((SELECT count(id_cheque) FROM DvCheque 
-         WHERE id_empresa = :id_empresa2 AND month(fecha) = month(CURDATE()) AND status <> 'A'), 0) AS count_month, 
-         ifnull((SELECT sum(valor_cheque) FROM DvCheque 
-         WHERE id_empresa = :id_empresa3 AND fecha = CURDATE() AND status <> 'A'), 0) AS valor_today, 
-         ifnull((SELECT count(id_cheque) FROM DvCheque 
-         WHERE id_empresa = :id_empresa4 AND fecha = CURDATE() AND status <> 'A'), 0) AS count_today, 
-         ifnull((SELECT sum(valor_cheque) FROM DvCheque 
-         WHERE id_empresa = :id_empresa5 AND (status = '1' OR status = 'D')), 0) AS valor_pendiente,
-         ifnull((SELECT count(id_cheque) FROM DvCheque 
-         WHERE id_empresa = :id_empresa6 AND (status = '1' OR status = 'D')), 0) AS count_pendiente, 
-         ifnull((SELECT sum(valor_cheque) FROM DvCheque 
-         WHERE id_empresa = :id_empresa7 AND vencimiento <= CURDATE() AND (status = '1' OR status = 'D')), 0) AS valor_vencim,
-         ifnull((SELECT count(id_cheque) FROM DvCheque 
-         WHERE id_empresa = :id_empresa8 AND vencimiento <= CURDATE() AND (status = '1' OR status = 'D')), 0) AS count_vencim";
-      */
-      $query = "SELECT 
-         COALESCE(SUM(CASE WHEN fecha = month(CURDATE()) AND status <> 'A' THEN valor_cheque END), 0) AS valor_month,
-         COALESCE(COUNT(CASE WHEN fecha = month(CURDATE()) AND status <> 'A' THEN id_cheque END), 0) AS count_month,
+         COALESCE(SUM(CASE WHEN month(fecha) = month(CURDATE()) AND year(fecha) = YEAR(CURDATE()) AND status <> 'A' THEN valor_cheque END), 0) AS valor_month,
+         COALESCE(COUNT(CASE WHEN month(fecha) = month(CURDATE()) AND year(fecha) = YEAR(CURDATE()) AND status <> 'A' THEN id_cheque END), 0) AS count_month,
          COALESCE(SUM(CASE WHEN fecha = CURDATE() AND status <> 'A' THEN valor_cheque END), 0) AS valor_today,
          COALESCE(COUNT(CASE WHEN fecha = CURDATE() AND status <> 'A' THEN id_cheque END), 0) AS count_today,
          COALESCE(SUM(CASE WHEN status IN ('1', 'D') THEN valor_cheque END), 0) AS valor_pendiente,
@@ -746,13 +728,6 @@ class ChequesModel {
          WHERE id_empresa = :id_empresa";
       $stmt = $connection->prepare($query);
       $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
-      // $stmt->bindParam(":id_empresa2", $_SESSION["id_empresa"], PDO::PARAM_INT);
-      // $stmt->bindParam(":id_empresa3", $_SESSION["id_empresa"], PDO::PARAM_INT);
-      // $stmt->bindParam(":id_empresa4", $_SESSION["id_empresa"], PDO::PARAM_INT);
-      // $stmt->bindParam(":id_empresa5", $_SESSION["id_empresa"], PDO::PARAM_INT);
-      // $stmt->bindParam(":id_empresa6", $_SESSION["id_empresa"], PDO::PARAM_INT);
-      // $stmt->bindParam(":id_empresa7", $_SESSION["id_empresa"], PDO::PARAM_INT);
-      // $stmt->bindParam(":id_empresa8", $_SESSION["id_empresa"], PDO::PARAM_INT);
       $stmt->execute();
       $response = $stmt->fetch(PDO::FETCH_ASSOC);
       $connection = null;
@@ -795,20 +770,29 @@ class ChequesModel {
 
 
    //******************************************************************************************
-   static public function actPagoCap($data, $connection = null) {
+   static public function actPagoCap($data, $connection = null, $status = null) {
       $conn = false;
       try {
          if ($connection == null) {
             $conn = true;
             $connection = Database::getConnection();
          }
-         $sql = "UPDATE DvCheque SET capital_pagado = capital_pagado - :capital 
-            WHERE id_empresa = :idEmpresa AND id_cheque = :id_cheque 
-         ";
+         if ($status != null) {
+            $sql = "UPDATE DvCheque SET capital_pagado = capital_pagado - :capital, status = :status
+               WHERE id_empresa = :idEmpresa AND id_cheque = :id_cheque 
+            ";
+         } else {
+            $sql = "UPDATE DvCheque SET capital_pagado = capital_pagado - :capital 
+               WHERE id_empresa = :idEmpresa AND id_cheque = :id_cheque 
+            ";
+         }
          $stmt = $connection->prepare($sql);
          $stmt->bindParam(":idEmpresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
          $stmt->bindParam(":id_cheque", $data["id_cheque"], PDO::PARAM_INT);
          $stmt->bindParam(":capital", $data["capital_pagado"], PDO::PARAM_INT);
+         if ($status != null) {
+            $stmt->bindParam(":status", $status, PDO::PARAM_STR);
+         }
          $stmt->execute();
          $response = array("success" => true, "message" => 'Registro actualizado exitosamente');
       } catch (PDOException $e) {

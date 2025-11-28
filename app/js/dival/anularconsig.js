@@ -101,44 +101,65 @@ document.addEventListener("DOMContentLoaded", function() {
 //*********************************************************************************************
 function getDocumentDetails(data) {
    document.getElementById('btnAnularDocum').classList.remove('d-none');
-   document.getElementById('id_consigna').value = data[0]['id_consigna'];
+   document.getElementById('idConsigna').value = data[0]['consecutivo'];
    const datosCuenta = document.getElementById('datosCuenta');
    datosCuenta.innerHTML = '';
-   let innerHtml = `
-      <div class="fw-600 fs-0 mb-0">Cuenta Bancaria: </div>
-      <div class="fw-bold fs--1 mt-0">${data[0]['BanCodig']} ${data[0]['BanNombr']}</div>
-   `;
-      // ${data['cheque'].nivel_riezgo ? `<br><small class="text-label fs--1 badge badge-phoenix badge-phoenix-${getRiskBadgeClass(data['cheque'].nivel_riezgo)}">N.R. ${data['cheque'].nivel_riezgo}</small>` : ''}
-   document.getElementById('datosCuenta').innerHTML = innerHtml;
+   // <div class="fw-600 fs-0 mb-0">Cuenta Bancaria: </div>
 
-   innerHtml = "";
+   let valConsig = 0;
+   let innerHtml = "";
    data.forEach(element => {
+      valConsig += parseFloat(element.valor_cheque);
       innerHtml += `
       <tr>
-         <td class="text-start ps-0">${element.consecutivo}</td>
+         <td class="text-start ps-0">${element.id_cheque}</td>
          <td>${element.TerNombr}</td>
          <td>${element.numero}</td>
          <td>${element.banco_codigo}</td>
-         <td>${element.fecha}</td>
+         <td>${element.fecha_cheque}</td>
          <td class="text-start">${element.UltVenci}</td>
          <td class="text-end">${formatCurrency(parseFloat(element.valor_cheque),0)}</td>
       </tr>
       `; 
    });
    document.getElementById('ConsigTable-body').innerHTML = innerHtml;
+
+   innerHtml = `
+      <div class="row">
+         <div class="col-lg-6 mb-3">
+            <label class="text-label fs-0 mb-0">Cuenta Bancaria</label>
+            <div class="fw-bold fs--1 mt-0">${data[0]['BanCodig']} - ${data[0]['BanNombr']}</div>
+         </div>
+         <div class="col-6 col-lg-3 mb-3">
+            <label class="text-label fs-0 mb-0">Fecha Consignación</label>
+            <div class="fw-bold fs--1 mt-0">${data[0]['fecha']}</div>
+         </div>
+         <div class="col-6 col-lg-3 mb-3">
+            <label class="text-label fs-0 mb-0">Valor Consignación</label>
+            <div class="fw-bold fs--1 mt-0">$ ${formatCurrency(parseFloat(valConsig),0)}</div>
+         </div>
+      </div>
+   `;
+   document.getElementById('datosCuenta').innerHTML = innerHtml;
+
+
+
 }
 
 
 //*********************************************************************************************
 function anularDocum(paramsList) {
+   const CompteBcoParam = paramsList.find(param => param.ParCodig === "BA1");
+   const CompteBco = CompteBcoParam.ParValor;
    const CompteParam = paramsList.find(param => param.ParCodig === "CO2");
    const Compte = CompteParam.ParValor;
    const formData = new FormData();
    formData.append("modulo", "dival");
    formData.append("option", "consigna");
    formData.append("action", "anular");
-   formData.append("id_consigna", document.getElementById('id_consigna').value);
+   formData.append("idConsigna", document.getElementById('idConsigna').value);
    formData.append("compte", Compte);
+   formData.append("CompteBco", CompteBco);
    const response = fetch('helpers/ajaxRouter.php', {
       method: 'POST',
       body: formData

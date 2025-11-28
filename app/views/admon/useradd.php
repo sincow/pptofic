@@ -6,8 +6,9 @@
 				<button type="button" class="btn-close" data-bs-dismiss="modal" ara-label="Close"></button>
 			</div>
 			<form role="form" id="formUserAdd" method="post">
-            <input type="hidden" id="option" name="option" value="users"/>
-            <input type="hidden" id="action" name="action" value="create"/>
+            <input type="hidden" id="modulo" name="modulo" value="admon">
+            <input type="hidden" id="option" name="option" value="users">
+            <input type="hidden" id="action" name="action" value="create">
 				<div class="modal-body h-100 p-0">
                <div class="card mb-0">
                   <div class="card-body p-4">
@@ -36,9 +37,9 @@
                               <input type="email" class="form-control" id="newemail" name="email">
                            </div>
                            <div class="col-md-12 mb-3 pe-0">
-                              <label for="newrol" class="text-label fs-0 ps-1">Rol</label>
-                              <select class="select2 form-control" style="width: 100%;" id="newrol" name="rol">
-                                 <option value="0">Seleccione un Rol</option>
+                              <label for="newrole" class="text-label fs-0 ps-1">Perfil</label>
+                              <select class="select2 form-control" style="width: 100%;" id="newrole" name="role">
+                                 <option value="0">Seleccione un Perfil</option>
                               </select>
                            </div>
                         </div>
@@ -68,7 +69,7 @@
 </div>
 <script>
    $(document).ready(function() {
-      $('#newrol').select2({
+      $('#newrole').select2({
          dropdownParent: $('#modalUserAdd'),
          width: '100%'
       });

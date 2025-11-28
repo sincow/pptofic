@@ -50,7 +50,7 @@
 
 <?php
 	$table = "reports";
-	$order = "priority_report, last_generate_report DESC, name_report";
+	$order = "priority_report, id_report";
 	$where = "status_report = '1'";
 	$reports = GeneralModel::getAll($table, $order, $where);
 ?>
@@ -256,7 +256,9 @@
 			</div>
 			<div class="row align-items-center justify-content-between py-2 pe-0 fs--1 mt-2">
 				<div class="col-auto d-flex">
-					<p class="mb-0 d-none d-sm-block me-3 fw-semi-bold text-900" data-list-info="data-list-info"></p><a class="fw-semi-bold" href="#!" data-list-view="*">Ver todos<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a><a class="fw-semi-bold d-none" href="#!" data-list-view="less">Ver menos<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
+					<p class="mb-0 d-none d-sm-block me-3 fw-semi-bold text-900 ps-2" data-list-info="data-list-info"></p>
+					<a class="fw-semi-bold" href="#!" data-list-view="*">Ver todos<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
+					<a class="fw-semi-bold d-none" href="#!" data-list-view="less">Ver menos<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
 				</div>
 				<div class="col-auto d-flex">
 					<button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>

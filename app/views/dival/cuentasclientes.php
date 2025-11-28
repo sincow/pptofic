@@ -14,7 +14,7 @@
 	</div>
 	<form role="form" class="ctaclienFormList" method="post" action="ctaclienetails">
    	<div class="mb-3">
-   		<div id="Ctaclien" data-list='{"valueNames":["id", "name", "cuenta", "ctacontable", "status"],"page":20,"pagination":true}'>
+   		<div id="Ctaclien" data-list='{"valueNames":["id", "name", "cuenta", "banco", "sucursal", "status"],"page":15,"pagination":true}'>
       		<div class="mb-0">
          		<div class="d-flex flex-wrap gap-3">
          			<div class="search-box">
@@ -77,8 +77,8 @@
 										<th class="sort white-space-nowrap align-middle ps-2" scope="col" data-sort="id" style="width:8%;">id</th>
 										<th class="sort white-space-nowrap align-middle ps-2" scope="col" data-sort="name" style="width:27%;">Nombre</th>
 										<th class="sort white-space-nowrap align-middle ps-2" scope="col" data-sort="cuenta" style="width:10%;">Número Cuenta</th>
-										<th class="sort white-space-nowrap align-middle ps-2" scope="col" data-sort="ctacontable" style="width:15%;">Banco</th>
-										<th class="sort white-space-nowrap align-middle ps-2" scope="col" data-sort="ctacontable" style="width:15%;">Sucursal</th>
+										<th class="sort white-space-nowrap align-middle ps-2" scope="col" data-sort="banco" style="width:15%;">Banco</th>
+										<th class="sort white-space-nowrap align-middle ps-2" scope="col" data-sort="sucursal" style="width:15%;">Sucursal</th>
 										<th class="sort white-space-nowrap align-middle ps-2" scope="col" data-sort="status" style="width:8%;">Estado</th>
 										<th class="sort align-middle text-start p-0 ps-3" scope="col" style="width:15%;">Acciones</th>
 									</tr>
@@ -100,7 +100,7 @@
 					<input type="hidden" name="idCli" value="" />
 					<div class="row align-items-center justify-content-between py-2 pe-0 fs--1">
 						<div class="col-auto d-flex">
-							<p class="mb-0 d-none d-sm-block me-3 fw-semi-bold text-900" data-list-info="data-list-info"></p>
+							<p class="mb-0 d-none d-sm-block me-3 fw-semi-bold text-900 ps-2" data-list-info="data-list-info"></p>
 							<a class="fw-semi-bold" href="#!" data-list-view="*">Ver Todos<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
 							<a class="fw-semi-bold d-none" href="#!" data-list-view="less">Ver Menos<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
 						</div>

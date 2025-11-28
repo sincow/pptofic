@@ -547,7 +547,6 @@ async function cargarCheques() {
    .then( data => {
       // const tbody = document.getElementById('chequesTable-body');
       // tbody.innerHTML = '';
-
       cargarChequesDetall(data);
       let dataArray = [];
       dataArray.push({
@@ -598,12 +597,12 @@ function cargarChequesDetall(data) {
       data["data"].forEach(funcionForEach);
       function funcionForEach(item, index) {
          colorVencim = "green";
-         var permiRec = '<a class="dropdown-item poRectId" idpoRec=' + item["po_id"] + '>Receive</a>';
-         // <td class="expected align-middle white-space-nowrap text-start py-1 ps-0">${formatDate(item["valor_cheque"])}</td>
-         valCheque = item["valor_cheque"] * 1;
-         valInteres = item["intereses_cobrados"] * 1;
-         sdoCapital = item["valor_cheque"] - item["capital_pagado"];
-         sdoInteres = item["intereses_cobrados"] - item["intereses_pagados"];
+         let permiRec = '<a class="dropdown-item poRectId" idpoRec=' + item["po_id"] + '>Receive</a>';
+         permiRec = '';
+         valCheque = parseFloat(item["valor_cheque"]);
+         valInteres = parseFloat(item["intereses_cobrados"]);
+         sdoCapital = parseFloat(item["valor_cheque"] - item["capital_pagado"]);
+         sdoInteres = parseFloat(item["intereses_cobrados"] - item["intereses_pagados"]);
          const fechaFin = new Date(item['UltVenci']);
          let diasShow = "";
          fechaFin.setHours(0, 0, 0, 0);
@@ -630,18 +629,18 @@ function cargarChequesDetall(data) {
          }
          let row = `
             <tr class="hover-actions-trigger btn-reveal-trigger position-static">
-               <td class="po align-middle white-space-nowrap py-1">
-                  <a class="fw-semi-bold documentId" name="idDocument" idDoc='${item["id_cheque"]}'>#'${item["numero"]}</a>
+               <td class="id align-middle text-end white-space-nowrap py-1 pe-3">
+                  <a class="fw-semi-bold documentId" name="idDocument" idDoc='${item["id_cheque"]}'>${item["id_cheque"]}</a>
                </td>
-               <td class="customer align-middle white-space-nowrap text-uppercase py-1 ps-0">${item["id_cheque"]}</td>
-               <td class="vendor   align-middle white-space-nowrap text-uppercase py-1 ps-0">${item["TerNombr"]}</td>
-               <td class="expected align-middle white-space-nowrap text-start py-1 ps-0">${formatDate(item["fecha"])}</td>
-               <td class="created  align-middle white-space-nowrap text-start py-1 ps-0" style="color:${colorVencim};" >${formatDate(item["UltVenci"])}  ${diasShow}</td>
-               <td class="expected align-middle white-space-nowrap text-end py-1 ps-0">${formatCurrency(valCheque,0)}</td>
-               <td class="tracking align-middle white-space-nowrap text-end py-1 ps-0">${formatCurrency(sdoCapital,0)}</td>
-               <td class="cost align-middle text-end fw-semi-bold text-1000 py-1 pe-2">${formatCurrency(valInteres,0)}</td>
-               <td class="cost align-middle text-end fw-semi-bold text-1000 py-1 pe-2">${formatCurrency(sdoInteres,0)}</td>
-               <td class="status align-middle white-space-nowrap text-start py-1 ps-1 fw-bold text-700"><span class="badge badge-phoenix fs--2 badge-phoenix-${getStatusBadgeClass(item["status"])}"><span class="badge-label">${status}</span><span class="ms-1" data-feather="${getStatusBadgeIcon(item["status"])}" style="height:12.8px;width:12.8px;"></span></span></td>
+               <td class="numero  align-middle white-space-nowrap text-uppercase py-1 ps-0">${item["numero"]}</td>
+               <td class="cliente align-middle white-space-nowrap text-uppercase py-1 ps-0">${item["TerNombr"]}</td>
+               <td class="fecha   align-middle white-space-nowrap text-start py-1 ps-0">${formatDate(item["fecha"])}</td>
+               <td class="vencin  align-middle white-space-nowrap text-start py-1 ps-0" style="color:${colorVencim};" >${formatDate(item["UltVenci"])}  ${diasShow}</td>
+               <td class="valor   align-middle white-space-nowrap text-end py-1 pe-2">${formatCurrency(valCheque,0)}</td>
+               <td class="saldo   align-middle white-space-nowrap text-end py-1 pe-2">${formatCurrency(sdoCapital,0)}</td>
+               <td class="interes align-middle text-end fw-semi-bold text-1000 py-1 pe-2">${formatCurrency(valInteres,0)}</td>
+               <td class="sdoint  align-middle text-end fw-semi-bold text-1000 py-1 pe-2">${formatCurrency(sdoInteres,0)}</td>
+               <td class="status  align-middle white-space-nowrap text-start py-1 ps-1 fw-bold text-700"><span class="badge badge-phoenix fs--2 badge-phoenix-${getStatusBadgeClass(item["status"])}"><span class="badge-label">${status}</span><span class="ms-1" data-feather="${getStatusBadgeIcon(item["status"])}" style="height:12.8px;width:12.8px;"></span></span></td>
                <td>`;
          if (permiRec != "") {
             row += `
@@ -663,7 +662,7 @@ function cargarChequesDetall(data) {
       $('#chequesTable-body').empty();
       $('#chequesTable-body').append(`
          <tr>
-            <td class="align-middle text-center" colspan="11">
+            <td class="align-middle text-center" colspan="10">
                <div class="empty">
                   <div class="empty-img"><span class="fas fa-file-invoice-dollar"></span></div>
                   <p class="mb-0">No hay registros para mostrar</p>
@@ -672,41 +671,48 @@ function cargarChequesDetall(data) {
          </tr>
       `);
    }
-   updateListJS(allCheques);
-   setTimeout(() => {
-      if (window.poTableList) {
-         window.poTableList.update();
-         window.poTableList.reIndex();
-         window.poTableList.sort('expected', { order: 'asc' });
-         $('[data-list-info]').text(`${window.poTableList.visibleItems.length} to ${window.poTableList.items.length} Items`);
-         window.poTableList.fuzzySearch('');
-      }
-   }, 100);
+   updateListJS();
+   // setTimeout(() => {
+   //    if (window.docTableList) {
+   //       window.docTableList.update();
+   //       window.docTableList.reIndex();
+   //       window.docTableList.sort('expected', { order: 'asc' });
+   //       $('[data-list-info]').text(`${window.docTableList.visibleItems.length} to ${window.docTableList.items.length} Items`);
+   //       window.docTableList.fuzzySearch('');
+   //    }
+   // }, 100);
    displayActiveFilters(data["applied_filters"]);
 }
 
 
-/*************************************************************/
-function updateListJS(allCheques) {
-   if (!window.poTableList) {
-      window.poTableList = null;
+//*********************************************************************************************
+function updateListJS() {
+   if (!window.docTableList) {
+      window.docTableList = null;
    }
-   window.poTableList = new List('chequesTable', {
-      valueNames: [
-         'po', 'customer', 'vendor', 'wh', 
-         'created', 'expected', 'tracking',
-         'received', 'cost', 'status'
-      ],
+   window.docTableList = new List('chequesTable', {
+      valueNames: ["id","numero","cliente","fecha","vencim","valor","saldo","interes","sdoint","status"],
       page: 20,
       pagination: true,
+      // pagination: {
+      //    innerWindow: 1,
+      //    outerWindow: 1,
+      //    left: 0,
+      //    right: 0
+      // },
       indexAsync: true
    });
-   window.poTableList.sort('expected', { order: 'asc' });
-   window.poTableList.fuzzySearch('');
+   window.docTableList.sort('vencim', { order: 'asc' });
+   window.docTableList.fuzzySearch('');
+   setupPaginationEvents(window.docTableList, 20);
+   window.docTableList.on('updated', function() {
+      updatePaginationInfo(window.docTableList);
+   });
+   updatePaginationInfo(window.docTableList);
 }
 
 
-/*******************************************************************************************/
+//*********************************************************************************************
 const formulario = document.getElementById("frmDocumentsFilter");
 if (formulario) {
    formulario.addEventListener("submit", async function (e) {
@@ -898,4 +904,117 @@ function getStatusBadgeIcon(status) {
       'D': 'x'
    };
    return icons[status.toLowerCase()] || 'clock';
+}
+
+
+//*********************************************************************************************
+function setupPaginationEvents2() {
+   const prevBtn = document.querySelector('[data-list-pagination="prev"]');
+   const nextBtn = document.querySelector('[data-list-pagination="next"]');
+   const viewAllLink = document.querySelector('[data-list-view="*"]');
+   const viewLessLink = document.querySelector('[data-list-view="less"]');
+
+   if (prevBtn) {
+      prevBtn.addEventListener('click', (e) => {
+         e.preventDefault();
+         if (window.docTableList) {
+            let currentPage = 1;
+            const activePage = document.querySelector('.pagination .active');
+            if (activePage) {
+               currentPage = parseInt(activePage.textContent) || 1;
+            }
+            console.log('currentPage PREV: ', activePage);
+            if (currentPage > 1) {
+               const pageSize = window.docTableList.page;
+               const startIndex = (currentPage - 2) * pageSize + 1;
+               window.docTableList.show(startIndex, pageSize);
+            }
+         }
+      });
+   }
+
+   if (nextBtn) {
+      nextBtn.addEventListener('click', (e) => {
+         e.preventDefault();
+         if (window.docTableList) {
+            let currentPage = 1;
+            const activePage = document.querySelector('.pagination .active');
+            if (activePage) {
+               currentPage = parseInt(activePage.textContent) || 1;
+            }
+            const totalPages = Math.ceil(window.docTableList.items.length / window.docTableList.page);
+            if (currentPage < totalPages) {
+               const pageSize = window.docTableList.page;
+               const startIndex = currentPage * pageSize + 1;
+               window.docTableList.show(startIndex, pageSize);
+            }
+
+         }
+      });
+   }
+
+   if (viewAllLink) {
+      viewAllLink.addEventListener('click', (e) => {
+         e.preventDefault();
+         if (window.docTableList) {
+            window.docTableList.page = 10000;
+            window.docTableList.update();
+            viewAllLink.classList.add('d-none');
+            if (viewLessLink) viewLessLink.classList.remove('d-none');
+            // viewLessLink.classList.remove('d-none');
+         }
+      });
+   }
+   if (viewLessLink) {
+      viewLessLink.addEventListener('click', (e) => {
+         e.preventDefault();
+         if (window.docTableList) {
+            window.docTableList.page = 5;
+            window.docTableList.update();
+            viewLessLink.classList.add('d-none');
+            // viewAllLink.classList.remove('d-none');
+            if (viewAllLink) viewAllLink.classList.remove('d-none');
+         }
+      });
+   }
+}
+
+
+//*********************************************************************************************
+// Función para actualizar la información del paginador
+function updatePaginationInfo2() {
+   if (!window.docTableList) return;
+   const listInfo = document.querySelector('[data-list-info]');
+   const list = window.docTableList;
+   const visibleItems = list.visibleItems.length;
+   const totalItems = list.items.length;
+   // const visibleItems = list.items.length;
+   const currentPage = list.i;  // Página actual (comienza en 1)
+   const itemsPerPage = list.page;  // Items por página (20)
+   let start = 0;
+   let end = 0;
+   if (visibleItems > 0) {
+      start = (currentPage - 1) * itemsPerPage + 1;
+      start = (currentPage);
+      if (currentPage == 1) {
+         end = Math.min(currentPage * itemsPerPage, totalItems);
+      } else {
+         end = Number(currentPage) + Number(itemsPerPage) - 1;
+         console.log('end antes: ', end);
+         end = Math.min(end, totalItems);
+      }
+      start = Math.min(start, end);
+   }
+   const infoText = `${start} hasta ${end} de ${totalItems}`;
+
+   console.log('list: ', list);
+   console.log('visibleItems: ', visibleItems);
+   console.log('currentPage: ', currentPage);
+   console.log('itemsPerPage: ', itemsPerPage);
+   console.log('start: ', start);
+   console.log('end: ', end);
+   console.log('start: ', start);
+   console.log('infoText: ', infoText);
+   listInfo.textContent = `${infoText}`;
+   //$('[data-list-info]').text(infoText);
 }

@@ -274,7 +274,6 @@
          console.error('Error loading calendar config:', error);
       });
 
-
       const formDataDoc = new FormData();
       formDataDoc.append('modulo', 'dival');
       formDataDoc.append('option', 'consigna');
@@ -291,7 +290,7 @@
             data.forEach(element => {
                innerHtml += `
                <tr>
-                  <td class="text-start ps-2">${element.consecutivo}</td>
+                  <td class="text-end pe-3">${element.id_cheque}</td>
                   <td>${element.TerNombr}</td>
                   <td>${element.numero}</td>
                   <td>${element.codigo}</td>

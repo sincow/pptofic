@@ -221,22 +221,22 @@ async function cargarCuentas() {
       } else {
         const row = document.createElement('tr');
         const td = document.createElement('td');
-        td.colSpan = 4;
+        td.colSpan = 6;
         td.className = 'text-center text-muted py-4';
         td.textContent = 'No se encontraron cuentas';
         row.appendChild(td);
         tbody.appendChild(row);
       }
       updateListJS();
-      setTimeout(() => {
-         if (window.cuentasListInstance) {
-            window.cuentasListInstance.update();
-            window.cuentasListInstance.reIndex();
-            window.cuentasListInstance.sort('name', { order: 'asc' });
-            $('[data-list-info]').text(`${window.cuentasListInstance.visibleItems.length} to ${window.cuentasListInstance.items.length} Items`);
-            window.cuentasListInstance.fuzzySearch('');
-         }
-      }, 100);
+      // setTimeout(() => {
+      //    if (window.cuentasListInstance) {
+      //       window.cuentasListInstance.update();
+      //       window.cuentasListInstance.reIndex();
+      //       window.cuentasListInstance.sort('name', { order: 'asc' });
+      //       $('[data-list-info]').text(`${window.cuentasListInstance.visibleItems.length} to ${window.cuentasListInstance.items.length} Items`);
+      //       window.cuentasListInstance.fuzzySearch('');
+      //    }
+      // }, 100);
    })
    .catch(error => {
       console.error('Error:', error);
@@ -244,7 +244,7 @@ async function cargarCuentas() {
       tbody.innerHTML = '';
       const row = document.createElement('tr');
       const td = document.createElement('td');
-      td.colSpan = 4;
+      td.colSpan = 6;
       td.className = 'text-center text-danger py-4';
       td.textContent = 'Error al cargar las Cuentas';
       row.appendChild(td);
@@ -299,33 +299,17 @@ function updateListJS() {
       window.cuentasListInstance = null;
    }
    window.cuentasListInstance = new List('Cuentas', {
-      valueNames: [
-         'id', 'name', 'cuenta', 'ctacontable', 'status'
-      ],
+      valueNames: ['id', 'name', 'cuenta', 'ctacontable', 'status'],
       page: 15,
       pagination: true,
       indexAsync: true
    });
    window.cuentasListInstance.sort('name', { order: 'asc' });
    window.cuentasListInstance.fuzzySearch('');
-}
 
-
-//*********************************************************************************************
-// Función para actualizar la información del paginador
-function updatePaginationInfo() {
-   if (!window.cuentasListInstance) return;
-   const list = window.cuentasListInstance;
-   const visibleItems = list.visibleItems.length;
-   const currentPage = list.i;  // Página actual (comienza en 1)
-   const itemsPerPage = list.page;  // Items por página (20)
-   let start = 0;
-   let end = 0;
-   if (visibleItems > 0) {
-      start = (currentPage - 1) * itemsPerPage + 1;
-      end = Math.min(currentPage * itemsPerPage, visibleItems);
-      start = Math.min(start, end); // Asegurar que start <= end
-   }
-   const infoText = `${start} to ${end} of ${visibleItems}`;
-   $('[data-list-info]').text(infoText);
+   setupPaginationEvents(window.cuentasListInstance, 15);
+   window.cuentasListInstance.on('updated', function() {
+      updatePaginationInfo(window.cuentasListInstance);
+   });
+   updatePaginationInfo(window.cuentasListInstance);
 }

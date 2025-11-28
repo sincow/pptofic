@@ -281,7 +281,6 @@ document.addEventListener("DOMContentLoaded", function() {
    });
 
 
-
    // Manejar el evento de búsqueda
    //**************************************************************************************
    $('#searchCliente').on('keyup', function() {
@@ -479,22 +478,22 @@ async function cargarClientes() {
       } else {
         const row = document.createElement('tr');
         const td = document.createElement('td');
-        td.colSpan = 4;
+        td.colSpan = 8;
         td.className = 'text-center text-muted py-4';
         td.textContent = 'No se encontraron clientes';
         row.appendChild(td);
         tbody.appendChild(row);
       }
       updateListJS();
-      setTimeout(() => {
-         if (window.clientesListInstance) {
-            window.clientesListInstance.update();
-            window.clientesListInstance.reIndex();
-            window.clientesListInstance.sort('name', { order: 'asc' });
-            $('[data-list-info]').text(`${window.clientesListInstance.visibleItems.length} to ${window.clientesListInstance.items.length} Items`);
-            window.clientesListInstance.fuzzySearch('');
-         }
-      }, 100);
+      // setTimeout(() => {
+      //    if (window.clientesListInstance) {
+      //       window.clientesListInstance.update();
+      //       window.clientesListInstance.reIndex();
+      //       window.clientesListInstance.sort('name', { order: 'asc' });
+      //       $('[data-list-info]').text(`${window.clientesListInstance.visibleItems.length} to ${window.clientesListInstance.items.length} Items`);
+      //       window.clientesListInstance.fuzzySearch('');
+      //    }
+      // }, 100);
    })
    .catch(error => {
       console.error('Error:', error);
@@ -502,13 +501,41 @@ async function cargarClientes() {
       tbody.innerHTML = '';
       const row = document.createElement('tr');
       const td = document.createElement('td');
-      td.colSpan = 4;
+      td.colSpan = 8;
       td.className = 'text-center text-danger py-4';
       td.textContent = 'Error al cargar los clientes';
       row.appendChild(td);
       tbody.appendChild(row);
    });
 
+}
+
+
+//*********************************************************************************************
+function updateListJS() {
+   if (!window.clientesListInstance) {
+       window.clientesListInstance = null;
+      //window.clientesListInstance.destroy();
+   }
+   window.clientesListInstance = new List('Clientes', {
+      valueNames: ["id", "name", "address", "phone", "email", "nr", "status"],
+      page: 15,
+      pagination: true,
+      // pagination: {
+      //    innerWindow: 1,
+      //    outerWindow: 1,
+      //    left: 0,
+      //    right: 0
+      // },
+      indexAsync: true
+   });
+   window.clientesListInstance.sort('name', { order: 'asc' });
+   window.clientesListInstance.fuzzySearch('');
+   setupPaginationEvents(window.clientesListInstance, 15);
+   window.clientesListInstance.on('updated', function() {
+      updatePaginationInfo(window.clientesListInstance);
+   });
+   updatePaginationInfo(window.clientesListInstance);
 }
 
 
@@ -546,42 +573,4 @@ function eliminarCliente(id, status) {
          }
       }
    })
-}
-
-
-//*********************************************************************************************
-function updateListJS() {
-   if (!window.clientesListInstance) {
-      window.clientesListInstance = null;
-   }
-   window.clientesListInstance = new List('Clientes', {
-      valueNames: [
-         'id', 'name', 'address', 'phone', 'email', 'nr', 'status'
-      ],
-      page: 15,
-      pagination: true,
-      indexAsync: true
-   });
-   window.clientesListInstance.sort('name', { order: 'asc' });
-   window.clientesListInstance.fuzzySearch('');
-}
-
-
-//*********************************************************************************************
-// Función para actualizar la información del paginador
-function updatePaginationInfo() {
-   if (!window.clientesListInstance) return;
-   const list = window.clientesListInstance;
-   const visibleItems = list.visibleItems.length;
-   const currentPage = list.i;  // Página actual (comienza en 1)
-   const itemsPerPage = list.page;  // Items por página (20)
-   let start = 0;
-   let end = 0;
-   if (visibleItems > 0) {
-      start = (currentPage - 1) * itemsPerPage + 1;
-      end = Math.min(currentPage * itemsPerPage, visibleItems);
-      start = Math.min(start, end); // Asegurar que start <= end
-   }
-   const infoText = `${start} to ${end} of ${visibleItems}`;
-   $('[data-list-info]').text(infoText);
 }
