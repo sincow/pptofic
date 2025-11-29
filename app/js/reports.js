@@ -119,7 +119,7 @@ if (formulario) {
             let win = window.open(data.url, '_blank');
             setTimeout(() => {
                win.close();
-            }, 6000 * 1000 );
+            }, 600 * 1000 );
             Swal.fire({
                title: success,
                text: data.message,

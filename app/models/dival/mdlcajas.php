@@ -27,50 +27,20 @@ class CajasModel {
 			// var_dump($_POST['pyt']);
 			// var_dump($_SESSION['csrf_token']);
 			// if (!validateCSRFToken($requestToken ?? '')) {
-			// 	throw new Exception('Invalid CSRF token', 419);fecCambioSearchFrom
+			// 	throw new Exception('Invalid CSRF token', 419);
 			// }
 			$filters = [
             'empresaSearch' => isset($_SESSION["id_empresa"]) ? $_SESSION["id_empresa"] : null,
 				'numberSearch' => isset($data['numberSearch']) ? trim($data['numberSearch']) : null,
-            'statusSearch' => isset($data['statusSearch']) ? trim($data['statusSearch']) : null,
-            'fecCambioSearchFrom' => isset($data['fecCambioSearchFrom']) && !empty($data['fecCambioSearchFrom']) ? DateTime::createFromFormat(DATE_FORMAT, $data['fecCambioSearchFrom'])->format('Y-m-d') : null,
-            'fecCambioSearchTo' => isset($data['fecCambioSearchTo']) && !empty($data['fecCambioSearchTo']) ? DateTime::createFromFormat(DATE_FORMAT, $data['fecCambioSearchTo'])->format('Y-m-d') : null,
-            'clienteSearch' => isset($data['clienteSearch']) ? trim($data['clienteSearch']) : null,
-            'fecVencimSearch' => isset($data['fecVencimSearch']) && !empty($data['fecVencimSearch']) ? DateTime::createFromFormat(DATE_FORMAT, $data['fecVencimSearch'])->format('Y-m-d') : null,
+            'tipoSearch' => isset($data['tipoSearch']) ? trim($data['tipoSearch']) : null,
+            'dateFromSearch' => isset($data['dateFromSearch']) && !empty($data['dateFromSearch']) ? DateTime::createFromFormat(DATE_FORMAT, $data['dateFromSearch'])->format('Y-m-d') : null,
+            'dateToSearch' => isset($data['dateToSearch']) && !empty($data['dateToSearch']) ? DateTime::createFromFormat(DATE_FORMAT, $data['dateToSearch'])->format('Y-m-d') : null,
+            'terceroSearch' => isset($data['terceroSearch']) ? trim($data['terceroSearch']) : null,
+				'minValueSearch' => isset($data['minValueSearch']) && is_numeric($data['minValueSearch']) ? (float)$data['minValueSearch'] : null,
+				'maxValueSearch' => isset($data['maxValueSearch']) && is_numeric($data['maxValueSearch']) ? (float)$data['maxValueSearch'] : null,
 
-            'poCompanySearch' => isset($data['poCompanySearch']) && is_numeric($data['poCompanySearch']) ? (int)$data['poCompanySearch'] : null,
-				'poVendorSearch' => isset($data['poVendorSearch']) && is_numeric($data['poVendorSearch']) ? (int)$data['poVendorSearch'] : null,
 				'poWarehouseSearch' => isset($data['poWarehouseSearch']) && is_numeric($data['poWarehouseSearch']) ? (int)$data['poWarehouseSearch'] : null,
-				'poFromDateSearch' => isset($data['poFromDateSearch']) && !empty($data['poFromDateSearch']) ? DateTime::createFromFormat(DATE_FORMAT, $data['poFromDateSearch'])->format('Y-m-d') : null,
-				'poToDateSearch' => isset($data['poToDateSearch']) && !empty($data['poToDateSearch']) ? DateTime::createFromFormat(DATE_FORMAT, $data['poToDateSearch'])->format('Y-m-d') : null,
-				'poFromExpectedSearch' => isset($data['poFromExpectedSearch']) && !empty($data['poFromExpectedSearch']) ? DateTime::createFromFormat(DATE_FORMAT, $data['poFromExpectedSearch'])->format('Y-m-d') : null,
-				'poToExpectedSearch' => isset($data['poToExpectedSearch']) && !empty($data['poToExpectedSearch']) ? DateTime::createFromFormat(DATE_FORMAT, $data['poToExpectedSearch'])->format('Y-m-d') : null,
-				'poStatusSearch' => isset($data['poStatusSearch']) ? trim($data['poStatusSearch']) : null,
-				'minCostSearch' => isset($data['minCostSearch']) && is_numeric($data['minCostSearch']) ? (float)$data['minCostSearch'] : null,
-				'maxCostSearch' => isset($data['maxCostSearch']) && is_numeric($data['maxCostSearch']) ? (float)$data['maxCostSearch'] : null
 			];
-
-         $query = "SELECT a.*, c.TerNombr, g.TabNive6 as TerTiDoc, c.TerDirec, c.TerTele1, c.TerEmail, m.nivel_riezgo, 
-            m.valor_cupo, m.valor_cupotemporal, 
-            l.nombre AS banco_nombre, k.sucursal AS banco_sucursal, k.numero_cuenta AS banco_num_cuenta, 
-            d.TerNombr as TerNombr2, h.TabNive6 as TerTiDoc2, d.TerDirec as TerDirec2, d.TerTele1 as TerTele12, 
-            e.TerNombr as TerNombr3, i.TabNive6 as TerTiDoc3, e.TerDirec as TerDirec3, e.TerTele1 as TerTele13, 
-            f.TerNombr as TerNombr4, j.TabNive6 as TerTiDoc4, f.TerDirec as TerDirec4, f.TerTele1 as TerTele14, 
-            COALESCE((SELECT MAX(n.fecha) FROM DvAplaza n WHERE a.id_empresa = n.id_empresa AND a.id_cheque = n.id_cheque), a.vencimiento) as UltVenci 
-            FROM DvCheque a 
-            LEFT JOIN companies b ON a.id_empresa = b.id_empresa
-            LEFT JOIN CoTercer  c FORCE INDEX (PRIMARY) ON c.EmpCodig = b.EmpCodig AND c.TerDocId = a.TerDocId 
-            LEFT JOIN CoTercer  d ON d.EmpCodig = b.EmpCodig AND d.TerDocId = a.TerDocId2 
-            LEFT JOIN CoTercer  e ON e.EmpCodig = b.EmpCodig AND e.TerDocId = a.TerDocId3 
-            LEFT JOIN CoTercer  f ON f.EmpCodig = b.EmpCodig AND f.TerDocId = a.TerDocId4 
-            LEFT JOIN GrTablas  g ON g.EmpCodig = '1' AND g.TabCodig = '01' AND c.TerTiDoc = g.TabNive1 
-            LEFT JOIN GrTablas  h ON h.EmpCodig = '1' AND h.TabCodig = '01' AND d.TerTiDoc = h.TabNive1 
-            LEFT JOIN GrTablas  i ON i.EmpCodig = '1' AND i.TabCodig = '01' AND e.TerTiDoc = i.TabNive1 
-            LEFT JOIN GrTablas  j ON j.EmpCodig = '1' AND j.TabCodig = '01' AND f.TerTiDoc = j.TabNive1 
-            LEFT JOIN DvBanCli  k ON a.id_empresa = k.id_empresa AND a.id_bancli = k.id_bancli 
-            LEFT JOIN DvBancos  l ON k.id_empresa = l.id_empresa AND k.id_banco = l.id_banco 
-            LEFT JOIN DvClient  m ON a.id_empresa = m.id_empresa AND a.id_dvcliente = m.id_dvcliente
-				WHERE 1=1";
 
          $query = "SELECT a.*, c.TerNombr, d.CueNombr, ifnull(e.BanNombr, '') as BanNombr, f.name 
             FROM DvMovCaj a 
@@ -81,49 +51,80 @@ class CajasModel {
             LEFT JOIN users     f ON a.id_empresa = f.id_empresa AND a.id_user = f.id_user
             WHERE 1=1";
 
-
          if (!empty($filters['empresaSearch'])) {
 				$query .= " AND a.id_empresa = ?";
 				$params[] = $filters['empresaSearch'];
 			}
 			if (!empty($filters['numberSearch'])) {
-				$query .= " AND a.numero LIKE ?";
-				$params[] = '%' . $filters['numberSearch'] . '%';
+				$query .= " AND a.id_movimiento = ?";
+				$params[] = $filters['numberSearch'];
 			}
-         if (!empty($filters['statusSearch'])) {
-            if ($filters['statusSearch'] == '*') {
-               $query .= " AND a.status <> ?";
+         if (!empty($filters['tipoSearch'])) {
+            if ($filters['tipoSearch'] == '*') {
+               $query .= " AND a.tipo_movimiento <> ?";
             } else {               
-               $query .= " AND a.status = ?";
+               $query .= " AND a.tipo_movimiento = ?";
             }
-				$params[] = $filters['statusSearch'];
+				$params[] = $filters['tipoSearch'];
          }
-         if (!empty($filters['fecCambioSearchFrom'])) {
+         if (!empty($filters['dateFromSearch'])) {
 				$query .= " AND a.fecha >= ?";
-				$params[] = $filters['fecCambioSearchFrom'];
+				$params[] = $filters['dateFromSearch'];
 			}
-			if (!empty($filters['fecCambioSearchTo'])) {
+			if (!empty($filters['dateToSearch'])) {
 				$query .= " AND a.fecha <= ?";
-				$params[] = $filters['fecCambioSearchTo'];
+				$params[] = $filters['dateToSearch'];
 			}
-         if (!empty($filters['clienteSearch'])) {
-				$query .= " AND c.TerDocId LIKE ?";
-				$params[] = '%' . $filters['clienteSearch'] . '%';
+         if (!empty($filters['terceroSearch'])) {
+				$query .= " AND a.TerDocId LIKE ?";
+				$params[] = '%' . $filters['terceroSearch'] . '%';
 			}
 			if (!empty($filters['fecVencimSearch'])) {
 				$query .= " AND a.vencimiento <= ?";
 				$params[] = $filters['fecVencimSearch'];
 			}
-			if (!empty($filters['minCostSearch'])) {
-				$query .= " AND a.valor_cheque - a.capital_pagado >= ?";
-				$params[] = $filters['minCostSearch'];
+			if (!empty($filters['minValueSearch'])) {
+				$query .= " AND (a.valor_entrada >= ?";
+				$params[] = $filters['minValueSearch'];
+				// $params[] = $filters['minValueSearch'];
 			}
-			if (!empty($filters['maxCostSearch'])) {
-				$query .= " AND a.valor_cheque - a.capital_pagado <= ?";
-				$params[] = $filters['maxCostSearch'];
-			}
+			if (!empty($filters['maxValueSearch'])) {
+				$query .= " AND a.valor_entrada <= ?)";
+				$params[] = $filters['maxValueSearch'];
+				// $params[] = $filters['maxValueSearch'];
+         } else {
+            if (!empty($filters['minValueSearch'])) {
+               $query .= " )";
+            }
+         }
 
-			$query .= " ORDER BY a.fecha DESC, a.id_movimiento DESC LIMIT 100";
+			if (!empty($filters['minValueSearch'])) {
+				$query .= " OR (a.valor_salida >= ?";
+				$params[] = $filters['minValueSearch'];
+				// $params[] = $filters['minValueSearch'];
+			}
+			if (!empty($filters['maxValueSearch'])) {
+				$query .= " AND a.valor_salida <= ?)";
+				$params[] = $filters['maxValueSearch'];
+				// $params[] = $filters['maxValueSearch'];
+			} else {
+            if (!empty($filters['minValueSearch'])) {
+               $query .= " )";
+            }
+         }
+
+
+
+         // if (!empty($filters['minValueSalSearch'])) {
+			// 	$query .= " AND a.valor_salida >= ?";
+			// 	$params[] = $filters['minValueSalSearch'];
+			// }
+			// if (!empty($filters['maxValueSalSearch'])) {
+			// 	$query .= " AND a.valor_salida <= ?";
+			// 	$params[] = $filters['maxValueSalSearch'];
+			// }
+
+         $query .= " ORDER BY a.fecha DESC, a.id_movimiento DESC LIMIT 100";
          $connection = Database::getConnection();
 			$stmt = $connection->prepare($query);
 			$stmt->execute($params);

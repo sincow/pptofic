@@ -8,8 +8,6 @@ if (!isset($_SESSION)) {
 
 class ReportsController {
 
-
-
    //**************************************************************************************
    static public function repliquida(){
       $required = ['repNroDomum'];
@@ -70,6 +68,13 @@ class ReportsController {
          $_POST["GenHojCal"] = 0;
       }
       $data = $_POST;
+      if ($data['clase'] == 3) {
+         $data["repNroDomum"] = 'P'.str_pad($data["repNroDomum"], 7, "0", STR_PAD_LEFT);
+      }
+      if ($data['clase'] == 5) {
+         $data["repNroDomum"] = 'L'.str_pad($data["repNroDomum"], 7, "0", STR_PAD_LEFT);
+      }
+
       $letra = ReportsModel::repDocument($data);
       if ($letra == null) {
          return array(
@@ -119,6 +124,12 @@ class ReportsController {
          $_POST["GenHojCal"] = 0;
       }
       $data = $_POST;
+      if ($data['clase'] == 3) {
+         $data["repNroDomum"] = 'P'.str_pad($data["repNroDomum"], 7, "0", STR_PAD_LEFT);
+      }
+      if ($data['clase'] == 5) {
+         $data["repNroDomum"] = 'L'.str_pad($data["repNroDomum"], 7, "0", STR_PAD_LEFT);
+      }
       $pagare = ReportsModel::repDocument($data);
       if ($pagare == null) {
          return array(

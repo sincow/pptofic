@@ -843,4 +843,56 @@ class ChequesModel {
       return $response;
    }
 
+
+   static public function getMargenContrib($data, $connection = null) {
+      $conn = false;
+      try {
+         if ($connection == null) {
+            $conn = true;
+            $connection = Database::getConnection();
+         }
+         $query_base = "SELECT 
+            c.TerDocId,
+            d.TerNombr,";
+
+         $columnas = [];
+         $fecha_actual = new DateTime();
+         for ($i = 0; $i < $data["meses"]; $i++) {
+            $fecha_iteracion = clone $fecha_actual;
+            $fecha_iteracion->modify("-$i months");
+            $anio = $fecha_iteracion->format('Y');
+            $mes = $fecha_iteracion->format('m');
+            $anio_mes = $anio . $mes;
+            $columna_nombre = "V" . $anio_mes;
+            $columnas[] = "COALESCE(SUM(CASE WHEN YEAR(a.fecha) = $anio AND MONTH(a.fecha) = $mes THEN a.valor END), 0) AS $columna_nombre";
+         }
+         $query_columnas = implode(",\n            ", $columnas);
+         $query_final = $query_base . $query_columnas . "
+            FROM DvPagInt a 
+            LEFT JOIN companies b ON a.id_empresa = b.id_empresa
+            LEFT JOIN DvCheque c ON a.id_empresa = c.id_empresa AND a.id_cheque = c.id_cheque 
+            LEFT JOIN CoTercer d ON b.EmpCodig = d.EmpCodig AND c.TerDocId = d.TerDocId 
+            WHERE a.id_empresa = :idEmpresa 
+            GROUP BY c.TerDocId, d.TerNombr
+            ORDER BY c.TerDocId;
+         ";
+         $stmt = $connection->prepare($query_final);
+         $stmt->bindParam(":idEmpresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+         $stmt->execute();
+         $response = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      } catch (PDOException $e) {
+         $errorInfo = GeneralController::handleMySQLerror($stmt->errorInfo()[1], $stmt->errorInfo()[2]);
+         if (ENVIRONMENT == 'development1') {
+            $messageError = $errorInfo["error_code"]." ".$errorInfo["technical_message"];
+         } else {
+            $messageError = $errorInfo["error_code"]." ".$errorInfo["error_message"];
+         }
+         $response = array("success" => false, "message" => $messageError, "code" =>  $errorInfo["error_code"]);
+      }
+      if ($conn == true) {
+         $connection = null;
+      }
+      return $response;
+   }
+
 }

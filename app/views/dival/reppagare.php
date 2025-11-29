@@ -31,7 +31,7 @@
                                  <label class="text-label fs-0 ps-2" for="repNroDomum">Número Pagaré</label>
                                  <div class="col-md-1 mt-0 mb-3">
                                     <div class="form-control mb-0 p-0 border-0">
-                                       <input type="text" class="form-control px-2" id="repNroDomum" name="repNroDomum" required>
+                                       <input type="text" class="form-control px-2" id="repNroDomum" name="repNroDomum" autofocus required>
                                     </div>
                                  </div>
                               </div>

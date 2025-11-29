@@ -255,6 +255,39 @@ document.addEventListener("DOMContentLoaded", async function() {
       });
    });
 
+
+   //*********************************************************************************************
+   const selectTercero = document.getElementById('terceroSearch');
+   if (selectTercero) {
+      var listWhere = [];
+      listWhere.push({
+         "id": "TerEstad",
+         "value": '1'
+      });
+      let selectQuery = 'terceroSearch';
+      let paramsQuery = [];
+      paramsQuery.push({
+         "modulo": "contabilidad",
+         "option": "terceros",
+         "action": "getByQuery",
+         "listWhere": JSON.stringify(listWhere),
+         "dropdownParent": $('#filterOffcanvas')
+      })
+
+      initialSelect(selectQuery, paramsQuery);
+
+      /*
+      getSelects('contabilidad', 'terceros', selectTercero, 'TerDocId', textOpt = ['TerDocId', 'TerNombr'], listWhere);
+      */
+      // $('#terceroSearch').select2({
+         // placeholder: "Seleccionar tercero",
+         // dropdownParent: $('#filterOffcanvas')
+         // allowClear: true,
+         // width: '100%'
+      // });
+   }
+
+
 });
 
 
@@ -331,8 +364,10 @@ function cargaMovCaja() {
       body: formData
    }).then(response => response.json())
    .then(data => {
+      cargarMovCajaDetail(data);
+      /*
       const cajaTableBody = document.getElementById('cajaTable-body');
-      cajaTableBody.innerHTML = ''; // Clear existing rows
+      cajaTableBody.innerHTML = '';
       data["data"].forEach(funcionForEach);
       function funcionForEach(movimiento, index) {
          const valor = movimiento["valor_entrada"] != 0 ? parseFloat(movimiento["valor_entrada"]) : parseFloat(movimiento["valor_salida"]);
@@ -376,9 +411,217 @@ function cargaMovCaja() {
             // </td>
          cajaTableBody.appendChild(row);
       };
-      // Re-initialize any table plugins if necessary
+      updateListJS();
+      displayActiveFilters(data["applied_filters"]);
+      */
    })
    .catch(error => {
       console.error('Error:', error);
+   });
+}
+
+
+//*********************************************************************************************
+function updateListJS() {
+   if (!window.cajaTableList) {
+      window.cajaTableList = null;
+   }
+   window.cajaTableList = new List('cajaTable', {
+      valueNames: ["id","tipo","fecha","valor","cliente","banco","cuenta","descrip"],
+      page: 15,
+      pagination: true,
+      indexAsync: true
+   });
+   window.cajaTableList.sort('vencim', { order: 'asc' });
+   window.cajaTableList.fuzzySearch('');
+   setupPaginationEvents(window.cajaTableList, 15);
+   window.cajaTableList.on('updated', function() {
+      updatePaginationInfo(window.cajaTableList);
+   });
+   updatePaginationInfo(window.cajaTableList);
+}
+
+
+function cargarMovCajaDetail(data) {
+   allMovCaja = data["data"];
+   const cajaTableBody = document.getElementById('cajaTable-body');
+   cajaTableBody.innerHTML = '';
+   if (data["data"].length > 0) {
+      data["data"].forEach(funcionForEach);
+      function funcionForEach(movimiento, index) {
+         const valor = movimiento["valor_entrada"] != 0 ? parseFloat(movimiento["valor_entrada"]) : parseFloat(movimiento["valor_salida"]);
+         let tipo = "";
+         let colorTipo = ""
+         switch (movimiento["tipo_movimiento"]) {
+            case '1':
+               tipo = "Aporte Caja";
+               colorTipo = "green";
+               break;
+            case '2':
+               tipo = "Ent Efectivo";
+               colorTipo = "blue";
+               break;
+            case '3':
+               tipo = "Vale Caja";
+               colorTipo = "orange";
+               break;
+            default:
+               break;
+         }
+         const row = document.createElement('tr');
+         row.classList.add('hover-actions-trigger', 'btn-reveal-trigger', 'position-static');
+         row.innerHTML = `
+            <td class="id align-middle text-end white-space-nowrap pe-2">${movimiento["id_movimiento"]}</td>
+            <td class="tipo    align-middle text-start ps-2" style="color:${colorTipo};">${tipo}</td>
+            <td class="fecha   align-middle text-start ps-2">${movimiento["fecha"]}</td>
+            <td class="valor   align-middle text-end pe-2">${formatCurrency(valor)}</td>
+            <td class="cliente align-middle text-start ps-2">${movimiento["TerNombr"]}</td>
+            <td class="banco   align-middle text-start ps-2">${movimiento["BanNombr"]}</td>
+            <td class="cuenta  align-middle text-start ps-2">${movimiento["CueNombr"]}</td>
+            <td class="descri  align-middle text-start ps-2">${movimiento["descripcion"]}</td>
+         `;
+         cajaTableBody.appendChild(row);
+      };
+   } else {
+      const row = document.createElement('tr');
+      row.classList.add('hover-actions-trigger', 'btn-reveal-trigger', 'position-static');
+      row.innerHTML = `
+         <td class="align-middle text-center" colspan="8">No se encontraron movimientos de caja.</td>
+      `;
+      cajaTableBody.appendChild(row);
+   }
+   updateListJS();
+   displayActiveFilters(data["applied_filters"]);
+}
+
+
+//*********************************************************************************************
+const formulario = document.getElementById("frmMovCajaFilter");
+if (formulario) {
+   formulario.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const csrfToken = document.querySelector('meta[name="pyt"]').getAttribute('content');
+      //$("#poExpectedSearchLabel").text($("#poToDateSearch").val());
+      const form = $(this).closest('form')[0];
+      const formData = new FormData(form);
+      const formValues = Object.fromEntries(formData.entries());
+      let allDocuments = [];
+      $('#po-table-body').empty();
+      const response = await fetch('helpers/ajaxRouter.php', {
+         method: 'POST',
+         headers: {
+            // 'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken  // Envía el token en el header
+         },
+         body: formData
+      }).then(resp => { 
+         return resp.json();
+      }).then( data => {
+         if (data.length > 0) {
+            allDocuments = data;
+         }
+         cargarMovCajaDetail(data);
+      });
+   });
+}
+
+
+//*********************************************************************************************
+function displayActiveFilters(filters) {
+   const activeFiltersContainer = $('#activeFilters');
+   activeFiltersContainer.empty();
+   // var tipoNames = [{
+   //    id: '',
+   //    name: 'Todos'
+   // }];
+   var tipoNames = [];
+   //var statusOptions = $('#tipoSearch').find('option');
+   $('#tipoSearch').find('option').each(function() {
+      statusText = $(this).text();
+      tipoNames.push({
+         id: $(this).val(),
+         name: statusText
+      });
+   });
+   var clientesNames = [];
+   //var clientesOptions = $('#terceroSearch').find('option');
+   $('#terceroSearch').find('option').each(function() {
+      clientesText = $(this).text();
+      clientesNames.push({
+         id: $(this).val(),
+         name: clientesText
+      });
+   });
+   var companyName = [];
+   //var companyOptions = $('#poCompanySearch').find('option');
+   $('#poCompanySearch').find('option').each(function() {
+      companyText = $(this).text();
+      companyName.push(
+         companyText
+      );
+   });
+   // Mapeo de nombres de campos a etiquetas legibles
+   const fieldLabels = {
+      'empresaSearch': 'Empresa',
+      'numberSearch': 'Nro Docum',
+      'tipoSearch': 'Tipo',
+      'dateFromSearch': 'Creado Desde',
+      'dateToSearch': 'Creado Hasta',
+      'fecVencimSearch': 'Por Vencerse',
+      'terceroSearch': 'Tercero',
+      'poVendorSearch': 'Vendor',
+      'poFromExpectedSearch': 'Expected From',
+      'poToExpectedSearch': 'Expected To',
+      'minValueSearch': 'Valor Desde',
+      'maxValueSearch': 'Valor Hasta'
+   };
+   for (const [field, value] of Object.entries(filters)) {
+      // Solo mostrar filtros con valores
+      if (value && value !== '' && value !== '0' && value != 'purchases' && value != 'filter' && field != 'empresaSearch') {
+         let displayValue = value;
+         // Formatear valores especiales
+         if (field === 'poCompanySearch') {
+            displayValue = companyName[value] || `Company #${value}`;
+         } else if (field === 'terceroSearch') {
+            // displayValue = vendorNames[value] || `${value}`;
+            // displayValue = clientesNames.find(status => status.id === value).name;
+         } else if (field == 'minValueSearch' || field == 'maxValueSearch') {
+            displayValue = `$${formatCurrency(parseFloat(value),0)}`;
+         } else if (field == 'tipoSearch') {
+            displayValue = tipoNames.find(status => status.id === value).name;
+         }
+         const badge = $(`
+            <span class="badge badge-phoenix badge-phoenix-info border me-1 mb-0">
+               <span class="fw-bold">${fieldLabels[field] || field}:</span>
+               ${displayValue}
+               <button class="btn-close btn-close-black btn-sm ms-1 remove-filter" 
+                  data-field="${field}" 
+                  aria-label="Remove filter">
+               </button>
+            </span>
+         `);
+         activeFiltersContainer.append(badge);
+      }
+   }
+   // Agregar evento para remover filtros
+   $('body').on('click', '.remove-filter', function(e) {
+      // 1. Prevenir el comportamiento por defecto y la propagación
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      // 2. Obtener el campo a limpiar
+      const field = $(this).data('field');      
+      // 3. Limpiar el campo en el formulario CORRECTO (#frmMovCajaFilter)
+      $(`#frmMovCajaFilter #${field}`).val('').trigger('change');
+      // 4. Si es un Select2, resetearlo correctamente
+      if ($(`#frmMovCajaFilter #${field}`).hasClass('select2-hidden-accessible')) {
+         $(`#frmMovCajaFilter #${field}`).val(null).trigger('change');
+      }
+      // 5. Disparar el evento de filtrado en el botón CORRECTO
+      $('#btnFilterMovCaja').trigger('click');
+      // 6. Opcional: Eliminar el badge del filtro
+      $(this).closest('.badge').fadeOut(300, function() {
+         $(this).remove();
+      });
    });
 }

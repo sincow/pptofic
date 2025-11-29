@@ -52,7 +52,6 @@
 								<span class="fas fa-search search-box-icon"></span>
 							</form>
 						</div>
-						<!-- <div class="me-lg-auto"> -->
 						<div >
 							<a type="button" class="btn btn-phoenix-primary d-lg-block border" style="position:relative; transform:none; border:none;" id="btnPurchasesFilter" href="#filterOffcanvas" data-bs-toggle="offcanvas"><span class="fas fa-filter me-2"></span>Filtrar</a>
 						</div>
@@ -172,27 +171,27 @@
 		<button class="btn btn-phoenix-secondary w-100" data-theme-control="reset"><span class="fas fa-arrows-rotate me-2 fs--2"></span>Restablecer filtros</button>
 	</div>
 	<div class="offcanvas-body scrollbar px-card" id="themeController">
-		<form role="form" id="frmDocumentsFilter" method="post">
+		<form role="form" id="frmMovCajaFilter" method="post">
 			<input type="hidden" id="modulo" name="modulo" value="dival">
-			<input type="hidden" id="option" name="option" value="cheques">
+			<input type="hidden" id="option" name="option" value="cajas">
 			<input type="hidden" id="action" name="action" value="filter">
 			<!-- <input type="hidden" name="pyt" value="<?php //getCSRFToken() ?>"> -->
 			<div class="row align-items-center g-1 text-sm-start">
 				<div class="col-6 mt-0">
 					<div class="form-control mb-3 p-0 border-0">
-						<label for="numberSearch">Numero Cheque</label>
-						<input type="text" class="form-control py-2" id="numberSearch" name="numberSearch" value="">
+						<label for="numberSearch">Numero Compte</label>
+						<input type="text" class="form-control py-2" id="numberSearch" name="numberSearch" value="" autocomplete="off">
 					</div>
 				</div>
 				<div class="col-6 mt-0">
 					<div class="form-control mb-3 p-0 border-0">
-						<label for="statusSearch">Estatus</label>
-						<select class="form-select select2" name="statusSearch" id="statusSearch">
+						<label for="tipoSearch">Tipo</label>
+						<select class="form-select select2" name="tipoSearch" id="tipoSearch">
 							<option value="">Seleccionar</option>
 							<option value="*">Todos</option>
-							<option value="1">Pendientes</option>
-							<option value="C">Consignados</option>
-							<option value="D">Devueltos</option>
+							<option value="1">Aporte Caja</option>
+							<option value="2">Ent Efectivo</option>
+							<option value="3">Vale Caja</option>
 						</select>
 					</div>
 				</div>
@@ -201,28 +200,21 @@
 				</div>
 				<div class="col-6 mt-0">
 					<div class="form-control mb-3 p-0 border-0">
-						<label for="fecCambioSearchFrom">desde</label>
-						<input type="text" class="form-control datepicker py-2 dp_fecha_ini" id="fecCambioSearchFrom" name="fecCambioSearchFrom" placeholder="<?php echo DATE_DISPLAY ?>" data-inputmask="'alias': '<?= DATE_DISPLAY ?>'" autocomplete="off" data-mask>
+						<label for="dateFromSearch">desde</label>
+						<input type="text" class="form-control datepicker py-2 dp_fecha_ini" id="dateFromSearch" name="dateFromSearch" placeholder="<?php echo DATE_DISPLAY ?>" data-inputmask="'alias': '<?= DATE_DISPLAY ?>'" autocomplete="off" data-mask>
 					</div>
 				</div>
 				<div class="col-6 mt-0">
 					<div class="form-control mb-3 p-0 border-0">
-						<label for="fecCambioSearchTo">Hasta</label>
-						<input type="text" class="form-control datepicker py-2 dp_fecha_fin" id="fecCambioSearchTo" name="fecCambioSearchTo" placeholder="<?php echo DATE_DISPLAY ?>" data-inputmask="'alias': '<?= DATE_DISPLAY ?>'" autocomplete="off" data-mask>
-					</div>
-				</div>
-
-				<div class="col-6 mt-0">
-					<div class="form-control mb-3 p-0 border-0">
-						<label for="fecVencimSearch">Por Vencerse hasta</label>
-						<input type="text" class="form-control datepicker fecVencimSearch py-2" id="fecVencimSearch" name="fecVencimSearch" placeholder="<?php echo DATE_DISPLAY ?>" data-inputmask="'alias': '<?= DATE_DISPLAY ?>'" autocomplete="off" data-mask>
+						<label for="dateToSearch">Hasta</label>
+						<input type="text" class="form-control datepicker py-2 dp_fecha_fin" id="dateToSearch" name="dateToSearch" placeholder="<?php echo DATE_DISPLAY ?>" data-inputmask="'alias': '<?= DATE_DISPLAY ?>'" autocomplete="off" data-mask>
 					</div>
 				</div>
 
             <div class="col-12">
 					<div class="form-control mb-3 p-0 border-0">
-						<label for="clienteSearch">Cliente</label>
-						<select class="form-select clienteSearch" name="clienteSearch" id="clienteSearch">
+						<label for="terceroSearch">Tercero</label>
+						<select class="form-select select2 terceroSearch" name="terceroSearch" id="terceroSearch">
 							<option selected="selected" value="">Select</option>
 						</select>
 					</div>
@@ -275,24 +267,34 @@
             -->
 
 				<div class="col-12 text-center">
-					<p class="mb-0 fs--1">Saldo Capital</p>
+					<p class="mb-0 fs--1">Valor documento</p>
 				</div>
 				<div class="col-6 mt-0">
 					<div class="form-control mb-3 p-0 border-0 text-center">
-						<label for="minCostSearch">Desde</label>
-						<input type="number" class="form-control py-2 text-end" id="minCostSearch" name="minCostSearch" >
+						<label for="minValueSearch">Desde</label>
+						<input type="number" class="form-control py-2 text-end" id="minValueSearch" name="minValueSearch" >
 					</div>
 				</div>
 				<div class="col-6 mt-0">
-					<div class="form-control mb-3 p-0 border-0 text-end">
-						<label for="maxCostSearch">Hasta</label>
-						<input type="number" class="form-control py-2 text-end" id="maxCostSearch" name="maxCostSearch" >
+					<div class="form-control mb-3 p-0 border-0 text-center">
+						<label for="maxValueSearch">Hasta</label>
+						<input type="number" class="form-control py-2 text-end" id="maxValueSearch" name="maxValueSearch" >
 					</div>
 				</div>
-				<button type="submit" class="btn btn-phoenix-info w-100" id="btnFilterPurchases" data-bs-dismiss="offcanvas" aria-label="Close" id="btnFilterPurchases"><span class="fas fa-filter me-2 fs--2"></span>Establecer filtros</button>
+				<button type="submit" class="btn btn-phoenix-info w-100" id="btnFilterMovCaja" data-bs-dismiss="offcanvas" aria-label="Close" id="btnFilterMovCaja"><span class="fas fa-filter me-2 fs--2"></span>Establecer filtros</button>
 				<!-- <button class="btn p-1 fw-bolder" type="button" data-bs-dismiss="offcanvas" aria-label="Close"><span class="fas fa-times fs-0"> </span></button> -->
 			</div>
 		</form>
 	</div>
 </div>
+<script>
+   $(document).ready(function() {
+      $('#terceroSearch').select2({
+         // placeholder: "Seleccionar cliente",
+         dropdownParent: $('#filterOffcanvas')
+         // allowClear: true,
+         // width: '100%'
+      });
+   });
+</script>
 <script src="app/js/dival/valescaja.js?v=1.0.0"></script>

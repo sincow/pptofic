@@ -19,7 +19,7 @@
 <div class="content ps-2 pe-2 pt-10">
 	<div class="row mb-0">
 		<div class="col-auto">
-			<h4 class="mb-0 ms-1">Documentos</h4>
+			<h4 class="mb-0 ms-1">Consulta de Documentos</h4>
 		</div>
 		<div class="col-lg-6">
 			<div class="gesAlert">
@@ -29,7 +29,7 @@
 			<nav class="mb-2" aria-label="breadcrumb">
 				<ol class="breadcrumb mb-0 float-sm-end">
 					<li class="breadcrumb-item"><a href="./">Dashboard</a></li>
-					<li class="breadcrumb-item active">Documentos</li>
+					<li class="breadcrumb-item active">Consulta Documentos</li>
 				</ol>
 			</nav>
 		</div>

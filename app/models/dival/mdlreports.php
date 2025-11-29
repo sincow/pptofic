@@ -1,6 +1,5 @@
 <?php
 if (!defined('CONFIG_PATH')) {
-   // require_once "../config/config.php";
    define("CONFIG_PATH", "../config");
 }
 require_once CONFIG_PATH . "/Database.php";
@@ -16,7 +15,7 @@ class ReportsModel {
    static public function repDocument($data){
       $connection = Database::getConnection();
       if ($data['clase'] != 1) {
-         $sql = "SELECT * FROM DvCheque WHERE id_empresa = :id_empresa AND clase = :clase AND consecutivo = :consecutivo";
+         $sql = "SELECT * FROM DvCheque WHERE id_empresa = :id_empresa AND clase = :clase AND numero = :numero";
       } else {
          $sql = "SELECT * FROM DvCheque WHERE id_empresa = :id_empresa AND clase = :clase AND id_cheque = :id_cheque";
       }
@@ -24,7 +23,7 @@ class ReportsModel {
       $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
       $stmt->bindParam(":clase", $data["clase"]);
       if ($data['clase'] != 1) {
-         $stmt->bindParam(":consecutivo", $data["repNroDomum"]);
+         $stmt->bindParam(":numero", $data["repNroDomum"]);
       } else {
          $stmt->bindParam(":id_cheque", $data["repNroDomum"]);
       }

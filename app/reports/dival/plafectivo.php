@@ -10,7 +10,6 @@ require_once "../../models/dival/mdlcheques.php";
 require_once '../../../vendor/fpdf/fpdf.php';
 require_once '../../../vendor/PHPExcel/Classes/PHPExcel.php';
 unset($_SESSION['reportPath']);
-
 $token = $_GET['token'] ?? '';
 if (empty($token) || !isset($_SESSION['report_temp_' . $token])) {
    echo "<script>

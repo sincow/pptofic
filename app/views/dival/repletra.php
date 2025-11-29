@@ -31,54 +31,10 @@
                                  <label class="text-label fs-0 ps-2" for="repNroDomum">Número Letra</label>
                                  <div class="col-md-3 col-xl-1 mt-0 mb-3">
                                     <div class="form-control mb-0 p-0 border-0">
-                                       <input type="text" class="form-control px-2" id="repNroDomum" name="repNroDomum" required>
+                                       <input type="text" class="form-control px-2" id="repNroDomum" name="repNroDomum" autofocus required>
                                     </div>
                                  </div>
                               </div>
-
-                              <!--
-                              <div class="row g-3 mt-3">
-                                 <div class="col-sm-8 col-md-5 col-lg-4 mt-0 mb-3">
-                                    <div class="form-control mb-0 p-0 border-0">
-                                       <label for="repIdSeller">Vendedor</label>
-                                       <select class="form-control select2" name="repIdSeller" id="repIdSeller">
-                                          <option value="" codeSeller="">Seleccione Vendedor</option>
-                                          <?php
-                                             // $table = "staffs";
-                                             // $order = "first_name, last_name";
-                                             // $where = "status = '1'";
-                                             // $sellers = GeneralModel::getAll($table, $order, $where);
-                                             // foreach ($sellers as $key => $value) {
-                                             //    echo '<option value="'.$value["id_staff"].'">'.$value["first_name"].' '.$value["last_name"].'</option>';
-                                             // }
-                                          ?>
-                                       </select>
-                                    </div>
-                                 </div>
-                              </div>
-                              -->
-
-                              <!--
-                              <div class="col-sm-8 col-md-5 col-lg-4 mt-0 mb-3">
-                                 <div class="form-control mb-3 p-0 border-0">
-                                    <label for="repIdCustomer">Nombre del Cliente</label>
-                                    <select class="form-control select2" style="width: 100%;" name="repIdCustomer" id="repIdCustomer">
-                                       <option selected="selected" value="" nitCustomer="">Seleccionar</option>
-                                       <?php
-                                          // $table = "services";
-                                          // $order = "name";
-                                          // $where = "status = '1'";
-                                          // $customers = GeneralModel::getAll($table, $order, $where);
-                                          // foreach ($customers as $key => $value) {
-                                          //    echo '
-                                          //       <option value='.$value["id_service"].' ">'.$value["name"].'</option>
-                                          //    ';
-                                          // }
-                                       ?>
-                                    </select>
-                                 </div>
-                              </div>
-                              -->
 
                               <!-- <div class="col-sm-8 col-md-5 col-lg-4 mt-0 mb-3">
                                  <div class="form-control mb-3 p-0 border-0">

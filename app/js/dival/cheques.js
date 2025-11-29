@@ -547,7 +547,7 @@ async function cargarCheques() {
    .then( data => {
       // const tbody = document.getElementById('chequesTable-body');
       // tbody.innerHTML = '';
-      cargarChequesDetall(data);
+      cargarChequesDetail(data);
       let dataArray = [];
       dataArray.push({
          "data":  data,
@@ -581,7 +581,7 @@ async function cargarCheques() {
 
 
 //*********************************************************************************************
-function cargarChequesDetall(data) {
+function cargarChequesDetail(data) {
    allCheques = data["data"];
    const tbody = document.getElementById('chequesTable-body');
    tbody.innerHTML = '';
@@ -737,7 +737,7 @@ if (formulario) {
          if (data.length > 0) {
             allDocuments = data;
          }
-         cargarChequesDetall(data);
+         cargarChequesDetail(data);
       });
    });
 }

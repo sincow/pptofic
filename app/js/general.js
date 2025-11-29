@@ -196,6 +196,7 @@ function initialSelect(selectQuery, parameters){
 	var optionParam = parameters[0]["option"];
 	let actionParam = parameters[0]["action"];
 	let listWhere = parameters[0]["listWhere"] || null;
+   let dropdownParent = parameters[0]["dropdownParent"] || null;
 	listWhere = JSON.stringify(listWhere);
 	const formDataSearch = new FormData();
 	formDataSearch.append("modulo", moduleParam);
@@ -209,6 +210,11 @@ function initialSelect(selectQuery, parameters){
 		// theme: "classic",
 		// theme: "bootstrap",
 		placeholder: 'Escribe al menos 3 caracteres para buscar...',
+      allowClear: true,
+      dropdownParent: dropdownParent,
+      escapeMarkup: function (markup) {
+         return markup;
+      },
 		minimumInputLength: 3,
 		ajax: {
 			url: ajaxUrl,

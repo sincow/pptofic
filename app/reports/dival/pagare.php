@@ -19,7 +19,6 @@ if (empty($token) || !isset($_SESSION['report_temp_' . $token])) {
    exit;
 }
 $reportData = $_SESSION['report_temp_' . $token];
-// Validar expiración (15 minutos)
 if (time() - $reportData['timestamp'] > 585) {
    unset($_SESSION['report_temp_' . $token]);
    echo "<script>

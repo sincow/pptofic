@@ -1,4 +1,3 @@
-
 <?php
 if (!isset($_SESSION)) {
 	session_start();
@@ -11,7 +10,6 @@ require_once "../../models/dival/mdlcheques.php";
 require_once '../../../vendor/fpdf/fpdf.php';
 require_once '../../../vendor/PHPExcel/Classes/PHPExcel.php';
 unset($_SESSION['reportPath']);
-
 $token = $_GET['token'] ?? '';
 if (empty($token) || !isset($_SESSION['report_temp_' . $token])) {
    echo "<script>
@@ -21,8 +19,7 @@ if (empty($token) || !isset($_SESSION['report_temp_' . $token])) {
    exit;
 }
 $reportData = $_SESSION['report_temp_' . $token];
-
-if (time() - $reportData['timestamp'] > 5850) {
+if (time() - $reportData['timestamp'] > 585) {
    unset($_SESSION['report_temp_' . $token]);
    echo "<script>
       alert('Token inválido');
@@ -30,7 +27,6 @@ if (time() - $reportData['timestamp'] > 5850) {
    </script>";
    exit;
 }
-
 
 // Obtener datos para el informe
 $id_dvcliente = $reportData['id_dvcliente'];
