@@ -60,7 +60,8 @@
       <input type="hidden" id="TerDocId" name="TerDocId" value="">
       <input type="hidden" id="TerDocId2" name="TerDocId2" value="">
       <input type="hidden" id="TerDocId3" name="TerDocId3" value="">
-      <input type="hidden" id="TerDocId4" name="TerDocId4" value="">
+      <input type="hidden" id="TerDocId4" name="TerDocId4" value=0>
+      <input type="hidden" id="clearSearch4" name="clearSearch4" value="">
       <input type="hidden" id="compte" name="compte" value="">
       <input type="hidden" name="acountingList" id="acountingList" value="">
       <input type="hidden" id="impuesto_banco" name="impuesto_banco" value="0.00">
@@ -77,7 +78,7 @@
                <div class="card-body">
                   <div class="row">
                      <div class="col-12 mb-3">
-                        <label class="text-label">Buscar Cliente</label>
+                        <label class="text-label" for="idCliente">Buscar Cliente</label>
                         <div class="d-flex align-items-end">
                            <input type="text" class="form-control flex-grow-1 client-search" id="idCliente" name="idCliente" autocomplete="off" autofocus required
                               placeholder="Escribe nombre, email o doc Identidad...">

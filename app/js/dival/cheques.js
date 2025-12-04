@@ -330,15 +330,17 @@ async function getDocumentDetails(idDocument) {
             ${data['cheque'].nivel_riezgo ? `<br><small class="text-label fs--1 badge badge-phoenix badge-phoenix-${getRiskBadgeClass(data['cheque'].nivel_riezgo)}">N.R. ${data['cheque'].nivel_riezgo}</small>` : ''}
          `;
          document.getElementById('datCliente').innerHTML = innerHtml;
-
-         const innerHtmlCta = `
-            <div class="fw-bold fs--1">Numero Cuenta: ${data['cheque'].numero_cuenta}</div>
-            <div class="fw-600 fs--1">${data['cheque'].banco_nombre}</div>
-            <small class="text-label">Sucursal: ${data['cheque'].sucursal}</small>
-         `;
-         document.getElementById('datCuenta').innerHTML = innerHtmlCta;
-         const valDocument = data['cheque'].valor_cheque * 1;
+         
          let tipDocument = data['cheque'].clase;
+         const valDocument = data['cheque'].valor_cheque * 1;
+         if (tipDocument == '1') {
+            const innerHtmlCta = `
+               <div class="fw-bold fs--1">Numero Cuenta: ${data['cheque'].numero_cuenta}</div>
+               <div class="fw-600 fs--1">${data['cheque'].banco_nombre}</div>
+               <small class="text-label">Sucursal: ${data['cheque'].sucursal}</small>
+            `;
+            document.getElementById('datCuenta').innerHTML = innerHtmlCta;
+         }
          let colDocument = 'success';
          switch (tipDocument) {
             case '1':

@@ -2,7 +2,6 @@
 if (!isset($_SESSION)) {
 	session_start();
 }
-// require_once '../../../config/Database.php';
 $_SESSION['reportPath'] = '../../';
 require_once "../../models/numaletras.php";
 require_once "../../models/dival/mdlcajas.php";
@@ -108,7 +107,6 @@ class PDF extends FPDF{
 class imprimirDocumento {
 	public $informe, $id_movimiento, $tipoDoc, $token;
 	public function traerImpresionDocumento() {
-
       $pdf = new PDF('P', 'mm', 'medcar');
       $title = 'Entrada de Efectivo a Caja';
 		$pdf->SetTitle($title,true);

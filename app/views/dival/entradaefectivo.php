@@ -52,7 +52,8 @@
                      <div class="col-sm-6 col-lg-4 mb-3">
                         <div class="form-group">
                            <label for="valeFecha" class="text-label fs-0 ps-0">Fecha Entrada *</label>
-                           <input type="date" class="form-control" id="valeFecha" name="valeFecha" placeholder="<?php echo DATE_DISPLAY ?>" data-inputmask="'alias': '<?= DATE_FORMAT ?>'" required>
+                           <input type="text" class="form-control py-2 dp_fecha_ini" id="valeFecha" name="valeFecha" placeholder="<?php echo DATE_DISPLAY ?>" data-inputmask="'alias': '<?= DATE_DISPLAY ?>'" autocomplete="off" data-mask>
+                           <!-- <input type="date" class="form-control" id="valeFecha" name="valeFecha" placeholder="<?php echo DATE_DISPLAY ?>" data-inputmask="'alias': '<?= DATE_FORMAT ?>'" required> -->
                         </div>
                      </div>
 

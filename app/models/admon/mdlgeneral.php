@@ -233,7 +233,7 @@ class GeneralModel {
 			// }
 		} catch (PDOException $e) {
 			$errorInfo = GeneralController::handleMySQLerror($stmt->errorInfo()[1], $stmt->errorInfo()[2]);
-			if (ENVIRONMENT == 'development1') {
+			if (ENVIRONMENT == 'development') {
 				$messageError = $errorInfo["error_code"]." ".$errorInfo["technical_message"];
 			} else {
 				$messageError = $errorInfo["error_code"]." ".$errorInfo["error_message"];
@@ -299,7 +299,7 @@ class GeneralModel {
 		} catch (PDOException $e) {
 			var_dump($e);
 			$errorInfo = GeneralController::handleMySQLerror($stmt->errorInfo()[1], $stmt->errorInfo()[2]);
-			if (ENVIRONMENT == 'development1') {
+			if (ENVIRONMENT == 'development') {
 				$messageError = $errorInfo["error_code"]." ".$errorInfo["technical_message"];
 			} else {
 				$messageError = $errorInfo["error_code"]." ".$errorInfo["error_message"];

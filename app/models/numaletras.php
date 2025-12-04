@@ -94,7 +94,7 @@
 	function longDate($fecha) {
 		$meses = array("Mes Nulo", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre");
 		$fecha_array = explode("-", $fecha);
-		return $fecha_array[2] . " de " . $meses[$fecha_array[1]] . " del año " . $fecha_array[0];
+		return $fecha_array[2] . " de " . $meses[intval($fecha_array[1])] . " del año " . $fecha_array[0];
 	}
 
 

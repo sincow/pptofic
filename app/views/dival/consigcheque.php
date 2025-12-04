@@ -86,7 +86,7 @@
                   <div class="row g-3">
                      <div class="col-12 mb-0">
                         <div class="d-grid d-flex gap-2">
-                           <button class="btn btn-phoenix-info" type="button" id="btnAporteCajaAdd">IMPRIMIR CONSIGNACIÓN</button>
+                           <!-- <button class="btn btn-phoenix-info" type="button" id="btnAporteCajaAdd">IMPRIMIR CONSIGNACIÓN</button> -->
                            <button class="btn btn-phoenix-success" type="submit" id="btnAporteCajaAdd">GRABAR CONSIGNACIÓN</button>
                         </div>
                      </div>

@@ -4,7 +4,7 @@ if (!isset($_SESSION)) {
 }
 $_SESSION['reportPath'] = '../../';
 require_once "../../models/numaletras.php";
-require_once "../../models/dival/mdlcheques.php";
+require_once "../../models/dival/mdlconsigna.php";
 //error_reporting(0);
 require_once '../../../vendor/fpdf/fpdf.php';
 require_once '../../../vendor/PHPExcel/Classes/PHPExcel.php';

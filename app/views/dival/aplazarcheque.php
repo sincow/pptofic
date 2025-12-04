@@ -351,7 +351,7 @@
             <div class="card mb-0">
                <div class="card-body p-3">
                   <div class="d-grid gap-2">
-                     <button class="btn btn-phoenix-success" type="submit" id="btnDevolAdd">GRABAR APLZAMIENTO</button>
+                     <button class="btn btn-phoenix-success" type="submit" id="btnDevolAdd">GRABAR APLAZAMIENTO</button>
                   </div>
                </div>
             </div>

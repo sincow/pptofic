@@ -2,7 +2,6 @@
 if (!isset($_SESSION)) {
 	session_start();
 }
-// require_once '../../../config/Database.php';
 $_SESSION['reportPath'] = '../../';
 require_once "../../models/numaletras.php";
 require_once "../../models/dival/mdlcheques.php";
@@ -179,7 +178,8 @@ class imprimirDocumento {
 	public $informe, $id_cheque, $numero, $token;
 	public function traerImpresionDocumento() {
 
-      $pdf = new PDF('L', 'mm', array(612/(72/25.4), 285/(72/25.4)));
+      // $pdf = new PDF('L', 'mm', array(285/(72/25.4), 612/(72/25.4)));
+      $pdf = new PDF('P', 'mm', 'medcar');
       $this->numero = $this->id_cheque;
       $title = 'Letra de Cambio';
 		$pdf->SetTitle($title,true);
@@ -248,7 +248,7 @@ class imprimirDocumento {
       $pdf->Ln(6);
       $pdf->Cell(47);
 		$pdf->SetTextColor(0, 0, 0);
-      $pdf->Cell(150, 0, "Señor(es): ".$this->informe['TerNombr'], 0, 0, 'L', false);
+      $pdf->Cell(150, 0, "Señor(es): ".$this->informe['TerNombr']." Con ".$this->informe['TerTiDoc']." Nro ".$this->informe['TerDocId'], 0, 0, 'L', false);
       $pdf->Ln(6);
       $pdf->Cell(47);
       $longDate = longDate($this->informe['vencimiento']);
@@ -288,31 +288,32 @@ class imprimirDocumento {
       $pdf->Cell(47);
 		$pdf->SetTextColor(255, 255, 255);
 		$pdf->Cell(5, 21, "", 1, 0, 'L', false);
-		$pdf->Cell(70, 21, "", 1, 0, 'L', false);
-		$pdf->Cell(35, 21, "", 1, 0, 'L', false);
-		$pdf->Cell(45, 21, "", 1, 0, 'L', false);
+		$pdf->Cell(87, 21, "", 1, 0, 'L', false);
+		$pdf->Cell(23, 21, "", 1, 0, 'L', false);
+		$pdf->Cell(40, 21, "", 1, 0, 'L', false);
       $pdf->Ln(0);
       $pdf->Cell(52);
-		$pdf->Cell(70, 5, 'DIRECCION ACEPTANTES', 0, 0, 'L', true);
-		$pdf->Cell(35, 5, 'TELEFONOS', 0, 0, 'L', true);
-		$pdf->Cell(45, 5, 'Atentamente', 0, 0, 'L', true);
+		$pdf->SetFont('Arial', '', 8);
+		$pdf->Cell(87, 5, 'Nombre', 0, 0, 'L', true);
+		$pdf->Cell(27, 5, 'Doc Identidad', 0, 0, 'L', true);
+		$pdf->Cell(36, 5, 'Atentamente', 0, 0, 'L', true);
 		$pdf->SetTextColor(0, 0, 0);
       $pdf->Ln(8);
       $pdf->Cell(52);
-      $pdf->Cell(70, 0, $this->informe['TerDirec'], 0, 0, 'L', false);
-      $pdf->Cell(35, 0, $this->informe['TerTele1'], 0, 0, 'L', false);
+      $pdf->Cell(87, 0, $this->informe['TerNombr'], 0, 0, 'L', false);
+      $pdf->Cell(23, 0, $this->informe['TerDocId'], 0, 0, 'L', false);
       $pdf->Ln(5);
       $pdf->Cell(52);
-      $pdf->Cell(70, 0, $this->informe['TerDirec2'], 0, 0, 'L', false);
-      $pdf->Cell(35, 0, $this->informe['TerTele12'], 0, 0, 'L', false);
+      $pdf->Cell(87, 0, $this->informe['TerNombr2'], 0, 0, 'L', false);
+      $pdf->Cell(23, 0, $this->informe['TerDocId2'], 0, 0, 'L', false);
       $pdf->Ln(5);
       $pdf->Cell(52);
-      $pdf->Cell(70, 0, $this->informe['TerDirec3'], 0, 0, 'L', false);
-      $pdf->Cell(35, 0, $this->informe['TerTele13'], 0, 0, 'L', false);
+      $pdf->Cell(87, 0, $this->informe['TerNombr3'], 0, 0, 'L', false);
+      $pdf->Cell(23, 0, $this->informe['TerDocId3'], 0, 0, 'L', false);
       $pdf->Ln(1);
 		$pdf->SetFont('Arial', '', 6);
-      $pdf->Cell(157);
-      $pdf->Cell(45, 0, '(GIRADOR)', 0, 0, 'C', false);
+      $pdf->Cell(162);
+      $pdf->Cell(40, 0, '(GIRADOR)', 0, 0, 'C', false);
       $pdf->Ln(2);
       $pdf->Cell(50);
 
@@ -336,10 +337,22 @@ class imprimirDocumento {
       // $pdf->Cell(30, 0, 'CC o NIT', 0 ,0, 'L', false);
       
 
+      $pdf->Rotate(90, 10, 195);
+		$pdf->SetTextColor(190, 190, 190);
+      $pdf->Text(119, 202, $this->informe['TerNombr']);
+		$pdf->SetTextColor(0, 0, 0);
       $pdf->Rotate(90, 13, 195);
       $pdf->Text(119, 202, 'CC o NIT');
+      $pdf->Rotate(90, 17, 188);
+		$pdf->SetTextColor(190, 190, 190);
+      $pdf->Text(119, 202, $this->informe['TerNombr2']);
+		$pdf->SetTextColor(0, 0, 0);
       $pdf->Rotate(90, 20, 188);
       $pdf->Text(119, 202, 'CC o NIT');
+      $pdf->Rotate(90, 24, 181);
+		$pdf->SetTextColor(190, 190, 190);
+      $pdf->Text(119, 204, $this->informe['TerNombr3']);
+		$pdf->SetTextColor(0, 0, 0);
       $pdf->Rotate(90, 27, 181);
       $pdf->Text(119, 204, 'CC o NIT');
 

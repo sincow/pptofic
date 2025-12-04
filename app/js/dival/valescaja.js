@@ -287,8 +287,29 @@ document.addEventListener("DOMContentLoaded", async function() {
       // });
    }
 
-
+   // document.getElementById('valeFecha').addEventListener('change', () => {
+   //document.getElementById('valeFecha').addEventListener('input', () => {
+   //*********************************************************************************************
+   $(".dp_fecha_ini").on("change", function() {
+      if (document.getElementById('valeFecha').value != document.getElementById('fechaActual').value) {
+         Swal.fire({
+            icon: "warning",
+            title: "Alerta",
+            text: "Esta seguro de usar fecha distinta a la actual?",
+            showConfirmButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Si'
+         }).then((result) => {
+            if (!result.isConfirmed) {
+               document.getElementById('valeFecha').value = document.getElementById('fechaActual').value;
+            }
+         });
+      }
+   })
+   
+   
 });
+
 
 
 //*********************************************************************************************
@@ -610,7 +631,7 @@ function displayActiveFilters(filters) {
       e.stopPropagation();
       e.stopImmediatePropagation();
       // 2. Obtener el campo a limpiar
-      const field = $(this).data('field');      
+      const field = $(this).data('field');
       // 3. Limpiar el campo en el formulario CORRECTO (#frmMovCajaFilter)
       $(`#frmMovCajaFilter #${field}`).val('').trigger('change');
       // 4. Si es un Select2, resetearlo correctamente

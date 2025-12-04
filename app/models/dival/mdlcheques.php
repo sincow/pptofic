@@ -499,7 +499,7 @@ class ChequesModel {
          $response = array("success" => true, "message" => 'Registro guardado exitosamente');
 		} catch (PDOException $e) {
 			$errorInfo = GeneralController::handleMySQLerror($stmt->errorInfo()[1], $stmt->errorInfo()[2]);
-			if (ENVIRONMENT == 'development1') {
+			if (ENVIRONMENT == 'development') {
 				$messageError = $errorInfo["error_code"]." ".$errorInfo["technical_message"];
 			} else {
 				$messageError = $errorInfo["error_code"]." ".$errorInfo["error_message"];
@@ -755,7 +755,7 @@ class ChequesModel {
          $response = array("success" => true, "message" => 'Registro actualizado exitosamente');
 		} catch (PDOException $e) {
 			$errorInfo = GeneralController::handleMySQLerror($stmt->errorInfo()[1], $stmt->errorInfo()[2]);
-			if (ENVIRONMENT == 'development1') {
+			if (ENVIRONMENT == 'development') {
 				$messageError = $errorInfo["error_code"]." ".$errorInfo["technical_message"];
 			} else {
 				$messageError = $errorInfo["error_code"]." ".$errorInfo["error_message"];
@@ -797,7 +797,7 @@ class ChequesModel {
          $response = array("success" => true, "message" => 'Registro actualizado exitosamente');
       } catch (PDOException $e) {
          $errorInfo = GeneralController::handleMySQLerror($stmt->errorInfo()[1], $stmt->errorInfo()[2]);
-         if (ENVIRONMENT == 'development1') {
+         if (ENVIRONMENT == 'development') {
             $messageError = $errorInfo["error_code"]." ".$errorInfo["technical_message"];
          } else {
             $messageError = $errorInfo["error_code"]." ".$errorInfo["error_message"];
@@ -830,7 +830,7 @@ class ChequesModel {
          $response = array("success" => true, "message" => 'Registro actualizado exitosamente');
       } catch (PDOException $e) {
          $errorInfo = GeneralController::handleMySQLerror($stmt->errorInfo()[1], $stmt->errorInfo()[2]);
-         if (ENVIRONMENT == 'development1') {
+         if (ENVIRONMENT == 'development') {
             $messageError = $errorInfo["error_code"]." ".$errorInfo["technical_message"];
          } else {
             $messageError = $errorInfo["error_code"]." ".$errorInfo["error_message"];
@@ -846,15 +846,14 @@ class ChequesModel {
 
    static public function getMargenContrib($data, $connection = null) {
       $conn = false;
+      if ($connection == null) {
+         $conn = true;
+         $connection = Database::getConnection();
+      }
       try {
-         if ($connection == null) {
-            $conn = true;
-            $connection = Database::getConnection();
-         }
          $query_base = "SELECT 
             c.TerDocId,
             d.TerNombr,";
-
          $columnas = [];
          $fecha_actual = new DateTime();
          for ($i = 0; $i < $data["meses"]; $i++) {
@@ -879,10 +878,43 @@ class ChequesModel {
          $stmt = $connection->prepare($query_final);
          $stmt->bindParam(":idEmpresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
          $stmt->execute();
-         $response = $stmt->fetchAll(PDO::FETCH_ASSOC);
+         $responseInt = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+         $query_base = "SELECT 
+            c.TerDocId,
+            d.TerNombr,";
+         $columnas = [];
+         $fecha_actual = new DateTime();
+         for ($i = 0; $i < $data["meses"]; $i++) {
+            $fecha_iteracion = clone $fecha_actual;
+            $fecha_iteracion->modify("-$i months");
+            $anio = $fecha_iteracion->format('Y');
+            $mes = $fecha_iteracion->format('m');
+            $anio_mes = $anio . $mes;
+            $columna_nombre = "V" . $anio_mes;
+            $columnas[] = "COALESCE(SUM(CASE WHEN YEAR(a.fecha) = $anio AND MONTH(a.fecha) = $mes THEN a.comision END), 0) AS $columna_nombre";
+         }
+         $query_columnas = implode(",\n            ", $columnas);
+         $query_final = $query_base . $query_columnas . "
+            FROM DvCheque a 
+            LEFT JOIN companies b ON a.id_empresa = b.id_empresa 
+            LEFT JOIN DvCheque c ON a.id_empresa = c.id_empresa AND a.id_cheque = c.id_cheque 
+            LEFT JOIN CoTercer d ON b.EmpCodig = d.EmpCodig AND c.TerDocId = d.TerDocId 
+            WHERE a.id_empresa = :idEmpresa 
+            GROUP BY c.TerDocId, d.TerNombr
+            ORDER BY c.TerDocId;
+         ";
+         $stmt = $connection->prepare($query_final);
+         $stmt->bindParam(":idEmpresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+         $stmt->execute();
+         $responseCom = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+         //$response = array_merge($responseInt, $responseCom);
+         $response = array("success" => true, "message" => 'Consulta exitosa', "int" => $responseInt, "com" => $responseCom);
+
       } catch (PDOException $e) {
          $errorInfo = GeneralController::handleMySQLerror($stmt->errorInfo()[1], $stmt->errorInfo()[2]);
-         if (ENVIRONMENT == 'development1') {
+         if (ENVIRONMENT == 'development') {
             $messageError = $errorInfo["error_code"]." ".$errorInfo["technical_message"];
          } else {
             $messageError = $errorInfo["error_code"]." ".$errorInfo["error_message"];
