@@ -388,4 +388,53 @@ class ReportsController {
 
    }
 
+
+   //**************************************************************************************
+   static public function reptarea(){
+      $required = ['repNroDomum'];
+      $verification = GeneralController::verifyRequiredFields($required, $_POST);
+      if ($verification["success"] == false) {
+         return $verification;
+      }
+      if (!isset($_POST["GenHojCal"])) {
+         $_POST["GenHojCal"] = 0;
+      }
+      $data = $_POST;
+      $tarea = ReportsModel::repTarea($data);
+      if ($tarea == null) {
+         return array(
+            'success' => false,
+            'message' => 'No se encontro la Tarea'
+         );
+      }
+      $idNotifi = $tarea["id_notifi"];
+      $dateTime = new DateTime();
+      $fechaHora = $dateTime->format('Y-m-d H:i:s');
+      $table = "reports";
+      $dataUpt = array(
+         "last_generate_report" => $fechaHora
+      );
+      $where = array("link_report" => 'reptarea');
+      $userupdt = GeneralModel::update($table, $dataUpt, $where);
+      if ($userupdt["success"] == false) {
+         // throw new PDOException($userupdt["message"], $userupdt["code"]);
+      }
+      $token = bin2hex(random_bytes(16));
+      $_SESSION['report_temp_' . $token] = [
+         'tipo' => 'Pagaré',
+         'clase' => $data['clase'],
+         'id_notifi' => $idNotifi,
+         'GenHojCal' => $_POST['GenHojCal'],
+         'token' => $token,
+         'timestamp' => time()
+      ];
+      $reportUrl = "app/reports/dival/tarea.php?token=" . urlencode($token);
+      return array(
+         'success' => true,
+         'url' => $reportUrl,
+         'message' => 'Informe generado correctamente'
+      );
+   }
+
+
 }

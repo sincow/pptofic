@@ -28,7 +28,9 @@ document.addEventListener("DOMContentLoaded", function() {
       });
       $('#modalUserAdd').modal('show');
    });
-   // Manejar el evento de clic en el botón de agregar
+
+   
+   //********************************************************************************
    $('#formUserAdd').on('submit', function(e) {
       e.preventDefault();
       const formData = new FormData(this);
@@ -42,12 +44,12 @@ document.addEventListener("DOMContentLoaded", function() {
       var data = $(this).parents().parents('tr');
       $('#editId').val(data.find('.photo').attr('id'));
       $('#editIdentificacion').val(data.find('.id').text());
-      $('#editname').val(data.find('.nombre').text());
+      $('#editname').val(data.find('.name').text());
       $('#editrole').val(data.find('.role').text());
-      $('#edittarjeta').val(data.find('.nombre').attr('tarjeta'));
-      $('#photoPrev').val(data.find('.nombre').attr('photo'));
-      $('#photoCurrent').val(data.find('.nombre').attr('photo'));
-      $('.photoUserFile').attr('src', data.find('.nombre').attr('photo'));
+      $('#edittarjeta').val(data.find('.name').attr('tarjeta'));
+      $('#photoPrev').val(data.find('.name').attr('photo'));
+      $('#photoCurrent').val(data.find('.name').attr('photo'));
+      $('.photoUserFile').attr('src', data.find('.name').attr('photo'));
       $('#editemail').val(data.find('.email').text());
       let idrole = parseInt(data.find('.role').attr('idrole'));
       let listWhere = [];
@@ -187,7 +189,7 @@ async function cargarUsers() {
             tdId.setAttribute('id', user.id_user);
             row.appendChild(tdId);
 
-            // Columna nombre
+            // Columna name
             const tdDesc = document.createElement('td');
             tdDesc.className = 'align-middle text-660 ps-2 py-1 name';
             tdDesc.textContent = user.name;
@@ -274,7 +276,7 @@ async function cargarUsers() {
       //    if (window.usersListInstance) {
       //       window.usersListInstance.update();
       //       window.usersListInstance.reIndex();
-      //       window.usersListInstance.sort('nombre', { order: 'asc' });
+      //       window.usersListInstance.sort('name', { order: 'asc' });
       //       $('[data-list-info]').text(`${window.usersListInstance.visibleItems.length} to ${window.usersListInstance.items.length} Items`);
       //       window.usersListInstance.fuzzySearch('');
       //    }

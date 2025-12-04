@@ -16,13 +16,43 @@ class UsersModel {
 		}
       $stmt = $connection->prepare("SELECT a.id_user, a.id_empresa, a.name, a.email, a.password, 
          a.id_role, a.photo, a.token_recovery, a.token_expiration, a.host_user, a.user_user, 
-         a.last_login, a.pass_user, a.status, a.id_user_at, a.created_at, a.updated_at, b.description as role 
+         a.last_login, a.pass_user, a.status, a.id_user_at, a.created_at, a.updated_at, 
+         b.description as role 
          FROM users a 
          LEFT JOIN roles b ON a.id_role = b.id_role 
-         WHERE a.id_empresa = :id_empresa 
+         WHERE a.id_empresa = :id_empresa AND email <> 'admin@hotmail.com' 
          ORDER BY a.name"
       );
       $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->execute();
+      $resp = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $stmt = null;
+      $connection = null;
+      return $resp;
+   }
+
+
+   /**********************************************************************/
+   static public function getWhere($data) {
+      $listWhere = json_decode($data["listWhere"], true);
+      $where = "a.id_empresa = :id_empresa AND ";
+      foreach ($listWhere as $key => $value) {
+         $where .= $value["id"] . " = :" . $value["id"] . " AND ";
+      }
+      if ($where != "") {
+         $where = substr($where, 0, -4);
+         $where = " AND " . $where;
+      }
+      $connection = Database::getConnection();
+      $stmt = $connection->prepare("SELECT a.* 
+         FROM users a 
+         WHERE 1 = 1 " . $where . " AND email <> 'admin@hotmail.com'
+         ORDER BY a.name"
+      );
+      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_STR);
+      foreach ($listWhere as $key => $value) {
+         $stmt->bindParam(":" . $value["id"], $value["value"]);
+      }
       $stmt->execute();
       $resp = $stmt->fetchAll(PDO::FETCH_ASSOC);
       $stmt = null;
@@ -36,10 +66,13 @@ class UsersModel {
       $connection = Database::getConnection();
       $stmt = $connection->prepare("SELECT a.id_user, a.id_empresa, a.name, a.email, a.password, 
          a.id_role, a.photo, a.token_recovery, a.token_expiration, a.host_user, a.user_user, 
-         a.last_login, a.pass_user a.status, a.id_user_at, a.created_at, a.updated_at 
+         a.last_login, a.pass_user a.status, a.id_user_at, a.created_at, a.updated_at, 
+         b.description as role 
          FROM users a 
-         WHERE a.id_user = :id_user"
+         LEFT JOIN roles b ON a.id_role = b.id_role 
+         WHERE a.id_empresa = :id_empresa AND a.id_user = :id_user AND email <> 'admin@hotmail.com' "
       );
+      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
       $stmt->bindParam(":id_user", $id, PDO::PARAM_INT);
       $stmt->execute();
       $resp = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -93,8 +126,9 @@ class UsersModel {
          $connection = Database::getConnection();
          $stmt = $connection->prepare("UPDATE users SET name = :name, 
             email = :email, id_role = :id_role, photo = :photo, id_user_at = :id_user_at 
-            WHERE id_user = :id_user"
+            WHERE id_empresa = :id_empresa AND id_user = :id_user"
          );
+         $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
          $stmt->bindParam(":id_user", $data["id"], PDO::PARAM_INT);
          $stmt->bindParam(":name", $data["nombre"], PDO::PARAM_STR);
          $stmt->bindParam(":email", $data["email"], PDO::PARAM_STR);
@@ -117,7 +151,9 @@ class UsersModel {
    static public function delete($data) {
       try {
          $connection = Database::getConnection();
-         $stmt = $connection->prepare("UPDATE users SET status = :status WHERE id_user = :id_user");
+         $stmt = $connection->prepare("UPDATE users SET status = :status 
+         WHERE id_empresa = :id_empresa AND id_user = :id_user");
+         $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
          $stmt->bindParam(":id_user", $data["id"], PDO::PARAM_INT);
          $stmt->bindParam(":status", $data["status"], PDO::PARAM_INT);
          $resp = $stmt->execute();

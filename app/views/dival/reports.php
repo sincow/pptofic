@@ -69,7 +69,7 @@
 		</div>
 	</div>
 	<div class="pb-2">
-		<div id="reports" data-list='{"valueNames":["title","text","priority","reportsby","reports","date"],"page":9,"pagination":true}'>
+		<div id="reports" data-list='{"valueNames":["title","text","priority","reportsby","reports","date"],"page":12,"pagination":true}'>
 			<div class="row g-3 justify-content-between mb-2">
 				<div class="col-12">
 					<div class="d-md-flex justify-content-between">

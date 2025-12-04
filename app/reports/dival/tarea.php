@@ -4,7 +4,7 @@ if (!isset($_SESSION)) {
 }
 $_SESSION['reportPath'] = '../../';
 require_once "../../models/numaletras.php";
-require_once "../../models/dival/mdlcajas.php";
+require_once "../../models/dival/mdltareas.php";
 //error_reporting(0);
 require_once '../../../vendor/fpdf/fpdf.php';
 require_once '../../../vendor/PHPExcel/Classes/PHPExcel.php';
@@ -18,7 +18,7 @@ if (empty($token) || !isset($_SESSION['report_temp_' . $token])) {
    exit;
 }
 $reportData = $_SESSION['report_temp_' . $token];
-if (time() - $reportData['timestamp'] > 585) {
+if (time() - $reportData['timestamp'] > 9585) {
    unset($_SESSION['report_temp_' . $token]);
    echo "<script>
       alert('Token inválido');
@@ -28,8 +28,8 @@ if (time() - $reportData['timestamp'] > 585) {
 }
 
 // Obtener datos para el informe
-$id_movimiento = $reportData['id_movimiento'];
-$informe = CajasModel::getOne($reportData);
+$id_notifi = $reportData['id_notifi'];
+$informe = TareasModel::getOne($reportData);
 
 
 //**************************************************************************************
@@ -104,10 +104,10 @@ class PDF extends FPDF{
 
 //**************************************************************************************
 class imprimirDocumento {
-	public $informe, $id_movimiento, $token;
+	public $informe, $id_notifi, $token;
 	public function traerImpresionDocumento() {
       $pdf = new PDF('P', 'mm', 'medcar');
-      $title = 'Vale de Caja';
+      $title = 'Tarea';
 		$pdf->SetTitle($title,true);
 		// $icon = "../views/img/favicons/favicon-32x32.png";
 		$icon = "../../../assets/img/favicons/favicon.ico";
@@ -125,7 +125,7 @@ class imprimirDocumento {
 			$pdf->Rotate(0);
 			$pdf->SetTextColor(0, 0, 0);
 			$pdf->SetFont('Arial', '', 8);
-         $pdf->Output('I', "VC-".$this->id_movimiento.'.pdf', true);
+         $pdf->Output('I', "TAREA-".$this->id_notifi.'.pdf', true);
          return;
       }
 
@@ -133,76 +133,102 @@ class imprimirDocumento {
 		$pdf->SetFont('Arial', 'B', 12);
       $pdf->SetFillColor(43, 114, 171);
 		$pdf->SetTextColor(0, 0, 0);
-      $pdf->Cell(195, 5, $_SESSION['companyname'], 0, 0, 'L', false);
+      $pdf->Cell(190, 5, $_SESSION['companyname'], 0, 0, 'L', false);
       $pdf->Ln(5);
 		$pdf->SetFont('Arial', '', 9);
-      $pdf->Cell(195, 5, $_SESSION['companyid'], 0, 0, 'L', false);
+      $pdf->Cell(40, 5, 'ASIGNACION DE TAREA', 0, 0, 'L', false);
       $pdf->Ln(0);
-      $pdf->Cell(125);
-		$pdf->Cell(65, 5, "", 1, 0, 'L', false);
+      $pdf->Cell(135);
+		$pdf->Cell(55, 6, "", 1, 0, 'L', false);
       $pdf->Ln(0);
-      $pdf->Cell(125);
+      $pdf->Cell(135);
 		$pdf->SetTextColor(255, 255, 255);
 		$pdf->SetFont('Arial', 'B', 10);
-      $pdf->Cell(37, 5, 'VALE DE CAJA Nro', 0, 0, 'L', true);
+      $pdf->Cell(33, 6, 'NRO ASIGNACION', 0, 0, 'L', true);
 		$pdf->SetTextColor(0, 0, 0);
       $pdf->Ln(0);
-      $pdf->Cell(165);
-		$pdf->Cell(20, 5, str_pad($this->informe['consecutivo'], 6, "0", STR_PAD_LEFT), 0, 0, 'R', false);
+      $pdf->Cell(175);
+		$pdf->Cell(12, 6, str_pad($this->informe['numero'], 6, "0", STR_PAD_LEFT), 0, 0, 'R', false);
 		$pdf->SetTextColor(0, 0, 0);
-		$pdf->SetFont('Arial', '', 9);
-      $pdf->Ln(6);
-      $pdf->Cell(155);
-		$pdf->Cell(35, 5, "", 1, 0, 'L', false);
-      $pdf->Ln(0);
-      $pdf->Cell(188, 5, 'Fecha: '.$this->informe['fecha'], 0, 0, 'R', false);
+		$pdf->SetFont('Arial', '', 8);
+      // $pdf->Ln(6);
+      // $pdf->Cell(155);
+		// $pdf->Cell(35, 5, "", 1, 0, 'L', false);
+      // $pdf->Ln(0);
+      // $pdf->Cell(188, 5, 'Fecha: '.$this->informe['fecha'], 0, 0, 'R', false);
 
       $pdf->Ln(10);
-		$pdf->Cell(125, 15, "", 1, 0, 'L', false);
-      $pdf->Cell(5);
-		$pdf->Cell(60, 15, "", 1, 0, 'L', false);
+		$pdf->Cell(110, 12, "", 1, 0, 'L', false);
+      $pdf->Cell(1);
+		$pdf->Cell(79, 12, "", 1, 0, 'L', false);
       $pdf->Ln(0);
 		$pdf->SetTextColor(255, 255, 255);
-      $pdf->Cell(125, 5, 'PAGADO A:', 0, 0, 'L', true);
-      $pdf->Cell(5);
-      $pdf->Cell(60, 5, 'POR VALOR DE:', 0, 0, 'C', true);
+      $pdf->Cell(110, 5, 'ASIGNADO A:', 0, 0, 'L', true);
+      $pdf->Cell(1);
+      $pdf->Cell(30, 5, 'FEC ASIGNACION', 0, 0, 'L', true);
+      // $pdf->Cell(5);
+      $pdf->Cell(29, 5, 'FEC ENTREGA', 0, 0, 'L', true);
+      // $pdf->Cell(5);
+      $pdf->Cell(20, 5, 'PRIORIDAD', 0, 0, 'L', true);
+
+
 		$pdf->SetTextColor(0, 0, 0);
       $pdf->Ln(8);
-      $pdf->Cell(125, 0, $this->informe['TerNombr'], 0, 0, 'L', false);
-      $pdf->Cell(15);
-      $pdf->Cell(30, 0,"$ ". number_format($this->informe['valor_salida'], 2), 0, 0, 'R', false);
-      $pdf->Ln(4);
-      $pdf->Cell(125, 0, "Doc Identidad: ". $this->informe['TerDocId'], 0, 0, 'L', false);
-      $pdf->Ln(5);
-		$pdf->Cell(190, 20, "", 1, 0, 'L', false);
-      $pdf->Ln(0);
-		$pdf->SetTextColor(255, 255, 255);
-      $pdf->Cell(190, 5, 'CONCEPTO:', 0, 0, 'L', true);
-		$pdf->SetTextColor(0, 0, 0);
-      $pdf->Ln(6);
-      $pdf->Write(4, $this->informe['descripcion']);
-      if (strlen($this->informe['descripcion']) < 140 ) {
-         $pdf->Ln(14);
-      } else {
-         $pdf->Ln(10);
+      $pdf->Cell(110, 0, $this->informe['name'], 0, 0, 'L', false);
+      $pdf->Cell(1);
+      $pdf->Cell(30, 0, $this->informe['fecha'], 0, 0, 'L', false);
+      // $pdf->Cell(5);
+      $pdf->Cell(29, 0, $this->informe['fecha_entrega'], 0, 0, 'L', false);
+
+      switch ($this->informe['prioridad']) {
+         case '1':
+            $pdf->Cell(20, 0, 'BAJA', 0, 0, 'L', false);
+            break;
+         case '2':
+            $pdf->Cell(20, 0, 'MEDIA', 0, 0, 'L', false);
+            break;
+         case '3':
+            $pdf->Cell(20, 0, 'ALTA', 0, 0, 'L', false);
+            break;
+         default:
+            # code...
+            break;
       }
-		$pdf->Cell(190, 5, "", 1, 0, 'L', false);
-      $pdf->Ln(0);
-		$pdf->SetTextColor(255, 255, 255);
-      $pdf->Cell(18, 5, 'CUENTA: ', 0, 0, 'L', true);
-		$pdf->SetTextColor(0, 0, 0);
-      $pdf->Cell(2);
-      $pdf->Cell(170, 5, $this->informe['CueCodig'].' - '.$this->informe['CueNombr'], 0, 0, 'L', false);
-      $pdf->Ln(7);
-		$pdf->Cell(190, 18, "", 1, 0, 'L', false);
-      $pdf->Ln(0);
-		$pdf->SetTextColor(255, 255, 255);
-      $pdf->Cell(190, 5, 'EL VALOR ES:', 0, 0, 'L', true);
       $pdf->Ln(6);
+
+      $pdf->Cell(190, 12, "", 1, 0, 'L', false);
+      $pdf->Ln(0);
+		$pdf->SetTextColor(255, 255, 255);
+      $pdf->Cell(190, 5, 'TITULO', 0, 0, 'L', true);
 		$pdf->SetTextColor(0, 0, 0);
-		$valletras = convertir($this->informe['valor_salida'], '1');
-      $pdf->Write(4, strtoupper($valletras));
-      $pdf->Ln(30);
+      $pdf->Ln(8);
+      $pdf->Cell(125, 0, $this->informe['titulo'], 0, 0, 'L', false);
+      $pdf->Ln(6);
+
+      $lineas = ceil(strlen($this->informe['detalle']) / 140);
+      if ($lineas < 10) {
+         $alto = 40;
+      } else {
+         $alto = $lineas * 4;
+      }
+      $pdf->Cell(190, $alto, "", 1, 0, 'L', false);
+      $pdf->Ln(0);
+		$pdf->SetTextColor(255, 255, 255);
+      $pdf->Cell(190, 5, 'CONCEPTO', 0, 0, 'L', true);
+		$pdf->SetTextColor(0, 0, 0);
+      $pdf->Ln(6);
+      $pdf->Write(4, $this->informe['detalle']);
+      // if (strlen($this->informe['detalle']) < 140 ) {
+      //    $pdf->Ln(14);
+      // } else {
+      //    $pdf->Ln(10);
+      // }
+      if ($lineas < 10) {
+         $pdf->Ln(40);
+      } else {
+         $pdf->Ln($alto);
+      }
+		$pdf->SetTextColor(255, 255, 255);
 		$pdf->SetTextColor(170, 170, 170);
       $pdf->Cell(80, 0, '______________________________________', 0, 0, 'L', false);
       $pdf->Cell(30);
@@ -212,12 +238,11 @@ class imprimirDocumento {
       $pdf->Cell(80, 0, 'Elaboró: ', 0, 0, 'L', false);
       $pdf->Cell(30);
       $pdf->Cell(80, 0, 'Recibí: ', 0, 0, 'L', false);
-      $pdf->Ln(5);
-      $pdf->Cell(80, 0, $this->informe['name'], 0, 0, 'L', false);
-      $pdf->Cell(30);
-      $pdf->Cell(80, 0, 'Doc Identidad: ', 0, 0, 'L', false);
+      $pdf->Ln(4);
+		$pdf->SetFont('Arial', '', 7);
+      $pdf->Cell(100, 0, $this->informe['user_name'], 0, 0, 'L', false);
 
-      $pdf->Output('I', "VC-".$this->informe['consecutivo'].'.pdf', true);
+      $pdf->Output('I', "TAREA-".$this->informe['consecutivo'].'.pdf', true);
    }
 
 
@@ -228,9 +253,9 @@ class imprimirDocumento {
 
 
 $documento = new imprimirDocumento();
-$documento->informe       = $informe;
-$documento->id_movimiento = $id_movimiento;
-$documento->token         = $token;
+$documento->informe   = $informe;
+$documento->id_notifi = $id_notifi;
+$documento->token     = $token;
 if ($reportData["GenHojCal"] == '1') {
 	$documento->traerHojaCalculo();
 } else $documento->traerImpresionDocumento();

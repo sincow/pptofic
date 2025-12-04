@@ -34,4 +34,20 @@ class ReportsModel {
       return $resp;
    }
 
+
+
+   //**************************************************************************************
+   static public function repTarea($data){
+      $connection = Database::getConnection();
+      $sql = "SELECT * FROM GrNotifi WHERE id_empresa = :id_empresa AND id_notifi = :id_notifi";
+      $stmt = $connection->prepare($sql);
+      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_notifi", $data["repNroDomum"]);
+      $stmt->execute();
+      $resp = $stmt->fetch(PDO::FETCH_ASSOC);
+      $stmt = null;
+      $connection = null;
+      return $resp;
+   }
+
 }
