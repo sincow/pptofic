@@ -1,6 +1,6 @@
 <?php
 if (!isset($_POST["option"])) {
-	require_once APP_PATH . '/models/mdlclientes.php';
+	require_once APP_PATH . '/models/dival/mdlclientes.php';
 }
 
 class ClientesController {

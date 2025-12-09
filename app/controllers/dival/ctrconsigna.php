@@ -1,6 +1,6 @@
 <?php
 if (!isset($_POST["option"])) {
-	require_once APP_PATH . '/models/dival/mdlcheques.php';
+	require_once APP_PATH . '/models/dival/mdlconsigna.php';
 }
 if (isset($_POST["action"]) && ($_POST["action"] == "create" || $_POST["action"] == "consigna" || $_POST["action"] == "anular")) {
 	require_once '../'.APP_PATH.'/models/dival/mdlcheques.php';

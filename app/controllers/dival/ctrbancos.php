@@ -1,6 +1,6 @@
 <?php
 if (!isset($_POST["option"])) {
-	require_once APP_PATH . '/models/mdlbancos.php';
+	require_once APP_PATH . '/models/dival/mdlbancos.php';
 }
 
 class BancosController {

@@ -1,6 +1,6 @@
 <?php
 if (!isset($_POST["option"])) {
-	require_once APP_PATH . '/models/mdlcomprobantes.php';
+	require_once APP_PATH . '/models/contabilidad/mdlcomprobantes.php';
 }
 
 class ComprobantesController {

@@ -521,6 +521,21 @@ function formatCurrency(amount, simbol, decimals = 0) {
 
 
 //*********************************************************************************************
+function formatDate(dateString) {
+   if (!dateString) return 'N/A';
+   const [year, month, day] = dateString.split('-');
+   if (!year || !month || !day) return 'Formato inválido';
+   const dateFormat = $("#dateFormat").val() || 'mm-dd-yyyy';
+   switch(dateFormat) {
+      case 'dd-mm-yyyy': return `${day}-${month}-${year}`;
+      case 'mm-dd-yyyy': return `${month}-${day}-${year}`;
+      case 'yyyy-mm-dd': return `${year}-${month}-${day}`;
+      default: return `${month}-${day}-${year}`;
+   }
+}
+
+
+//*********************************************************************************************
 function setupPaginationEvents(dataPaginacion, itemsPage = 20) {
    const prevBtn = document.querySelector('[data-list-pagination="prev"]');
    const nextBtn = document.querySelector('[data-list-pagination="next"]');

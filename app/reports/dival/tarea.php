@@ -4,7 +4,7 @@ if (!isset($_SESSION)) {
 }
 $_SESSION['reportPath'] = '../../';
 require_once "../../models/numaletras.php";
-require_once "../../models/dival/mdltareas.php";
+require_once "../../models/admon/mdlnotificaciones.php";
 //error_reporting(0);
 require_once '../../../vendor/fpdf/fpdf.php';
 require_once '../../../vendor/PHPExcel/Classes/PHPExcel.php';
@@ -18,7 +18,7 @@ if (empty($token) || !isset($_SESSION['report_temp_' . $token])) {
    exit;
 }
 $reportData = $_SESSION['report_temp_' . $token];
-if (time() - $reportData['timestamp'] > 9585) {
+if (time() - $reportData['timestamp'] > 585) {
    unset($_SESSION['report_temp_' . $token]);
    echo "<script>
       alert('Token inválido');
@@ -29,7 +29,7 @@ if (time() - $reportData['timestamp'] > 9585) {
 
 // Obtener datos para el informe
 $id_notifi = $reportData['id_notifi'];
-$informe = TareasModel::getOne($reportData);
+$informe = NotificacionesModel::getOne($reportData);
 
 
 //**************************************************************************************

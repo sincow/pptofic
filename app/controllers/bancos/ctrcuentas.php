@@ -1,6 +1,6 @@
 <?php
 if (!isset($_POST["option"])) {
-	require_once APP_PATH . '/models/mdlcuentas.php';
+	require_once APP_PATH . '/models/bancos/mdlcuentas.php';
 }
 
 class CuentasController {

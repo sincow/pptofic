@@ -1,6 +1,6 @@
 <?php
 if (!isset($_POST["option"])) {
-	require_once APP_PATH . '/models/mdlusers.php';
+	require_once APP_PATH . '/models/admon/mdlgeneral.php';
 }
 
 class TablasController {

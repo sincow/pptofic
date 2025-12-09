@@ -1,6 +1,6 @@
 <?php
 if (!isset($_POST["option"])) {
-	require_once APP_PATH . '/models/mdlterceros.php';
+	require_once APP_PATH . '/models/contabilidad/mdlterceros.php';
 }
 
 class TercerosController {

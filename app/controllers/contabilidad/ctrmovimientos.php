@@ -1,13 +1,12 @@
 <?php
 if (!isset($_POST["option"])) {
-	require_once APP_PATH . '/models/mdlcheques.php';
+	require_once APP_PATH . '/models/dival/mdlcheques.php';
 }
 if (isset($_POST["action"]) && $_POST["action"] == "create") {
    require_once '../'. APP_PATH . '/models/dival/mdlclientes.php';
 }
 
 class MovimientosController {
-
 
    //**************************************************************************************
    static public function save($data, $connection = null) {

@@ -1,6 +1,6 @@
 <?php
 if (!isset($_POST["option"])) {
-	require_once APP_PATH . '/models/mdltiposmovimiento.php';
+	require_once APP_PATH . '/models/bancos/mdltiposmovimiento.php';
 }
 
 class TiposmovimientoController {

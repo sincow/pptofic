@@ -1,6 +1,6 @@
 <?php
 if (!isset($_POST["option"])) {
-	require_once APP_PATH . '/models/mdlparametros.php';
+	require_once APP_PATH . '/models/admon/mdlparametros.php';
 }
 
 class ParametrosController {

@@ -10,7 +10,7 @@
 					<div class="col-5 d-none d-sm-flex justify-content-center align-items-center ms-2 py-0 px-1">
 						<!-- <p class="wms logo-text d-none d-sm-block">VET</p> -->
 						<!-- <p class="wms logo-text d-none d-sm-block ps-2">- Clinic</p> -->
-						<img class="ps-1" src=<?php echo APP_ICON?> alt="VET" width="60" />
+						<img class="ps-1" src=<?php echo APP_ICON?> alt="Dival" width="60" />
 					</div>
 				</div>
 			</a>
@@ -50,9 +50,9 @@
 			</li>
 		</div>
 
-	<?php
-		// include 'language_selector.php';
-	?>
+		<?php
+			// include 'language_selector.php';
+		?>
 
 
 		<ul class="navbar-nav navbar-nav-icons flex-row ms-auto">
@@ -86,7 +86,11 @@
 				</div>
 			</li>
 			<li class="nav-item dropdown">
-				<a class="nav-link" href="#" style="min-width: 2.5rem" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-bs-auto-close="outside"><span data-feather="bell" style="height:20px;width:20px;"></span></a>
+				<a class="nav-link" href="#" style="min-width: 2.5rem" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-bs-auto-close="outside" id="btnNotify">
+					<i class="fas fa-bell notification-icon" style="font-size: 25px; color: #6c757d;" id="bellNotify"></i>
+					<!-- <span data-feather="bell" style="height:25px;width:25px;" id="bellNotify"></span> -->
+					<span class="position-absolute top-7 start-100 translate-middle badge rounded-pill" style="margin-top: 8px;" id="badgeNotify"></span>
+				</a>
 				<div class="dropdown-menu dropdown-menu-end notification-dropdown-menu py-0 shadow border border-300 navbar-dropdown-caret" id="navbarDropdownNotfication" aria-labelledby="navbarDropdownNotfication">
 					<div class="card position-relative border-0">
 						<div class="card-header p-2">
@@ -97,12 +101,12 @@
 						</div>
 						<div class="card-body p-0">
 							<div class="scrollbar-overlay" style="height: 27rem;">
-								<div class="border-300">
+								<div class="border-300" id="notificationList">
 									<div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read border-bottom">
 										<div class="d-flex align-items-center justify-content-between position-relative">
 											<div class="d-flex">
-												<!-- <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/30.webp" alt="" /> -->
-												</div>
+												<!-- <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/30.webp" alt="" />
+												</div> -->
 												<div class="flex-1 me-sm-3">
 													<h4 class="fs--1 text-black">Jessie Samson</h4>
 													<p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>💬</span>Mentioned you in a comment.<span class="ms-2 text-400 fw-bold fs--2">10m</span></p>
@@ -151,11 +155,11 @@
 										</div>
 									</div>
 								</div>
+<!--
 								<div class="border-300">
 									<div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
 										<div class="d-flex align-items-center justify-content-between position-relative">
 											<div class="d-flex">
-												<!-- <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/57.webp" alt="" /> -->
 												</div>
 												<div class="flex-1 me-sm-3">
 													<h4 class="fs--1 text-black">Kiera Anderson</h4>
@@ -172,7 +176,6 @@
 									<div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
 										<div class="d-flex align-items-center justify-content-between position-relative">
 											<div class="d-flex">
-												<!-- <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/59.webp" alt="" /> -->
 												</div>
 												<div class="flex-1 me-sm-3">
 													<h4 class="fs--1 text-black">Herman Carter</h4>
@@ -189,7 +192,6 @@
 									<div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read ">
 										<div class="d-flex align-items-center justify-content-between position-relative">
 											<div class="d-flex">
-												<!-- <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/58.webp" alt="" /> -->
 												</div>
 												<div class="flex-1 me-sm-3">
 													<h4 class="fs--1 text-black">Benjamin Button</h4>
@@ -204,6 +206,7 @@
 										</div>
 									</div>
 								</div>
+-->
 							</div>
 						</div>
 						<div class="card-footer p-0 border-top border-0">
@@ -219,7 +222,7 @@
 				?>
 			</li>
 
-			<li class="nav-item dropdown"><a class="nav-link lh-1 pe-0" id="navbarDropdownUser" href="#!" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
+			<li class="nav-item dropdown ps-4"><a class="nav-link lh-1 pe-0" id="navbarDropdownUser" href="#!" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
 					<div class="avatar avatar-l ">
 						<?php
 							if ($_SESSION["photo"] != "") {
@@ -268,13 +271,6 @@
 			</li>
 		</ul>
 	</div>
-
-
-
-
-
-
-
 
 </nav>
 
@@ -574,6 +570,125 @@
 </nav>
 
 <script>
+	document.addEventListener('DOMContentLoaded', function() {
+		document.getElementById('bellNotify').style.color = '';
+
+		const icon = document.getElementById('bellNotify');
+		const badge = document.getElementById('badgeNotify');
+		let innerHTML = "";
+
+		const formData = new FormData();
+		formData.append("modulo", "admon");
+		formData.append("option", "notificaciones");
+		formData.append("action", "getMisNotificaciones");
+		formData.append("revisada", "0");
+		const response = fetch('helpers/ajaxRouter.php', {
+			method: 'POST',
+			body: formData
+		}).then(resp => resp.json())
+		.then( data => {
+			if (data.length > 0) {
+				document.getElementById('bellNotify').style.color = '#28a745';
+
+				//icon.className = 'fas fa-bell notification-icon';
+				//icon.style.color = '#28a745';
+				// icon.style.fontSize = '25px';
+
+				let $notificationCount = data.length;
+				if (data.length > 99) {
+					$notificationCount = '99+';
+				}
+				document.getElementById('badgeNotify').classList.add('bg-warning');
+				let btnNotify = document.getElementById('badgeNotify').innerHTML = `
+					${$notificationCount}
+				`;
+				// <span class="position-absolute top-7 start-100 translate-middle badge rounded-pill bg-warning" style="font-size: 0.8em;">
+				// </span>
+
+				data.forEach(notificacion => {
+					innerHTML += `
+						<div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read border-bottom">
+							<div class="d-flex align-items-center justify-content-between position-relative">
+								<div class="d-flex">
+					`;
+
+					let entrega = "";
+					switch (notificacion.tipo) {
+						case 1:
+							innerHTML += `
+								<div class="avatar avatar-m me-1">
+									<span class='me-0 fs-2'>📋</span>
+								</div>
+							`;
+							break; 
+						case 2:
+							innerHTML += `
+								<div class="avatar avatar-m me-1">
+									<span class='me-0 fs-2'>💬</span>
+								</div>
+							`;
+							break;
+						case 3:
+							innerHTML += `
+								<div class="avatar avatar-m me-1">
+									<span class='me-0 fs-2'>📅</span>
+								</div>
+							`;
+							break;
+						case 4:
+							innerHTML += `
+								<div class="avatar avatar-m me-1">
+									<span class='me-0 fs-2'>📈</span>
+								</div>
+							`;
+							break;
+						default:
+							break;
+					}
+
+					innerHTML += `
+						<div class="flex-1 me-sm-0">
+							<h4 class="fs--1 text-black mb-0">${notificacion.user_name}</h4>
+					`;
+					if (notificacion.tipo == "1") {
+						let prioridad = "";
+						let color = "";
+						entrega = "para entregar: " + notificacion.fecha_entrega;
+						switch (notificacion.prioridad) {
+							case 1:
+								prioridad = "Baja";
+								color = "success";
+								break;
+							case 2:
+								prioridad = "Media";
+								color = "warning";
+								break;
+							case 3:
+								prioridad = "Alta";
+								color = "danger";
+								break;
+							default:
+								break;
+						}
+						innerHTML += `
+							<p class="fw-normal fs--2 ps-2 mb-0">Creó la siguiente tarea con prioridad  <span class="fs--1 fw-bold badge bg-${color}">${prioridad}</span>
+							</p>
+						`;
+					}
+					innerHTML += `
+										<p class="fw-bold fs--1 ps-2 mb-0">${notificacion.titulo}</p>
+										<p class="fw-normal fs--1 ps-2 mb-0"><span class="me-1 fas fa-clock"></span><span class="fw-bold">${notificacion.fecha}</span><span class="ps-2 fw-bold">${entrega}</span></p>
+									</div>
+								</div>
+							</div>
+						</div>
+					`;
+				});
+				document.getElementById('notificationList').innerHTML = innerHTML;
+				// document.getElementById('notificationList').appendChild(notificacionItem);
+			}
+		});
+	})
 	/*
 var navbarTopShape = window.config.config.phoenixNavbarTopShape;
 var navbarPosition = window.config.config.phoenixNavbarPosition;

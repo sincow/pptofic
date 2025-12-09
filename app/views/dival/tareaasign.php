@@ -13,18 +13,13 @@
    	</div>
 	</div>
 	<form class="needs-validation form-search crearTareaForm" role="form" id="crearTareaForm" name="crearTareaForm" enctype="multipart/form-data" method="post" novalidate>
-      <input type="hidden" id="modulo" name="modulo" value="dival">
-      <input type="hidden" id="option" name="option" value="tareas">
-      <input type="hidden" id="action" name="action" value="addtarea">
+      <input type="hidden" id="modulo" name="modulo" value="admon">
+      <input type="hidden" id="option" name="option" value="notificaciones">
+      <input type="hidden" id="action" name="action" value="addnotify">
       <input type="hidden" id="fechaActual" name="fechaActual" value="<?php echo date('Y-m-d'); ?>">
-      <input type="hidden" id="TerDocId" name="TerDocId" >
-      <input type="hidden" id="BancoCodig" name="BancoCodig" value="">
-      <input type="hidden" id="CueCodig" name="CueCodig" value="">
-      <input type="hidden" id="compte" name="compte" value="">
-      <input type="hidden" id="CompteBco" name="CompteBco" value = "">
-      <input type="hidden" id="valeValor" name="valeValor" value = 0>
-      <input type="hidden" id="tipoDoc" name="tipoDoc" value = '2'>
-      <input type="hidden" name="acountingList" id="acountingList" value="">
+      <input type="hidden" id="idtarea" name="idtarea" value=0>
+      <input type="hidden" id="idTipo" name="idTipo" value = 1>
+      <input type="hidden" id="cumplimiento" name="cumplimiento" value=0>
       <div class="row g-3">
          <div class="col-lg-5 mt-0">
             <div class="card mb-2">
@@ -56,7 +51,7 @@
                         </div>
                      </div>
                      <div class="col-sm-6 col-lg-4 mb-3">
-                           <label for="fechaentrega" class="text-label fs-0 ps-0">Prioridad *</label>
+                           <label for="prioridad" class="text-label fs-0 ps-0">Prioridad *</label>
                            <select class="form-select select2" id="prioridad" name="prioridad" required>
                               <option value="">Seleccionar</option>
                               <option value="1">Baja</option>
@@ -88,7 +83,7 @@
                   <div class="row g-3">
                      <div class="col-12 mb-3">
                         <div class="d-grid gap-2">
-                           <button class="btn btn-phoenix-success" type="submit" id="btnEntradaCajaAdd">GRABAR ASIGNACION</button>
+                           <button class="btn btn-phoenix-success" type="submit" id="btnAsigmTarea">GRABAR ASIGNACION</button>
                         </div>
                      </div>
                   </div>
@@ -101,4 +96,4 @@
 		include APP_PATH.'/views/layouts/footer.php';
 	?>
 </div>
-<script src="app/js/dival/tareas.js?v=1.0.0"></script>
+<script src="app/js/dival/notificaciones.js?v=1.0.0"></script>

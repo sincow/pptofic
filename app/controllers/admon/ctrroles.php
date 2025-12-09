@@ -1,6 +1,6 @@
 <?php
 if (!isset($_POST["option"])) {
-	require_once APP_PATH . '/models/admin/mdlroles.php';
+	require_once APP_PATH . '/models/admon/mdlroles.php';
 }
 
 class RolesController {

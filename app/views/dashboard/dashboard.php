@@ -187,7 +187,7 @@
                      Recordatorios
                   </h5>
                </div> -->
-               <div class="card-body p-3">
+               <div class="card-body p-3" id="remindersList">
                   <div class="d-flex align-items-start mb-2">
                      <span class="fas fa-bell text-warning me-2 mt-1"></span>
                      <div class="flex-1">
@@ -313,7 +313,98 @@
          console.error('Error loading calendar config:', error);
       });
 
+		const formData = new FormData();
+		formData.append("modulo", "admon");
+		formData.append("option", "notificaciones");
+		formData.append("action", "getMisNotificaciones");
+		formData.append("status", "1");
+		let innerHTML = "";
+		const response = fetch('helpers/ajaxRouter.php', {
+			method: 'POST',
+			body: formData
+		}).then(resp => resp.json())
+		.then( data => {
+			if (data.length > 0) {
+				data.forEach(notificacion => {
+					innerHTML += `
+						<div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read border-bottom">
+							<div class="d-flex align-items-center justify-content-between position-relative">
+								<div class="d-flex">
+					`;
+               let entrega = "";
+               switch (notificacion.tipo) {
+                  case 1:
+                     innerHTML += `
+                        <div class="avatar avatar-m me-1">
+                           <span class='me-0 fs-2'>📋</span>
+                        </div>
+                     `;
+                     break; 
+                  case 2:
+                     innerHTML += `
+                        <div class="avatar avatar-m me-1">
+                           <span class='me-0 fs-2'>💬</span>
+                        </div>
+                     `;
+                     break;
+                  case 3:
+                     innerHTML += `
+                        <div class="avatar avatar-m me-1">
+                           <span class='me-0 fs-2'>📅</span>
+                        </div>
+                     `;
+                     break;
+                  case 4:
+                     innerHTML += `
+                        <div class="avatar avatar-m me-1">
+                           <span class='me-0 fs-2'>📈</span>
+                        </div>
+                     `;
+                     break;
+                  default:
+                     break;
+               }
+					innerHTML += `
+						<div class="flex-1 me-sm-0">
+					`;
 
+               if (notificacion.tipo == "1") {
+						let prioridad = "";
+						let color = "";
+						entrega = "para entregar: " + notificacion.fecha_entrega;
+						switch (notificacion.prioridad) {
+							case 1:
+								prioridad = "Baja";
+								color = "success";
+								break;
+							case 2:
+								prioridad = "Media";
+								color = "warning";
+								break;
+							case 3:
+								prioridad = "Alta";
+								color = "danger";
+								break;
+							default:
+								break;
+						}
+						// innerHTML += `
+						// 	<p class="fw-normal fs--2 ps-2 mb-0">Creó la siguiente tarea con prioridad  <span class="fs--1 fw-bold badge bg-${color}">${prioridad}</span>
+						// 	</p>
+						// `;
+					}
+               innerHTML += `
+                              <p class="fw-bold fs--1 ps-2 mb-0">${notificacion.titulo}</p>
+                              <p class="fw-normal fs--1 ps-2 mb-0"><span class="me-1 fas fa-clock"></span><span class="fw-bold">${notificacion.fecha}</span><span class="ps-2 fw-bold">${entrega}</span></p>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               `;
+            });
+            document.getElementById('remindersList').innerHTML = innerHTML;
+         }
+      })
       /*
       const formDataTipDoc = new FormData();
       const permiModsw = $("#permiModsw").val();

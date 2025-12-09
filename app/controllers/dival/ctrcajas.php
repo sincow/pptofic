@@ -1,6 +1,6 @@
 <?php
 if (!isset($_POST["option"])) {
-	require_once APP_PATH . '/models/mdlcajas.php';
+	require_once APP_PATH . '/models/dival/mdlcajas.php';
 }
 require_once '../'. APP_PATH . '/controllers/contabilidad/ctrmovimientos.php';
 require_once '../'. APP_PATH . '/models/contabilidad/mdlmovimientos.php';
@@ -8,7 +8,6 @@ require_once '../'. APP_PATH . '/controllers/contabilidad/ctrcuentas.php';
 require_once '../'. APP_PATH . '/models/contabilidad/mdlcuentas.php';
 
 class CajasController {
-
 
    //*******************************************************************************************
    static public function filter(){

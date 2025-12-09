@@ -746,7 +746,7 @@ if (formulario) {
 
 
 //*********************************************************************************************
-function formatDate(dateString) {
+function formatDate2(dateString) {
    if (!dateString) return 'N/A';
    const [year, month, day] = dateString.split('-');
    if (!year || !month || !day) return 'Formato inválido';

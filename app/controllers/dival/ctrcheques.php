@@ -1,6 +1,6 @@
 <?php
 if (!isset($_POST["option"])) {
-	require_once APP_PATH . '/models/mdlcheques.php';
+	require_once APP_PATH . '/models/dival/mdlcheques.php';
 }
 if (isset($_POST["action"]) && ($_POST["action"] == "create" || $_POST["action"] == "devolucion" || $_POST["action"] == "aplaza" || $_POST["action"] == "pagocapital" || $_POST["action"] == "pagointeres" || $_POST["action"] == "anular" || $_POST["action"] == "anularApl" || $_POST["action"] == "anularPagoCap" || $_POST["action"] == "anularPagoInt")) {
    require_once '../'. APP_PATH . '/models/dival/mdlclientes.php';
