@@ -117,11 +117,6 @@
 									</tr>
 								</thead>
 								<tbody class="list" id="notifiTable-body">
-                           <!-- <tr class="hover-actions-trigger btn-reveal-trigger position-static">
-                              <td colspan="12" class="order align-middle white-space-nowrap py-2 text-center">
-                                 No hay registros para mostrar
-                              </td>
-                           </tr> -->
                            <tr>
                               <td colspan="12" class="text-center">
                                  <div class="spinner-border" role="status">
@@ -133,7 +128,6 @@
                      </table>
                   </form>  
                </div>
-
                <div class="row align-items-center justify-content-between py-2 pe-0 fs--2">
                   <div class="col-auto d-flex">
                      <p class="mb-0 d-none d-sm-block me-3 fw-semi-bold text-900 ps-2" data-list-info="data-list-info"></p>
@@ -146,13 +140,12 @@
                      <button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
                   </div>
                </div>
-
             </div>
          </div>
       </div>
    </form>
 	<?php
-      include "chequedetails.php";
+      include "tareadetails.php";
 		include APP_PATH.'/views/layouts/footer.php';
 	?>
 </div>

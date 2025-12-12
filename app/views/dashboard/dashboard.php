@@ -175,11 +175,10 @@
          </div>
 
          <div class="col-12">
-            <div class="card">
+            <div class="card" style="min-height: 125px;">
                <div class="card-header fw-bold py-1 fs-0 text-start text-white bg-primary" style="opacity: 70%;">
                   <i class="fa-solid fa-bell me-2"></i>Recordatorios
                </div>
-
                <!-- <div class="card-header bg-100 py-3">
                   <h5 class="mb-0">
                      <i class="fa-solid fa-alarm-clock"></i>
@@ -188,6 +187,7 @@
                   </h5>
                </div> -->
                <div class="card-body p-3" id="remindersList">
+                  <!--
                   <div class="d-flex align-items-start mb-2">
                      <span class="fas fa-bell text-warning me-2 mt-1"></span>
                      <div class="flex-1">
@@ -202,6 +202,7 @@
                         <p class="fs--2 mb-0 text-600">20 de Octubre, 2025</p>
                      </div>
                   </div>
+                  -->
                </div>
             </div>
          </div>
@@ -327,7 +328,7 @@
 			if (data.length > 0) {
 				data.forEach(notificacion => {
 					innerHTML += `
-						<div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read border-bottom">
+						<div class="px-2 px-sm-3 pb-2 border-300 notification-card position-relative read border-bottom">
 							<div class="d-flex align-items-center justify-content-between position-relative">
 								<div class="d-flex">
 					`;

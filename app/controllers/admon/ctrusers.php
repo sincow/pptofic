@@ -25,9 +25,26 @@ class UsersController {
 
 
    //*****************************************************************************************
-   static public function getOne($id) {
-      $client = UsersModel::getOne("id", $id, null);
-      return $client;
+   static public function getOne() {
+      $required = ['id'];
+      $verification = GeneralController::verifyRequiredFields($required, $_POST);
+      if ($verification["success"] == false) {
+         return $verification;
+      }
+      $data = $_POST;
+      if ($data["id"] == "*") {
+         $data["id"] = $_SESSION["user_id"];
+      }
+
+      $data["id"] = filter_var($data["id"], FILTER_SANITIZE_NUMBER_INT);
+      // var_dump($data);
+      if (!filter_var($data["id"], FILTER_VALIDATE_INT)) {
+         $response = array("success" => false, "message" => 'Registro inválido');
+         return $response;
+      }
+      $user = UsersModel::getOne($data);
+      unset($user['password']);
+      return $user;
    }
 
 
@@ -188,6 +205,61 @@ class UsersController {
          }
       }
       return $response;
+   }
+
+
+   //*****************************************************************************************
+   static public function updtPass() {
+      $required = ['id', 'passAct', 'pass', 'passRep'];
+      $verification = GeneralController::verifyRequiredFields($required, $_POST);
+      if ($verification["success"] == false) {
+         return $verification;
+      }
+      $data = $_POST;
+      if (empty($data["id"]) || !filter_var($data["id"], FILTER_VALIDATE_INT)) {
+         $response = array("success" => false, "message" => 'Registro inválido');
+         return $response;
+      }
+      $data["id"] = filter_var($data["id"], FILTER_SANITIZE_NUMBER_INT);
+      $user = UsersModel::getOne($data);
+      if ($user == null) {
+         $response = array("success" => false, "message" => 'Usuario inválido');
+         return $response;
+      }
+      if (!password_verify($data["passAct"], $user['password'])) {
+         $response = array("success" => false, "message" => 'Contraseña actual inválida');
+         return $response;
+      }
+      if ($data["pass"] != $data["passRep"]) {
+         $response = array("success" => false, "message" => 'Error al verificar contraseña');
+         return $response;
+      }
+      $encriptar = crypt($data["pass"], '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
+
+      $data["pass"] = password_hash($data["pass"], PASSWORD_DEFAULT);
+      try {
+         $connection = Database::getConnection();
+         $connection->beginTransaction();
+         $tabla = "users";
+         $dataUpdt = array(
+            'password' => $encriptar
+         );
+         $where = array(
+            "id_empresa" => $_SESSION["id_empresa"],
+            "id_user" => $data["id"]
+         );
+         $response = GeneralModel::update($tabla, $dataUpdt, $where, $connection);
+         if ($response["success"] === false) {
+            throw new PDOException($response["message"], $response["code"]);
+         }
+         $connection->commit();
+         $response = array("success" => true, "message" => "Registro guardado exitosamente");
+      } catch (PDOException $ex) {
+         $connection->rollBack();
+         $response = array("success" => false, "message" => $ex->getMessage(), "code" => $ex->getCode());
+      }
+		$reportUrl = null;
+		return array("success" => $response["success"], "message" =>  $response["message"], "reportUrl" => $reportUrl);
    }
 
 

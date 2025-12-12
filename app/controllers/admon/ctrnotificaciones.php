@@ -34,9 +34,59 @@ class NotificacionesController {
 
    //******************************************************************************************
    static public function getNotificacion() {
+      $required = ['idNotifi'];
+      $verification = GeneralController::verifyRequiredFields($required, $_POST);
+      if ($verification["success"] == false) {
+         return $verification;
+      }
       $data = $_POST;
+      if (empty($data["idNotifi"]) || !filter_var($data["idNotifi"], FILTER_VALIDATE_INT)) {
+         $response = array("success" => false, "message" => 'Registro inválido');
+         return $response;
+      }
+      $data["id_notifi"] = filter_var($data["idNotifi"], FILTER_SANITIZE_NUMBER_INT);
       $notificacion = NotificacionesModel::getOne($data);
+      $tabla = "GrNotifi";
+      $dataUpdt = array(
+         "revisada"  => "1"
+      );
+      $where = array(
+         "id_empresa" => $_SESSION["id_empresa"],
+         "id_notifi" => $data["id_notifi"]
+      );
+      $response = GeneralModel::update($tabla, $dataUpdt, $where);
+
       return $notificacion;
+   }
+
+
+   //******************************************************************************************
+   static public function getDetails() {
+      $required = ['idNotifi'];
+      $verification = GeneralController::verifyRequiredFields($required, $_POST);
+      if ($verification["success"] == false) {
+         return $verification;
+      }
+      $data = $_POST;
+      if (empty($data["idNotifi"]) || !filter_var($data["idNotifi"], FILTER_VALIDATE_INT)) {
+         $response = array("success" => false, "message" => 'Registro inválido');
+         return $response;
+      }
+      $data["id_notifi"] = filter_var($data["idNotifi"], FILTER_SANITIZE_NUMBER_INT);
+      $responseOne = NotificacionesModel::getOne($data);
+      $responseSeg = null;
+      $responseRep = null;
+      $responseCie = null;
+      if ($responseOne != null ) {
+         $data["tipo"] = "12";
+         $responseSeg = NotificacionesModel::getSeguimientos($data);
+         // $data["tipo"] = "2";
+         // $responseRep = NotificacionesModel::getSeguimientos($data);
+         $data["tipo"] = "3";
+         $responseCie = NotificacionesModel::getSeguimientos($data);
+      }
+      $response = array("tarea" => $responseOne, "seguim" => $responseSeg, "cierre" => $responseCie);
+      return $response;
    }
 
 
@@ -128,18 +178,17 @@ class NotificacionesController {
       try {
          $connection = Database::getConnection();
          $connection->beginTransaction();
-
          if ($data["idTipo"] == 2) {
             $tabla = "GrNotifi";
             $dataUpdt = array(
-               'fecha_reprogra' => $data["fecha"],
-               'user_id_user' => $_SESSION["user_id"]
+               'fecha_reprogra' => $data["fecha"]
+               // 'user_id_user' => $_SESSION["user_id"]
             );
             $where = array(
                "id_empresa" => $_SESSION["id_empresa"],
                "id_notifi" => $data["idtarea"]
             );
-            $response = GeneralModel::update($tabla, $dataUpdt, $where);
+            $response = GeneralModel::update($tabla, $dataUpdt, $where, $connection);
             if ($response["success"] === false) {
                throw new PDOException($response["message"], $response["code"]);
             }
@@ -147,19 +196,18 @@ class NotificacionesController {
             $tabla = "GrNotifi";
             $dataUpdt = array(
                'cumplimiento' => $data["cumplimiento"],
-               'status'       => "9",
-               'user_id_user' => $_SESSION["user_id"]
+               'status'       => "9"
+               // 'user_id_user' => $_SESSION["user_id"]
             );
             $where = array(
                "id_empresa" => $_SESSION["id_empresa"],
                "id_notifi" => $data["idtarea"]
             );
-            $response = GeneralModel::update($tabla, $dataUpdt, $where);
+            $response = GeneralModel::update($tabla, $dataUpdt, $where, $connection);
             if ($response["success"] === false) {
                throw new PDOException($response["message"], $response["code"]);
             }
          }
-   
          $tabla = "GrNotiSeg";
          $dataUpdt = array(
             'id_empresa' => $_SESSION["id_empresa"],

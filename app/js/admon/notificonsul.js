@@ -9,6 +9,20 @@ document.addEventListener("DOMContentLoaded", function() {
    });
    const selectCuenta = document.getElementById('empleadoSearch');
    getSelects('admon', 'users', selectCuenta, 'id_user', textOpt = ['name'], listWhere);
+
+
+   //*********************************************************************************************
+   document.querySelector('#notifiTable tbody').addEventListener('click', async function(e) {
+      e.preventDefault();
+      const target = e.target.closest('.documentId');
+      if (target) {
+         const idDocument = target.getAttribute('iddoc');
+         const modal =  new bootstrap.Modal(document.getElementById('modalTareaDetails'));
+         getDocumentDetails(idDocument);
+         modal.show();
+      }
+   });
+
 });
 
 
@@ -114,7 +128,7 @@ function cargarNotifiDetail(data) {
                statusBadgeClass = "success";
                break;
             case 'C':
-               status = 'CONSIGNADO';
+               status = '';
                break;
             default:
                break;
@@ -124,18 +138,18 @@ function cargarNotifiDetail(data) {
             colorVencim = "";
             if (fechaCierre > fechaFin) {
                colorCierre = "red";
-               situacion = 'REALIZADA - ATRASADA';
+               situacion = 'REALIZADA, ATRASADA';
             } else {
                colorCierre = "green";
-               situacion = 'REALIZADA - A TIEMPO';
+               situacion = 'REALIZADA, A TIEMPO';
             }
          } else {
             if (fechaFin < fechaInicio) {
                colorCierre = "red";
-               situacion = 'EN PROCESO - ATRASADA';
+               situacion = 'EN PROCESO, ATRASADA';
             } else {
                colorCierre = "green";
-               situacion = 'EN PROCESO - A TIEMPO';
+               situacion = 'EN PROCESO, A TIEMPO';
             }
          }
          let row = `
@@ -367,4 +381,186 @@ function displayActiveFilters(filters) {
          $(this).remove();
       });
    });
+}
+
+//*********************************************************************************************
+async function getDocumentDetails(idDocument) {
+   const formData = new FormData();
+   formData.append("modulo", "admon");
+   formData.append("option", "notificaciones");
+   formData.append("action", "getDetails");
+   formData.append("idNotifi", idDocument);
+   let colorVencim = "";
+   let colorCierre = "";
+   let fechaFin = "";
+   let fechaCierre = "";
+   let fecha_cierre = "";
+   let diasShow = "";
+   let diferencia = "";
+   let dias = "";
+   let status = "";
+   let statusBadgeClass = "";
+   let situacion = "";
+   let reprograma = "";
+   let fechaInicio = new Date();
+   let innerHtml = ``;
+   fechaInicio.setHours(0, 0, 0, 0);
+   const response = await fetch('helpers/ajaxRouter.php', {
+      method: 'POST',
+      body: formData
+   }).then(resp => resp.json())
+   .then( data => {
+      colorVencim = "green";
+      colorCierre = "green";
+      fechaFin = new Date(data['tarea'].UltEntrega);
+      fechaFin.setHours(0, 0, 0, 0);
+      fechaCierre = formatDate(data['tarea'].fecha_cierre);
+      fecha_cierre = data['tarea'].fecha_cierre;
+      if (data['tarea'].fecha_cierre == null) {
+         fecha_cierre = "";
+         fechaCierre = "";
+      } else {
+         fecha_cierre = formatDate(fecha_cierre);
+         fechaCierre = new Date(data['tarea'].fecha_cierre);
+         fechaCierre.setHours(0, 0, 0, 0);
+      }
+      diasShow = "";
+      diferencia = fechaFin.getTime() - fechaInicio.getTime();
+      dias = Math.ceil(diferencia / (1000 * 60 * 60 * 24)) +1;
+      if (dias < 0) {
+         colorVencim = "red";
+         diasShow = ' ->  '+ (dias * -1) + " Días";
+      } else if (dias < 3) {
+         colorVencim = "orange";
+      }
+      status = 'PENDIENTE';
+      statusBadgeClass = "warning";
+      switch (data['tarea'].status) {
+         case '1':
+            break;
+         case '9':
+            status = 'CERRADA';
+            statusBadgeClass = "success";
+            break;
+         case 'C':
+            status = '';
+            break;
+         default:
+            break;
+      }
+
+      reprograma = "NO TIENE";
+      if (data['tarea'].UltEntrega != data['tarea'].fecha_entrega) {
+         reprograma = data['tarea'].UltEntrega;         
+      }
+
+      if (data['tarea']) {
+         situacion = "";
+         if (data['tarea'].status == "9") {
+            colorVencim = "";
+            if (fechaCierre > fechaFin) {
+               colorCierre = "red";
+               situacion = 'REALIZADA, ATRASADA';
+            } else {
+               colorCierre = "green";
+               situacion = 'REALIZADA, A TIEMPO';
+            }
+         } else {
+            if (fechaFin < fechaInicio) {
+               colorCierre = "red";
+               situacion = 'EN PROCESO, ATRASADA';
+            } else {
+               colorCierre = "green";
+               situacion = 'EN PROCESO, A TIEMPO';
+            }
+         }
+         let colorCumpli = "";
+         if (data["tarea"].cumplimiento < 70) {
+            colorCumpli = "red"; 
+         } else if (data["tarea"].cumplimiento < 80) {
+            colorCumpli = "orange";
+         } else {
+            colorCumpli = "green";
+         }
+         let colorPrioridad = "";
+         let prioridad = "";
+         if (data["tarea"].prioridad == 1) {
+            colorPrioridad = "green"; 
+            prioridad = "Baja";
+         } else if (data["tarea"].prioridad == 2) {
+            colorPrioridad = "orange";
+            prioridad = "Media";
+         } else {
+            colorPrioridad = "red";
+            prioridad = "Alta";
+         }
+         
+         innerHtml = `
+            <div class="fw-bold fs-0">Numero Tarea: ${data['tarea'].id_notifi}</div>
+            <div class="fw-600 fs-0"><b>Fecha Asignación:</b> ${data['tarea'].fecha}</div>
+            <div class="fw-600 fs-0"><b>Fecha Entrega:</b> <span style="color:${colorVencim};">${data['tarea'].fecha_entrega}  ${diasShow}</span></div>
+            <div class="fw-600 fs-0"><b>Prioridad:</b> <span style="color:${colorPrioridad};"> ${prioridad}</span></div>
+            <div class="fw-600 fs-0"><b>Reprogramación:</b> ${reprograma}</div>
+            <div class="fw-600 fs-0"><b>Situación:</b> <span style="color:${colorCierre};"> ${situacion}</span></div>
+            <div class="fw-600 fs-0"><b>Título:</b></div>
+            <div class="fw-600 fs--1">${data['tarea'].titulo}</div>
+            <div class="fw-600 fs-0"><b>Detalle:</b></div>
+            <div class="fw-600 fs--1">${data['tarea'].detalle}</div>
+         `;
+         document.getElementById('datTarea').innerHTML = innerHtml;
+
+         innerHtml = `<div class="fw-bold fs-0">PENDIENTE</div>`;         
+         if (data["cierre"].length > 0 ) {
+            data["cierre"].forEach(cierre => {
+               innerHtml = `
+                  <div class="fw-600 fs-0"><b>Fecha Cierre:</b> ${cierre.fecha}</div>
+                  <div class="fw-600 fs-0"><b>% Cumplimiento:</b> <span style="color:${colorCumpli};"> ${data['tarea'].cumplimiento}</span></div>
+                  <div class="fw-600 fs-0"><b>Detalle:</b></div>
+                  <div class="fw-600 fs--1">${cierre.detalle}</div>
+               `;
+            });
+         }
+         document.getElementById('datCierre').innerHTML = innerHtml;
+
+         innerHtml = `<div class="fw-bold fs-0">PENDIENTE</div>`;         
+         let tipo = "";
+         let fechaSeguim = "";
+         if (data["seguim"].length > 0 ) {
+            innerHtml = ``;
+            statusBadgeClass = "";
+            data["seguim"].forEach(seguim => {
+               if (seguim.tipo == "1") {
+                  tipo = "SEGUIMIENTO";
+                  statusBadgeClass = "info";
+                  fechaSeguim = "Fecha Seguimiento: ";
+               } else if (seguim.tipo == "2") {
+                  statusBadgeClass = "warning";
+                  tipo = "REPROGRAMACIÓN";
+                  fechaSeguim = "Fecha Reprogramación: ";
+               }
+               innerHtml += `
+                  <div class="fw-600 fs-0"><b>${fechaSeguim}</b> ${seguim.fecha}</div>
+                  <div class="fw-600 fs-0"><b>Tipo:</b> <span class="badge badge-phoenix fs--1 badge-phoenix-${statusBadgeClass}">${tipo}<span></div>
+                  <div class="fw-600 fs-0"><b>Detalle:</b></div>
+                  <div class="fw-600 border-bottom fs--1">${seguim.detalle}</div>
+                  <br>
+               `;
+            });
+         }
+         document.getElementById('datSeguim').innerHTML = innerHtml;
+
+
+      } else {
+         swal.fire({
+            title: 'Error',
+            text: 'No se encontraron detalles',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+         })
+      }
+   })
+   .catch(error => {
+      console.error('Error:', error);
+   });
+
 }

@@ -1,6 +1,9 @@
 
 document.addEventListener("DOMContentLoaded", function() {
-   cargarUsers();
+   const userList = document.getElementById('usersFormList');
+   if (userList) {
+      cargarUsers();
+   }
 
    //********************************************************************************
    $("#btnaddUser").on('click', function(e) {
@@ -232,7 +235,7 @@ async function cargarUsers() {
             if ($('#permiPersw').val() == "1") {
                const editBtn = document.createElement('a');
                editBtn.className = 'btn btn-outline-success me-1 p-2 py-1 perm-btn';
-               editBtn.innerHTML = '<i class="fas fa-edit"></i> Permissions';
+               editBtn.innerHTML = '<i class="fas fa-edit"></i> Permisos';
                editBtn.setAttribute('data-id', user.id_user);
                tdActions.appendChild(editBtn);
             }
@@ -353,4 +356,3 @@ function updateListJS() {
    });
    updatePaginationInfo(window.usersListInstance);
 }
-

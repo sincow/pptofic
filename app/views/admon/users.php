@@ -12,7 +12,7 @@
 			</nav>
 		</div>
 	</div>
-	<form role="form" class="usersFormList" method="post" action="userdetails">
+	<form role="form" class="usersFormList" id="usersFormList" method="post" action="userdetails">
 		<div class="mb-3">
 			<div id="Users" data-list='{"valueNames":["id","name","email","role","last","status"],"page":10,"pagination":true}'>
 				<div class="mb-0">

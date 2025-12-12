@@ -62,18 +62,19 @@ class UsersModel {
 
 
    //*****************************************************************************************
-   static public function getOne($id) {
+   static public function getOne($data) {
       $connection = Database::getConnection();
-      $stmt = $connection->prepare("SELECT a.id_user, a.id_empresa, a.name, a.email, a.password, 
-         a.id_role, a.photo, a.token_recovery, a.token_expiration, a.host_user, a.user_user, 
-         a.last_login, a.pass_user a.status, a.id_user_at, a.created_at, a.updated_at, 
+      $stmt = $connection->prepare("SELECT a.id_user, a.id_empresa, a.name, a.email,  
+         a.id_role, a.photo, a.token_recovery, a.token_expiration, a.password,  
+         a.last_login, a.status, a.id_user_at, a.created_at, a.updated_at, 
          b.description as role 
          FROM users a 
          LEFT JOIN roles b ON a.id_role = b.id_role 
-         WHERE a.id_empresa = :id_empresa AND a.id_user = :id_user AND email <> 'admin@hotmail.com' "
+         WHERE a.id_empresa = :id_empresa AND a.id_user = :id_user "
       );
+      //  AND email <> 'admin@hotmail.com' 
       $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
-      $stmt->bindParam(":id_user", $id, PDO::PARAM_INT);
+      $stmt->bindParam(":id_user", $data["id"], PDO::PARAM_INT);
       $stmt->execute();
       $resp = $stmt->fetch(PDO::FETCH_ASSOC);
       $stmt = null;

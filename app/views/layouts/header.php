@@ -155,7 +155,7 @@
 										</div>
 									</div>
 								</div>
-<!--
+								<!--
 								<div class="border-300">
 									<div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
 										<div class="d-flex align-items-center justify-content-between position-relative">
@@ -206,7 +206,7 @@
 										</div>
 									</div>
 								</div>
--->
+								-->
 							</div>
 						</div>
 						<div class="card-footer p-0 border-top border-0">
@@ -568,20 +568,23 @@
 		</li>
 	</ul>
 </nav>
-
+<?php
+	include APP_PATH.'/views/admon/notifidetails.php';
+?>
 <script>
 	document.addEventListener('DOMContentLoaded', function() {
+		cargarNotificaciones();
+		/*
 		document.getElementById('bellNotify').style.color = '';
-
 		const icon = document.getElementById('bellNotify');
 		const badge = document.getElementById('badgeNotify');
 		let innerHTML = "";
-
 		const formData = new FormData();
 		formData.append("modulo", "admon");
 		formData.append("option", "notificaciones");
 		formData.append("action", "getMisNotificaciones");
 		formData.append("revisada", "0");
+		formData.append("status", "1");
 		const response = fetch('helpers/ajaxRouter.php', {
 			method: 'POST',
 			body: formData
@@ -608,6 +611,7 @@
 				data.forEach(notificacion => {
 					innerHTML += `
 						<div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read border-bottom">
+							<a href="#" class="notifidetails" onclick="mostrarNotificacion(${notificacion.id_notifi})" data-id="${notificacion.id_notifi}" style="text-decoration: none; color: inherit;">
 							<div class="d-flex align-items-center justify-content-between position-relative">
 								<div class="d-flex">
 					`;
@@ -681,104 +685,275 @@
 									</div>
 								</div>
 							</div>
+							</a>
 						</div>
 					`;
 				});
 				document.getElementById('notificationList').innerHTML = innerHTML;
-				// document.getElementById('notificationList').appendChild(notificacionItem);
 			}
 		});
+		*/
 	})
+
+
+	//**************************************************************************************
+	async function cargarNotificaciones() {
+		document.getElementById('bellNotify').style.color = '';
+		document.getElementById('badgeNotify').innerHTML = ``;
+		document.getElementById('notificationList').innerHTML = ``;
+		const icon = document.getElementById('bellNotify');
+		const badge = document.getElementById('badgeNotify');
+		let innerHTML = "";
+		const formData = new FormData();
+		formData.append("modulo", "admon");
+		formData.append("option", "notificaciones");
+		formData.append("action", "getMisNotificaciones");
+		formData.append("revisada", "0");
+		formData.append("status", "1");
+		const response = fetch('helpers/ajaxRouter.php', {
+			method: 'POST',
+			body: formData
+		}).then(resp => resp.json())
+		.then( data => {
+			if (data.length > 0) {
+				document.getElementById('bellNotify').style.color = '#28a745';
+
+				//icon.className = 'fas fa-bell notification-icon';
+				//icon.style.color = '#28a745';
+				// icon.style.fontSize = '25px';
+
+				let $notificationCount = data.length;
+				if (data.length > 99) {
+					$notificationCount = '99+';
+				}
+				document.getElementById('badgeNotify').classList.add('bg-warning');
+				let btnNotify = document.getElementById('badgeNotify').innerHTML = `
+					${$notificationCount}
+				`;
+				// <span class="position-absolute top-7 start-100 translate-middle badge rounded-pill bg-warning" style="font-size: 0.8em;">
+				// </span>
+
+				data.forEach(notificacion => {
+					innerHTML += `
+						<div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read border-bottom">
+							<a href="#" class="notifidetails" onclick="mostrarNotificacion(${notificacion.id_notifi})" data-id="${notificacion.id_notifi}" style="text-decoration: none; color: inherit;">
+							<div class="d-flex align-items-center justify-content-between position-relative">
+								<div class="d-flex">
+					`;
+
+					let entrega = "";
+					switch (notificacion.tipo) {
+						case 1:
+							innerHTML += `
+								<div class="avatar avatar-m me-1">
+									<span class='me-0 fs-2'>📋</span>
+								</div>
+							`;
+							break; 
+						case 2:
+							innerHTML += `
+								<div class="avatar avatar-m me-1">
+									<span class='me-0 fs-2'>💬</span>
+								</div>
+							`;
+							break;
+						case 3:
+							innerHTML += `
+								<div class="avatar avatar-m me-1">
+									<span class='me-0 fs-2'>📅</span>
+								</div>
+							`;
+							break;
+						case 4:
+							innerHTML += `
+								<div class="avatar avatar-m me-1">
+									<span class='me-0 fs-2'>📈</span>
+								</div>
+							`;
+							break;
+						default:
+							break;
+					}
+
+					innerHTML += `
+						<div class="flex-1 me-sm-0">
+							<h4 class="fs--1 text-black mb-0">${notificacion.user_name}</h4>
+					`;
+					if (notificacion.tipo == "1") {
+						let prioridad = "";
+						let color = "";
+						entrega = "para entregar: " + notificacion.fecha_entrega;
+						switch (notificacion.prioridad) {
+							case 1:
+								prioridad = "Baja";
+								color = "success";
+								break;
+							case 2:
+								prioridad = "Media";
+								color = "warning";
+								break;
+							case 3:
+								prioridad = "Alta";
+								color = "danger";
+								break;
+							default:
+								break;
+						}
+						innerHTML += `
+							<p class="fw-normal fs--2 ps-2 mb-0">Creó la siguiente tarea con prioridad  <span class="fs--1 fw-bold badge bg-${color}">${prioridad}</span>
+							</p>
+						`;
+					}
+					innerHTML += `
+										<p class="fw-bold fs--1 ps-2 mb-0">${notificacion.titulo}</p>
+										<p class="fw-normal fs--1 ps-2 mb-0"><span class="me-1 fas fa-clock"></span><span class="fw-bold">${notificacion.fecha}</span><span class="ps-2 fw-bold">${entrega}</span></p>
+									</div>
+								</div>
+							</div>
+							</a>
+						</div>
+					`;
+				});
+				document.getElementById('notificationList').innerHTML = innerHTML;
+			}
+		});
+	}
+
+
+	//**************************************************************************************
+	async function mostrarNotificacion(id) {
+		const modal = new bootstrap.Modal(document.getElementById('modalNotifiDetails'));
+		const formData = new FormData();
+		formData.append("modulo", "admon");
+		formData.append("option", "notificaciones");
+		formData.append("action", "getNotificacion");
+		formData.append("idNotifi", id);
+		const response = await fetch('helpers/ajaxRouter.php', {
+			method: 'POST',
+			body: formData
+		}).then(resp => resp.json())
+		.then(data => {
+			let innerHTML = "";
+			modal.show();
+			let tipo = "";
+			switch (data["tipo"]) {
+				case 1:
+					tipo = "Tarea";
+					break; 
+				case 2:
+					tipo = "Chat";
+					break;
+				case 3:
+					tipo = "Recordatorio";
+					break;
+				case 4:
+					tipo = "Informes";
+					break;
+				default:
+					break;
+			}
+			innerHTML += `
+				<div class="fw-600 fs-0"><b>Tipo:</b> ${tipo}</div>
+				<div class="fw-600 fs-0"><b>Fecha:</b> ${data['fecha']}</div>
+				<div class="fw-600 fs-0"><b>Asunto:</b> ${data['titulo']}</div>
+				<div class="fw-600 fs-0"><b>Detalle:</b></div>
+				<div class="fw-600 fs--1">${data['detalle']}</div>
+			`;
+			document.getElementById('datNotifi').innerHTML = innerHTML;
+		});
+		cargarNotificaciones();
+		//location.reload();
+	}
 	/*
-var navbarTopShape = window.config.config.phoenixNavbarTopShape;
-var navbarPosition = window.config.config.phoenixNavbarPosition;
-var body = document.querySelector('body');
-var navbarDefault = document.querySelector('#navbarDefault');
-var navbarTop = document.querySelector('#navbarTop');
-var topNavSlim = document.querySelector('#topNavSlim');
-var navbarTopSlim = document.querySelector('#navbarTopSlim');
-var navbarCombo = document.querySelector('#navbarCombo');
-var navbarComboSlim = document.querySelector('#navbarComboSlim');
-var dualNav = document.querySelector('#dualNav');
-var documentElement = document.documentElement;
-var navbarVertical = document.querySelector('.navbar-vertical');
-if (navbarPosition === 'dual-nav') {
-	topNavSlim.remove();
-	navbarTop.remove();
-	navbarVertical.remove();
-	navbarTopSlim.remove();
-	navbarCombo.remove();
-	navbarComboSlim.remove();
-	navbarDefault.remove();
-	dualNav.removeAttribute('style');
-	documentElement.classList.add('dual-nav');
-} else if (navbarTopShape === 'slim' && navbarPosition === 'vertical') {
-	navbarDefault.remove();
-	navbarTop.remove();
-	navbarTopSlim.remove();
-	navbarCombo.remove();
-	navbarComboSlim.remove();
-	topNavSlim.style.display = 'block';
-	navbarVertical.style.display = 'inline-block';
-	body.classList.add('nav-slim');
-} else if (navbarTopShape === 'slim' && navbarPosition === 'horizontal') {
-	navbarDefault.remove();
-	navbarVertical.remove();
-	navbarTop.remove();
-	topNavSlim.remove();
-	navbarCombo.remove();
-	navbarComboSlim.remove();
-	navbarTopSlim.removeAttribute('style');
-	body.classList.add('nav-slim');
-} else if (navbarTopShape === 'slim' && navbarPosition === 'combo') {
-	navbarDefault.remove();
-	//- navbarVertical.remove();
-	navbarTop.remove();
-	topNavSlim.remove();
-	navbarCombo.remove();
-	navbarTopSlim.remove();
-	navbarComboSlim.removeAttribute('style');
-	navbarVertical.removeAttribute('style');
-	body.classList.add('nav-slim');
-} else if (navbarTopShape === 'default' && navbarPosition === 'horizontal') {
-	alert("entro horiz");
-	navbarDefault.remove();
-	topNavSlim.remove();
-	navbarVertical.remove();
-	navbarTopSlim.remove();
-	navbarCombo.remove();
-	navbarComboSlim.remove();
-	navbarTop.removeAttribute('style');
-	documentElement.classList.add('navbar-horizontal');
-} else if (navbarTopShape === 'default' && navbarPosition === 'combo') {
-	topNavSlim.remove();
-	navbarTop.remove();
-	navbarTopSlim.remove();
-	navbarDefault.remove();
-	navbarComboSlim.remove();
-	navbarCombo.removeAttribute('style');
-	navbarVertical.removeAttribute('style');
-	documentElement.classList.add('navbar-combo')
-} else {
-	topNavSlim.remove();
-	navbarTop.remove();
-	navbarTopSlim.remove();
-	navbarCombo.remove();
-	navbarComboSlim.remove();
-	navbarDefault.removeAttribute('style');
-	navbarVertical.removeAttribute('style');
-}
-var navbarTopStyle = window.config.config.phoenixNavbarTopStyle;
-var navbarTop = document.querySelector('.navbar-top');
-if (navbarTopStyle === 'darker') {
-	navbarTop.classList.add('navbar-darker');
-}
-var navbarVerticalStyle = window.config.config.phoenixNavbarVerticalStyle;
-var navbarVertical = document.querySelector('.navbar-vertical');
-if (navbarVerticalStyle === 'darker') {
-	navbarVertical.classList.add('navbar-darker');
-}
-*/
+	var navbarTopShape = window.config.config.phoenixNavbarTopShape;
+	var navbarPosition = window.config.config.phoenixNavbarPosition;
+	var body = document.querySelector('body');
+	var navbarDefault = document.querySelector('#navbarDefault');
+	var navbarTop = document.querySelector('#navbarTop');
+	var topNavSlim = document.querySelector('#topNavSlim');
+	var navbarTopSlim = document.querySelector('#navbarTopSlim');
+	var navbarCombo = document.querySelector('#navbarCombo');
+	var navbarComboSlim = document.querySelector('#navbarComboSlim');
+	var dualNav = document.querySelector('#dualNav');
+	var documentElement = document.documentElement;
+	var navbarVertical = document.querySelector('.navbar-vertical');
+	if (navbarPosition === 'dual-nav') {
+		topNavSlim.remove();
+		navbarTop.remove();
+		navbarVertical.remove();
+		navbarTopSlim.remove();
+		navbarCombo.remove();
+		navbarComboSlim.remove();
+		navbarDefault.remove();
+		dualNav.removeAttribute('style');
+		documentElement.classList.add('dual-nav');
+	} else if (navbarTopShape === 'slim' && navbarPosition === 'vertical') {
+		navbarDefault.remove();
+		navbarTop.remove();
+		navbarTopSlim.remove();
+		navbarCombo.remove();
+		navbarComboSlim.remove();
+		topNavSlim.style.display = 'block';
+		navbarVertical.style.display = 'inline-block';
+		body.classList.add('nav-slim');
+	} else if (navbarTopShape === 'slim' && navbarPosition === 'horizontal') {
+		navbarDefault.remove();
+		navbarVertical.remove();
+		navbarTop.remove();
+		topNavSlim.remove();
+		navbarCombo.remove();
+		navbarComboSlim.remove();
+		navbarTopSlim.removeAttribute('style');
+		body.classList.add('nav-slim');
+	} else if (navbarTopShape === 'slim' && navbarPosition === 'combo') {
+		navbarDefault.remove();
+		//- navbarVertical.remove();
+		navbarTop.remove();
+		topNavSlim.remove();
+		navbarCombo.remove();
+		navbarTopSlim.remove();
+		navbarComboSlim.removeAttribute('style');
+		navbarVertical.removeAttribute('style');
+		body.classList.add('nav-slim');
+	} else if (navbarTopShape === 'default' && navbarPosition === 'horizontal') {
+		alert("entro horiz");
+		navbarDefault.remove();
+		topNavSlim.remove();
+		navbarVertical.remove();
+		navbarTopSlim.remove();
+		navbarCombo.remove();
+		navbarComboSlim.remove();
+		navbarTop.removeAttribute('style');
+		documentElement.classList.add('navbar-horizontal');
+	} else if (navbarTopShape === 'default' && navbarPosition === 'combo') {
+		topNavSlim.remove();
+		navbarTop.remove();
+		navbarTopSlim.remove();
+		navbarDefault.remove();
+		navbarComboSlim.remove();
+		navbarCombo.removeAttribute('style');
+		navbarVertical.removeAttribute('style');
+		documentElement.classList.add('navbar-combo')
+	} else {
+		topNavSlim.remove();
+		navbarTop.remove();
+		navbarTopSlim.remove();
+		navbarCombo.remove();
+		navbarComboSlim.remove();
+		navbarDefault.removeAttribute('style');
+		navbarVertical.removeAttribute('style');
+	}
+	var navbarTopStyle = window.config.config.phoenixNavbarTopStyle;
+	var navbarTop = document.querySelector('.navbar-top');
+	if (navbarTopStyle === 'darker') {
+		navbarTop.classList.add('navbar-darker');
+	}
+	var navbarVerticalStyle = window.config.config.phoenixNavbarVerticalStyle;
+	var navbarVertical = document.querySelector('.navbar-vertical');
+	if (navbarVerticalStyle === 'darker') {
+		navbarVertical.classList.add('navbar-darker');
+	}
+	*/
 </script>
 
 

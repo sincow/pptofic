@@ -34,13 +34,11 @@ class NotificacionesModel {
    }
 
 
-
    //**************************************************************************************
 	static public function filter($data) {
 		try {
 			$filters = [];
 			$params = [];
-
 			$filters = [
             'empresaSearch' => isset($_SESSION["id_empresa"]) ? $_SESSION["id_empresa"] : null,
 				'numberSearch' => isset($data['numberSearch']) ? trim($data['numberSearch']) : null,
@@ -50,14 +48,9 @@ class NotificacionesModel {
             'empleadoSearch' => isset($data['empleadoSearch']) ? trim($data['empleadoSearch']) : null,
             'entregaSearchFrom' => isset($data['entregaSearchFrom']) && !empty($data['entregaSearchFrom']) ? DateTime::createFromFormat(DATE_FORMAT, $data['entregaSearchFrom'])->format('Y-m-d') : null,
 				'entregaSearchTo' => isset($data['entregaSearchTo']) && !empty($data['entregaSearchTo']) ? DateTime::createFromFormat(DATE_FORMAT, $data['entregaSearchTo'])->format('Y-m-d') : null,
-
             'tituloSearch' => isset($data['tituloSearch']) ? trim($data['tituloSearch']) : null,
 
-            'poCompanySearch' => isset($data['poCompanySearch']) && is_numeric($data['poCompanySearch']) ? (int)$data['poCompanySearch'] : null,
-				'poVendorSearch' => isset($data['poVendorSearch']) && is_numeric($data['poVendorSearch']) ? (int)$data['poVendorSearch'] : null,
-				'poWarehouseSearch' => isset($data['poWarehouseSearch']) && is_numeric($data['poWarehouseSearch']) ? (int)$data['poWarehouseSearch'] : null,
-				'minCostSearch' => isset($data['minCostSearch']) && is_numeric($data['minCostSearch']) ? (float)$data['minCostSearch'] : null,
-				'maxCostSearch' => isset($data['maxCostSearch']) && is_numeric($data['maxCostSearch']) ? (float)$data['maxCostSearch'] : null
+            'poCompanySearch' => isset($data['poCompanySearch']) && is_numeric($data['poCompanySearch']) ? (int)$data['poCompanySearch'] : null
 			];
 
 			$query = "SELECT a.*, b.name, c.name as user_name, 
@@ -130,7 +123,6 @@ class NotificacionesModel {
         			return !empty($value);
 				})
 			]);
-
       } catch (Exception $e) {
 			$code = $e->getCode();
 			//http_response_code(is_numeric($code) ? (int)$code : 500);
@@ -146,16 +138,16 @@ class NotificacionesModel {
 				'trace' => $e->getTrace() // Solo para desarrollo
 			]);
 		}
-
       return json_decode($success);
-
    }
 
 
    //**************************************************************************************
    static public function getMisNotificaciones($data) {
       $connection = Database::getConnection();
-      $sql = "SELECT a.*, b.name, c.name as user_name 
+      $sql = "SELECT a.*, b.name, c.name as user_name, 
+         COALESCE((SELECT MAX(n.fecha) FROM GrNotiSeg n WHERE a.id_empresa = n.id_empresa AND 
+         a.id_notifi = n.id_notifi AND n.tipo = '2'), a.fecha_entrega) as UltEntrega 
          FROM GrNotifi a
          LEFT JOIN users b ON a.id_user = b.id_user
          LEFT JOIN users c ON a.user_id_user = c.id_user
@@ -188,7 +180,11 @@ class NotificacionesModel {
    //**************************************************************************************
    static public function getOne($data) {
       $connection = Database::getConnection();
-      $sql = "SELECT a.*, b.name, c.name as user_name 
+      $sql = "SELECT a.*, b.name, c.name as user_name, 
+         COALESCE((SELECT MAX(n.fecha) FROM GrNotiSeg n WHERE a.id_empresa = n.id_empresa AND 
+         a.id_notifi = n.id_notifi AND n.tipo = '2'), a.fecha_entrega) as UltEntrega, 
+         COALESCE((SELECT MAX(n.fecha) FROM GrNotiSeg n WHERE a.id_empresa = n.id_empresa AND 
+         a.id_notifi = n.id_notifi AND n.tipo = '3'), null) as fecha_cierre 
          FROM GrNotifi a
          LEFT JOIN users b ON a.id_user = b.id_user
          LEFT JOIN users c ON a.user_id_user = c.id_user
@@ -199,6 +195,47 @@ class NotificacionesModel {
       $stmt->bindParam(":id_notifi", $data["id_notifi"], PDO::PARAM_INT);
       $stmt->execute();
       $response = $stmt->fetch(PDO::FETCH_ASSOC);
+      $connection = null;
+      $stmt = null;
+      return $response;
+   }
+
+
+   //**************************************************************************************
+   static public function getSeguimientos($data) {
+      $connection = Database::getConnection();
+      if (isset($data["tipo"])) {
+         if ($data["tipo"] == '12') {
+            $sql = "SELECT a.*, b.name as user_name 
+               FROM GrNotiSeg a
+               LEFT JOIN users b ON a.id_user = b.id_user
+               WHERE a.id_empresa = :idEmpresa AND a.id_notifi = :id_notifi AND a.tipo <> '3' 
+               ORDER BY a.fecha DESC
+            ";
+         } else {
+            $sql = "SELECT a.*, b.name as user_name 
+               FROM GrNotiSeg a
+               LEFT JOIN users b ON a.id_user = b.id_user
+               WHERE a.id_empresa = :idEmpresa AND a.id_notifi = :id_notifi AND a.tipo = :tipo 
+               ORDER BY a.fecha DESC
+            ";
+         }
+      } else {
+         $sql = "SELECT a.*, b.name as user_name 
+            FROM GrNotiSeg a
+            LEFT JOIN users b ON a.id_user = b.id_user
+            WHERE a.id_empresa = :idEmpresa AND a.id_notifi = :id_notifi 
+            ORDER BY a.fecha DESC
+         ";
+      }
+      $stmt = $connection->prepare($sql);
+      $stmt->bindParam(":idEmpresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_notifi", $data["id_notifi"], PDO::PARAM_INT);
+      if (isset($data["tipo"]) && $data["tipo"] != '12') {
+         $stmt->bindParam(":tipo", $data["tipo"], PDO::PARAM_INT);
+      }
+      $stmt->execute();
+      $response = $stmt->fetchAll(PDO::FETCH_ASSOC);
       $connection = null;
       $stmt = null;
       return $response;
