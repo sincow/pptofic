@@ -104,12 +104,12 @@ if (!isset($_SESSION)) {
 			$dashborad = "";
 			// $pagina = $_GET["ruta"]; // se adicionó para que pudieran aliminar registros (slia error de permiso)
 			if (!isset($_GET["ruta"])) {
-				if ($_SESSION["profile"] == "V") {
-					$pagina = "sellersdashboard";
-					$dashborad = "modules/sellersdashboard.php";
-				} else {
+				if ($_SESSION["profile"] == "1") {
 					$pagina = "dashboard";
 					$dashborad = "app/views/dashboard/dashboard.php";
+				} else {
+					$pagina = "asisdashboard";
+					$dashborad = "app/views/dashboard/asisdashboard.php";
 				}
 			} else {
 				$pagina = $_GET["ruta"]; // se adicionó para que pudieran aliminar registros (slia error de permiso)
@@ -117,7 +117,7 @@ if (!isset($_SESSION)) {
 
 			$permi = array_search($pagina, array_column($_SESSION['permissionssin'], 'OpcLink'));
 			// if($pagina != "dashboard" && $pagina != "signout" && $pagina != "sinpermiso" && $pagina != "cerrarsesion"){
-			if ($_SESSION['permissionssin'][$permi]["UsuPermi"] != 1 && $pagina != "dashboard" && $pagina != "sellersdashboard" && $pagina != "signout" && $pagina != "forbidden" && $pagina != "cerrarsesion") {
+			if ($_SESSION['permissionssin'][$permi]["UsuPermi"] != 1 && $pagina != "dashboard" && $pagina != "asisdashboard" && $pagina != "signout" && $pagina != "forbidden" && $pagina != "cerrarsesion") {
 				echo '<main class="main" id="top">';
 				include "menu.php";
 				include "header.php";

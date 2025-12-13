@@ -107,10 +107,10 @@ class NotificacionesController {
       $data["titulo"] = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_SPECIAL_CHARS);
       $data["titulo"] = strip_tags($data["titulo"]);
       $data["titulo"] = strtoupper(htmlspecialchars($data["titulo"], ENT_QUOTES, 'UTF-8'));
-      $data["detalle"] = trim($data["detalle"]);
-      $data["detalle"] = filter_input(INPUT_POST, 'detalle', FILTER_SANITIZE_SPECIAL_CHARS);
-      $data["detalle"] = strip_tags($data["detalle"]);
-      $data["detalle"] = strtoupper(htmlspecialchars($data["detalle"], ENT_QUOTES, 'UTF-8'));
+      // $data["detalle"] = trim($data["detalle"]);
+      // $data["detalle"] = filter_input(INPUT_POST, 'detalle', FILTER_SANITIZE_SPECIAL_CHARS);
+      // $data["detalle"] = strip_tags($data["detalle"]);
+      // $data["detalle"] = strtoupper(htmlspecialchars($data["detalle"], ENT_QUOTES, 'UTF-8'));
 
       $data["numero"] = 1;
       $lastRecord = NotificacionesModel::getLastNotificacion();
@@ -171,10 +171,10 @@ class NotificacionesController {
       $data["idtarea"] = filter_var($data["idtarea"], FILTER_SANITIZE_NUMBER_INT);
       $data["idTipo"] = filter_var($data["idTipo"], FILTER_SANITIZE_NUMBER_INT);
       $data["cumplimiento"] = filter_var($data["cumplimiento"], FILTER_SANITIZE_NUMBER_INT);
-      $data["comentario"] = trim($data["comentario"]);
-      $data["comentario"] = filter_input(INPUT_POST, 'comentario', FILTER_SANITIZE_SPECIAL_CHARS);
-      $data["comentario"] = strip_tags($data["comentario"]);
-      $data["comentario"] = strtoupper(htmlspecialchars($data["comentario"], ENT_QUOTES, 'UTF-8'));
+      // $data["comentario"] = trim($data["comentario"]);
+      // $data["comentario"] = filter_input(INPUT_POST, 'comentario', FILTER_SANITIZE_SPECIAL_CHARS);
+      // $data["comentario"] = strip_tags($data["comentario"]);
+      // $data["comentario"] = strtoupper(htmlspecialchars($data["comentario"], ENT_QUOTES, 'UTF-8'));
       try {
          $connection = Database::getConnection();
          $connection->beginTransaction();

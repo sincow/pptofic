@@ -209,6 +209,96 @@ class UsersController {
 
 
    //*****************************************************************************************
+   static public function updtData() {
+      $required = ['userUpdtId', 'userUpdateEmail'];
+      $verification = GeneralController::verifyRequiredFields($required, $_POST);
+      if ($verification["success"] == false) {
+         return $verification;
+      }
+      $data = $_POST;
+
+      $data = $_POST;
+      if (empty($data["userUpdtId"]) || !filter_var($data["userUpdtId"], FILTER_VALIDATE_INT)) {
+         $response = array("success" => false, "message" => "Registro inválido (Id)");
+         return $response;
+      }
+      $data["userUpdateEmail"] = trim($data["userUpdateEmail"]);
+      $data["userUpdateEmail"] = strip_tags($data["userUpdateEmail"]);
+      $data["userUpdateEmail"] = filter_var(trim($_POST['userUpdateEmail']), FILTER_SANITIZE_EMAIL);
+      if (!filter_var($data["userUpdateEmail"], FILTER_VALIDATE_EMAIL)) {
+         $response = array("success" => false, "message" => htmlspecialchars("Campo email es inválido", ENT_QUOTES, 'UTF-8'));
+         return $response;
+      }
+
+      $photo = $_POST["photoPrev"];
+      if(isset($_FILES["userUpdatePhoto"]["tmp_name"]) && $_FILES['userUpdatePhoto']['error'] === UPLOAD_ERR_OK){
+         list($ancho, $alto) = getimagesize($_FILES["userUpdatePhoto"]["tmp_name"]);
+         $nuevoAncho = 500;
+         $nuevoAlto = 500;
+         $directorio = "../assets/img/users/".$_SESSION["id_empresa"];
+         if (!file_exists($directorio)) {
+            mkdir($directorio, 0755, true);
+         }
+         $aleatorio = mt_rand(100,999);
+         if($_FILES["userUpdatePhoto"]["type"] == "image/jpeg"){
+            $photo = $directorio."/".$_POST["id"].$aleatorio.".jpg";
+            $origen = imagecreatefromjpeg($_FILES["userUpdatePhoto"]["tmp_name"]);
+            $destino = imagecreatetruecolor($nuevoAncho, $nuevoAlto);
+            imagecopyresized($destino, $origen, 0, 0, 0, 0, $nuevoAncho, $nuevoAlto, $ancho, $alto);
+            imagejpeg($destino, $photo);
+         }
+         if($_FILES["userUpdatePhoto"]["type"] == "image/png"){
+            $photo = $directorio."/".$_POST["id"].$aleatorio.".png";
+            $origen = imagecreatefrompng($_FILES["userUpdatePhoto"]["tmp_name"]);
+            $destino = imagecreatetruecolor($nuevoAncho, $nuevoAlto);
+            imagecopyresized($destino, $origen, 0, 0, 0, 0, $nuevoAncho, $nuevoAlto, $ancho, $alto);
+            imagepng($destino, $photo);
+         }
+         if($_FILES["userUpdatePhoto"]["type"] == "image/webp"){
+            $photo = $directorio."/".$_POST["id"].$aleatorio.".webp";
+            $origen = imagecreatefromwebp($_FILES["userUpdatePhoto"]["tmp_name"]);
+            $destino = imagecreatetruecolor($nuevoAncho, $nuevoAlto);
+            imagecopyresized($destino, $origen, 0, 0, 0, 0, $nuevoAncho, $nuevoAlto, $ancho, $alto);
+            imagewebp($destino, $photo);
+         }
+         $photo = str_replace("../", "", $photo);
+      }
+      $data["photo"] = $photo;
+
+      try {
+         $connection = Database::getConnection();
+         $connection->beginTransaction();
+         $tabla = "users";
+         $dataUpdt = array(
+            'photo' => $data["photo"],
+            'email' => $data["userUpdateEmail"]
+         );
+         $where = array(
+            "id_empresa" => $_SESSION["id_empresa"],
+            "id_user" => $data["userUpdtId"]
+         );
+         $response = GeneralModel::update($tabla, $dataUpdt, $where, $connection);
+         if ($response["success"] === false) {
+            throw new PDOException($response["message"], $response["code"]);
+         }
+         $connection->commit();
+         if ($response["success"] && $_POST["photoPrev"] != $photo) {
+            $photoPrev = "../".$_POST["photoPrev"];
+            if (file_exists($photoPrev)) {
+               unlink($photoPrev);
+            }
+         }
+
+         $response = array("success" => true, "message" => "Registro guardado exitosamente");
+      } catch (PDOException $ex) {
+         $connection->rollBack();
+         $response = array("success" => false, "message" => $ex->getMessage(), "code" => $ex->getCode());
+      }
+		return array("success" => $response["success"], "message" =>  $response["message"]);
+   }
+
+
+   //*****************************************************************************************
    static public function updtPass() {
       $required = ['id', 'passAct', 'pass', 'passRep'];
       $verification = GeneralController::verifyRequiredFields($required, $_POST);

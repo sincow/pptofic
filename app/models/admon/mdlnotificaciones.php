@@ -63,6 +63,10 @@ class NotificacionesModel {
             LEFT JOIN users b     ON a.id_user = b.id_user
             LEFT JOIN users c     ON a.user_id_user = c.id_user
 				WHERE 1=1";
+         if ($_SESSION['profile'] != '1' ) {
+				$query .= " AND a.id_user = ?";
+				$params[] = $_SESSION['user_id'];
+         }
 
          if (!empty($filters['empresaSearch'])) {
 				$query .= " AND a.id_empresa = ?";

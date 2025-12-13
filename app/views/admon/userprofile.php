@@ -53,8 +53,12 @@ if ($user != []) {
 					<div class="card">
 						<div class="card-body p-3 pb-0">
 							<form class="needs-validation mb-1" id="frmUserUptEmail" method="post" enctype="multipart/form-data" novalidate>
-								<input class="form-control" type="hidden" id="userUpdtId" name="userUpdtId" value="<?php if ($user == []) {echo '';} else {echo $user[0]["id_user"];} ?>" />
-								<input class="form-control" type="hidden" id="userUpdtCode" name="userUpdtCode" value="<?php if ($user == []) {echo 'code';} else {echo $user[0]["code_user"];} ?>" />
+								<input type="hidden" id="userUpdtId" name="userUpdtId" value="">
+								<input type="hidden" id="userUpdtCode" name="userUpdtCode" value="">
+								<input type="hidden" id="modulo" name="modulo" value="admon">
+								<input type="hidden" id="option" name="option" value="users">
+								<input type="hidden" id="action" name="action" value="updtData">
+								<input type="hidden" id="photoPrev" name="photoPrev">
 								<div class="border-bottom border-dashed border-300 pb-2">
 									<div class="row align-items-center g-3 g-sm-5 text-center text-sm-start">
 										<div class="col-12 col-sm-auto ps-5">
@@ -72,7 +76,7 @@ if ($user != []) {
 										<div class="col-12 col-sm-auto flex-1">
 											<h3 id="userName"><?php //if ($user == []) {echo '';} else {echo $user[0]["name_user"];} ?></h3>
 											<p class="text-800 mb-1" id="vinculacion"></p>
-											<p class="text-800" id="lastLogin">Fecha Última entrada <?php if ($user == []) {echo '';} else {echo substr($user[0]["last_login_user"], 0, 10);} ?></p>
+											<p class="text-800" id="lastLogin">Fecha Última entrada </p>
 										</div>
 									</div>
 								</div>
@@ -82,22 +86,22 @@ if ($user != []) {
 									</div>
 									<div class="col-12 col-sm-auto mt-1 pb-2">
 										<label for="userUpdateCode">Código del Usuario</label>
-										<input class="form-control-plaintext outline-none py-0 text-700 fw-bold" id="userUpdateCode" type="text" readonly value="<?php if ($user == []) {echo '';} else {echo $user[0]["code_user"];} ?>" />
+										<input class="form-control-plaintext outline-none py-0 text-700 fw-bold" id="userUpdateCode" type="text" readonly value="" />
 									</div>
 									<div class="col-12 col-sm-auto mt-1 pb-2">
 										<label for="userUpdateProfile">Perfil del Usuario</label>
-										<input class="form-control-plaintext outline-none py-0 text-700 fw-bold" id="userUpdateProfile" type="text" readonly value="<?php echo $profile; ?>" />
+										<input class="form-control-plaintext outline-none py-0 text-700 fw-bold" id="userUpdateProfile" type="text" readonly value="" />
 									</div>
 									<div class="col-12 mt-1 pb-2">
 										<label for="userUpdateName">Nombre del Usuario</label>
-										<input class="form-control-plaintext lh-sm py-0 text-700 fw-bold" id="userUpdateName" type="text" readonly value="<?php if ($user == []) {echo '';} else {echo $user[0]["name_user"];} ?>" />
+										<input class="form-control-plaintext lh-sm py-0 text-700 fw-bold" id="userUpdateName" type="text" readonly value="" />
 									</div>
 									<div class="col-12 col-sm-7 mt-1 pb-2">
 										<label for="userUpdateEmail">Correo electrónico</label>
-										<input class="form-control" type="email" id="userUpdateEmail" name="userUpdateEmail" value="<?php if ($user == []) {echo '';} else {echo $user[0]["email_user"];} ?>" minlength="10" maxlength="100" required />
+										<input class="form-control" type="email" id="userUpdateEmail" name="userUpdateEmail" value="" minlength="10" maxlength="100" required />
 									</div>
 									<div class="col-12 mt-2 mb-3 pb-2">
-										<button class="btn btn-phoenix-primary" type="button" id="btnUserUpdtData"><span class="fas fa-edit me-2"></span>Modificar datos</button>
+										<button class="btn btn-phoenix-primary" type="submit" id="btnUserUpdtData"><span class="fas fa-edit me-2"></span>Modificar datos</button>
 									</div>
 								</div>
 							</form>
@@ -172,6 +176,7 @@ if ($user != []) {
 			document.getElementById('userUpdtId').value = data["id_user"];
 			document.getElementById('userUpdateId').value = data["id_user"];
 			document.querySelector('.userUpdateFilePhoto').src = data["photo"];
+			document.getElementById('photoPrev').value = data["photo"];
 			document.getElementById('userName').textContent = data["name"];
 			document.getElementById('vinculacion').textContent = "Fecha vinculación "+ data["created_at"];
 			document.getElementById('lastLogin').textContent = "Fecha Última entrada "+ data["last_login"];
@@ -179,7 +184,6 @@ if ($user != []) {
 			document.getElementById('userUpdateProfile').value = data["role"];
 			document.getElementById('userUpdateName').value = data["name"];
 			document.getElementById('userUpdateEmail').value = data["email"];
-			console.log(data);
 		});
 
 
@@ -219,7 +223,41 @@ if ($user != []) {
 
 
 		//**************************************************************************************
-		document.getElementById('btnUserUpdtData').addEventListener('click', function(e) {
+		document.getElementById('frmUserUptEmail').addEventListener('submit', function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			const formData = new FormData(this);
+			const response = fetch('helpers/ajaxRouter.php', {
+				method: 'POST',
+				body: formData
+			}).then(resp => resp.json())
+			.then(data => {
+				if (data["success"]) {
+					const notify = swal.fire({
+						title: 'Éxito',
+						text: data["message"],
+						icon: 'success',
+						confirmButtonText: 'Aceptar'
+					}).then(() => {
+						location.reload();
+					});
+				} else {
+					const notify = swal.fire({
+						title: 'Error',
+						text: data["message"],
+						icon: 'error',
+						confirmButtonText: 'Aceptar'
+					});
+				}
+				// this.reset();
+				// this.querySelector('.form-control').focus();
+			})
+		})
+
+
+		//**************************************************************************************
+		/*
+		document.getElementById('btnUserUpdtData2').addEventListener('click', function(e) {
 			e.preventDefault();
 			const formData = new FormData();
 			formData.append("modulo", "admon");
@@ -251,6 +289,6 @@ if ($user != []) {
 				}
 			});
 		})
-
+		*/
 	});
 </script>

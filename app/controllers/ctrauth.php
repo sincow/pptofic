@@ -11,7 +11,8 @@ class AuthController {
       require_once __DIR__ . '/../views/auth/login.php';
    }
 
-   // Procesar login
+
+	// Procesar login
    //*****************************************************************************************
    public function login(): void {
       if (!isset($_SESSION)) {
@@ -51,7 +52,8 @@ class AuthController {
       }
    }
 
-   //*****************************************************************************************
+
+	//*****************************************************************************************
    static public function loginUser(){
 		/*
 		if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -102,7 +104,7 @@ class AuthController {
 				$_SESSION['user_id'] = $user['id_user'];
 				$_SESSION['user_name'] = $user['name'];
 				$_SESSION['user_email'] = $user['email'];
-				$_SESSION["profile"] = 'A';
+				$_SESSION["profile"] = $user['id_role'];
 				$_SESSION["photo"] = $user['photo'];
 				$_SESSION["login"] = "ok";
 				$_SESSION["id_empresa"] = $user["id_empresa"];

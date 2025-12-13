@@ -96,7 +96,7 @@
 						<div class="card-header p-2">
 							<div class="d-flex justify-content-between">
 								<h5 class="text-black mb-0">Notificaciones</h5>
-								<button class="btn btn-link p-0 fs--1 fw-normal" type="button">Marcar todo como leído</button>
+								<!-- <button class="btn btn-link p-0 fs--1 fw-normal" type="button">Marcar todo como leído</button> -->
 							</div>
 						</div>
 						<div class="card-body p-0">
@@ -815,6 +815,21 @@
 					`;
 				});
 				document.getElementById('notificationList').innerHTML = innerHTML;
+			} else {
+				// innerHTML += `
+				// 	<div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read border-bottom">
+				// `;
+				document.getElementById('bellNotify').style.color = '#adb5bd';
+				document.getElementById('badgeNotify').classList.remove('bg-warning');
+				document.getElementById('notificationList').innerHTML = `
+					<div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read border-bottom">
+						<div class="d-flex align-items-center justify-content-between position-relative">
+							<div class="flex-1 me-sm-0">
+								<h4 class="fs--1 text-black mb-0">No tienes nuevas notificaciones</h4>
+							</div>
+						</div>
+					</div>
+				`;
 			}
 		});
 	}

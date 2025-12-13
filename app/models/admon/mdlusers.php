@@ -70,7 +70,7 @@ class UsersModel {
          b.description as role 
          FROM users a 
          LEFT JOIN roles b ON a.id_role = b.id_role 
-         WHERE a.id_empresa = :id_empresa AND a.id_user = :id_user "
+         WHERE a.id_empresa = :id_empresa AND a.id_user = :id_user AND email <> 'admin@hotmail.com' "
       );
       //  AND email <> 'admin@hotmail.com' 
       $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);

@@ -314,6 +314,7 @@
          console.error('Error loading calendar config:', error);
       });
 
+      /****************************************************************************************/
 		const formData = new FormData();
 		formData.append("modulo", "admon");
 		formData.append("option", "notificaciones");

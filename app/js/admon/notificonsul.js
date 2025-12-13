@@ -383,6 +383,7 @@ function displayActiveFilters(filters) {
    });
 }
 
+
 //*********************************************************************************************
 async function getDocumentDetails(idDocument) {
    const formData = new FormData();
@@ -494,7 +495,6 @@ async function getDocumentDetails(idDocument) {
             colorPrioridad = "red";
             prioridad = "Alta";
          }
-         
          innerHtml = `
             <div class="fw-bold fs-0">Numero Tarea: ${data['tarea'].id_notifi}</div>
             <div class="fw-600 fs-0"><b>Fecha Asignación:</b> ${data['tarea'].fecha}</div>
@@ -505,10 +505,9 @@ async function getDocumentDetails(idDocument) {
             <div class="fw-600 fs-0"><b>Título:</b></div>
             <div class="fw-600 fs--1">${data['tarea'].titulo}</div>
             <div class="fw-600 fs-0"><b>Detalle:</b></div>
-            <div class="fw-600 fs--1">${data['tarea'].detalle}</div>
+            <div class="fw-600 fs--1">${data['tarea'].detalle.replace(/\n/g, '<br>')}</div>
          `;
          document.getElementById('datTarea').innerHTML = innerHtml;
-
          innerHtml = `<div class="fw-bold fs-0">PENDIENTE</div>`;         
          if (data["cierre"].length > 0 ) {
             data["cierre"].forEach(cierre => {
@@ -516,12 +515,11 @@ async function getDocumentDetails(idDocument) {
                   <div class="fw-600 fs-0"><b>Fecha Cierre:</b> ${cierre.fecha}</div>
                   <div class="fw-600 fs-0"><b>% Cumplimiento:</b> <span style="color:${colorCumpli};"> ${data['tarea'].cumplimiento}</span></div>
                   <div class="fw-600 fs-0"><b>Detalle:</b></div>
-                  <div class="fw-600 fs--1">${cierre.detalle}</div>
+                  <div class="fw-600 fs--1">${cierre.detalle.replace(/\n/g, '<br>')}</div>
                `;
             });
          }
          document.getElementById('datCierre').innerHTML = innerHtml;
-
          innerHtml = `<div class="fw-bold fs-0">PENDIENTE</div>`;         
          let tipo = "";
          let fechaSeguim = "";
@@ -542,14 +540,12 @@ async function getDocumentDetails(idDocument) {
                   <div class="fw-600 fs-0"><b>${fechaSeguim}</b> ${seguim.fecha}</div>
                   <div class="fw-600 fs-0"><b>Tipo:</b> <span class="badge badge-phoenix fs--1 badge-phoenix-${statusBadgeClass}">${tipo}<span></div>
                   <div class="fw-600 fs-0"><b>Detalle:</b></div>
-                  <div class="fw-600 border-bottom fs--1">${seguim.detalle}</div>
+                  <div class="fw-600 border-bottom fs--1">${seguim.detalle.replace(/\n/g, '<br>')}</div>
                   <br>
                `;
             });
          }
          document.getElementById('datSeguim').innerHTML = innerHtml;
-
-
       } else {
          swal.fire({
             title: 'Error',
@@ -562,5 +558,4 @@ async function getDocumentDetails(idDocument) {
    .catch(error => {
       console.error('Error:', error);
    });
-
 }

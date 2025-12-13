@@ -185,16 +185,31 @@
 						</select>
 					</div>
 				</div>
-
-            <div class="col-12">
-					<div class="form-control mb-3 p-0 border-0">
-						<label for="empleadoSearch">Empleado</label>
-						<select class="form-select empleadoSearch" name="empleadoSearch" id="empleadoSearch">
-							<option selected="selected" value="">Select</option>
-						</select>
-					</div>
-				</div>
-
+            <?php
+               if ($_SESSION["profile"] != 1) {
+                  echo '
+                     <div class="col-12 d-none">
+                        <div class="form-control mb-3 p-0 border-0">
+                           <label for="empleadoSearch">Empleado</label>
+                           <select class="form-select empleadoSearch" name="empleadoSearch" id="empleadoSearch">
+                              <option selected="selected" value="">Select</option>
+                           </select>
+                        </div>
+                     </div>
+                  ';
+               } else {
+                  echo '
+                     <div class="col-12">
+                        <div class="form-control mb-3 p-0 border-0">
+                           <label for="empleadoSearch">Empleado</label>
+                           <select class="form-select empleadoSearch" name="empleadoSearch" id="empleadoSearch">
+                              <option selected="selected" value="">Select</option>
+                           </select>
+                        </div>
+                     </div>
+                  ';
+               }
+            ?>
             <div class="col-12 text-center">
 					<p class="mb-0 fs--1">Fecha Creación</p>
 				</div>
@@ -245,4 +260,4 @@
 		</form>
 	</div>
 </div>
-<script src="app/js/admon/notificonsul.js?v=1.0.0"></script>
+<script src="app/js/admon/notificonsul.js?v=1.0.1"></script>

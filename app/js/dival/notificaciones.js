@@ -166,7 +166,7 @@ document.getElementById('idtarea').addEventListener('change', async function() {
       formData.append('modulo', 'admon');
       formData.append('option', 'notificaciones');
       formData.append('action', 'getNotificacion');
-      formData.append('id_notifi', this.value);
+      formData.append('idNotifi', this.value);
       const response = await fetch('helpers/ajaxRouter.php', {
          method: 'POST',
          body: formData
