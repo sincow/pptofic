@@ -251,7 +251,7 @@ class NotificacionesModel {
       $connection = Database::getConnection();
       $tipo = 1;
       $sql = "SELECT * FROM GrNotifi 
-         WHERE numero = (SELECT MAX(numero) FROM DvConsig 
+         WHERE numero = (SELECT MAX(numero) FROM GrNotifi 
          WHERE id_empresa = :idEmpresa AND tipo = :tipo)
       ";
       $stmt = $connection->prepare($sql);
