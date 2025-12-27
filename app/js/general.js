@@ -431,7 +431,7 @@ function showClientSuggestions(clients, inputElement, left, top) {
    suggestionsDiv.id = 'clientSuggestions';
    suggestionsDiv.className = 'list-group position-absolute';
    suggestionsDiv.style.zIndex = '1000';
-   suggestionsDiv.style.width = inputElement.offsetWidth + 'px';
+   suggestionsDiv.style.width = inputElement.offsetWidth + 'px';                                                                                                                                                                                                                                                                                                                                    
    suggestionsDiv.style.maxHeight = '200px';
    suggestionsDiv.style.overflowY = 'auto';
    clients.forEach(client => {
@@ -463,14 +463,15 @@ function showClientSuggestions(clients, inputElement, left, top) {
 		left = rect.left;
 	}
 	if (top == null) {
-		top = rect.bottom;
+		top = rect.top;
 	}
    suggestionsDiv.style.top = top + 'px';
    suggestionsDiv.style.left = left + 'px';
    //document.getElementById('formCtaclienAdd').appendChild(suggestionsDiv);
-   document.getElementsByClassName('form-search')[0].appendChild(suggestionsDiv);
+   document.getElementsByClassName('div-search')[0].appendChild(suggestionsDiv);
    // document.body.appendChild(suggestionsDiv);
 }
+
 
 //***********************************************************************************************
 /*

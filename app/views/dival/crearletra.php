@@ -76,7 +76,7 @@
                   <i class="fa-solid fa-user me-2"></i>Información del Cliente
                </div>
                <div class="card-body">
-                  <div class="row">
+                  <div class="row div-search">
                      <div class="col-12 mb-3">
                         <label class="text-label" for="idCliente">Buscar Cliente</label>
                         <div class="d-flex align-items-end">
@@ -114,25 +114,11 @@
                         </div>
                      </div>
 
-                     <!-- <div class="col-12 mb-1">
-                        <div class="form-group">
-                           <label for="numero_cuenta" class="text-label fs-0 ps-1">Número Cuenta *</label>
-                           <select class="form-control" style="width: 100%;" id="numero_cuenta" name="numero_cuenta" required>
-                              <option value="">Seleccionar</option>
-                           </select>
-                        </div>
-                     </div> -->
-                     <!-- <div class="col-12 mb-3">
-                        <p class="text-label fs--1" id="datCuenta">
-                           <small class="text-muted"></small>
-                        </p>
-                     </div> -->
                      <div class="col-12 px-0">
                         <div class="card-header fw-bold py-1 fs-0 text-start text-white bg-primary" style="opacity: 70%;">
                            <i class="fa-solid fa-file-invoice me-2"></i>Cartera Pendiente
                         </div>
                         <div class="table-responsive scrollbar" style="min-height:100px; max-height: 490px; overflow-y: auto;">
-                           <!-- <table class="table table-hover"> -->
                            <table class="table table-sm table-hover mb-0 border-top border-200" id="saldoCarteraTable" style="position: relative; border-collapse: collapse; width: 100%; font-size: 11px;">
                               <thead>
                                  <tr>
@@ -241,28 +227,6 @@
                               <input type="number" class="form-control p-1" style="text-align: right;" id="porcentaje_comision" name="porcentaje_comision" maxlength="9" step="0.00000001" max="99.99999999" value="0.00000000">
                            </div>
                         </div>
-                        <!-- <div class="col-12 mb-3">
-                           <div class="form-group" style="text-align: right;" >
-                              <label for="impuesto_banco" class="text-label fs-0 ps-1">% Impto Bco (X1000)</label>
-                              <input type="number" class="form-control p-1" style="text-align: right;" id="impuesto_banco" name="impuesto_banco" maxlength="4" step="0.01" value="0.00">
-                           </div>
-                        </div> -->
-
-                        <!-- <div class="col-12 mb-3">
-                           <div class="form-group" style="text-align: center;">
-                              <label for="newnumero_cuenta" class="text-label fs-0 ps-1">Mensajería</label>
-                              <div class="form-check">
-                                 <label class="form-check-label me-5" for="mensajeria1">
-                                    <input class="form-check-input" id="mensajeria1" type="radio" name="mensajeria" value=1>
-                                    Si
-                                 </label>
-                                 <label class="form-check-label" for="mensajeria2">
-                                    <input class="form-check-input" id="mensajeria2" type="radio" name="mensajeria" value=2 checked="">
-                                    No
-                                 </label>
-                              </div>
-                           </div>
-                        </div> -->
                      </div>
 
                      <div class="col-lg-4">
@@ -272,12 +236,6 @@
                               <input type="text" class="form-control p-1" style="text-align: right;" id="valComision" name="valComision" maxlength="11" value="0" readonly>
                            </div>
                         </div>
-                        <!-- <div class="col-12 mb-3">
-                           <div class="form-group" style="text-align: right;" >
-                              <label for="valImptoBco" class="text-label fs-0 ps-1">Valor Imp Bco</label>
-                              <input type="text" class="form-control p-1" style="text-align: right;" id="valImptoBco" name="valImptoBco" maxlength="11" value="0" readonly>
-                           </div>
-                        </div> -->
                         <div class="col-12 mb-3">
                            <div class="form-group" style="text-align: right;" >
                               <label for="valIVA" class="text-label fs-0 ps-1">Valor IVA</label>
@@ -292,12 +250,6 @@
                         </div>
                      </div>
                   </div>
-                  <!-- <div class="row g-lg-3 mb-3">
-                     <label for="imagen" class="text-label fs-0 ps-1">Imagen del Documento</label>
-                     <div class="col-12 mt-1 mb-0">
-                        <input type="file" class="form-control" id="imagen" name="imagen" accept=".pdf" required>
-                     </div>
-                  </div> -->
 
                   <div class="row g-lg-3 mb-0">
                      <div class="col-12">

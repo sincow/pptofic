@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function() {
    //********************************************************************************
    $('#usersTable tbody').on('click', '.edit-btn', function() {
       var data = $(this).parents().parents('tr');
-      $('#editId').val(data.find('.photo').attr('id'));
+      $('#editId').val(data.find('.id').attr('id'));
       $('#editIdentificacion').val(data.find('.id').text());
       $('#editname').val(data.find('.name').text());
       $('#editrole').val(data.find('.role').text());

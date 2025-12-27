@@ -106,7 +106,7 @@ class PDF extends FPDF{
 class imprimirDocumento {
 	public $informe, $id_movimiento, $token;
 	public function traerImpresionDocumento() {
-      $pdf = new PDF('P', 'mm', 'medcar');
+      $pdf = new PDF('P', 'mm', 'letter');
       $title = 'Vale de Caja';
 		$pdf->SetTitle($title,true);
 		// $icon = "../views/img/favicons/favicon-32x32.png";

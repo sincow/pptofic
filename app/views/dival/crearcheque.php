@@ -74,13 +74,12 @@
                </div>
                <div class="card-body">
                   <div class="row">
-                     <div class="col-12 mb-3">
+                     <div class="col-12 mb-3 div-search">
                         <label class="text-label">Buscar Cliente</label>
                         <div class="d-flex align-items-end">
                            <input type="text" class="form-control flex-grow-1 client-search" id="idCliente" name="idCliente" autocomplete="off" autofocus required
                               placeholder="Escribe nombre, email o doc Identidad...">
-                           <button type="button" class="btn btn-phoenix-secondary btn-sm clear-search ms-2"
-                              id="clearSearch" style="height: 38px;">
+                           <button type="button" class="btn btn-phoenix-secondary btn-sm clear-search ms-2" id="clearSearch" style="height: 38px;">
                               <i class="fas fa-times"></i>
                            </button>
                         </div>
@@ -106,7 +105,6 @@
                         </div>
 
                         <div class="table-responsive scrollbar" style="min-height:100px; max-height: 490px; overflow-y: auto;">
-                           <!-- <table class="table table-hover"> -->
                            <table class="table table-sm table-hover mb-0 border-top border-200" id="saldoCarteraTable" style="position: relative; border-collapse: collapse; width: 100%; font-size: 11px;">
                               <thead>
                                  <tr>
@@ -134,10 +132,7 @@
          <div class="col-lg-5 mt-0">
             <div class="card mb-3">
                <div class="card-header fw-bold py-1 fs-0 text-start text-white bg-primary" style="opacity: 70%;">
-               <!-- <div class="card-header bg-100 py-3">
-                  <h5 class="mb-0 text-800"> -->
                   <i class="fa-solid fa-file-signature me-2"></i>Datos del Cheque
-                  <!-- </h5> -->
                </div>
                <div class="card-body">
                   <div class="row g-lg-3">
@@ -299,4 +294,4 @@
 		include APP_PATH.'/views/layouts/footer.php';
 	?>
 </div>
-<script src="app/js/dival/crearcheque.js?v=1.0.0"></script>
+<script src="app/js/dival/crearcheque.js?v=1.0.1"></script>

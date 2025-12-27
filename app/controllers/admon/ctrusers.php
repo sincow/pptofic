@@ -81,7 +81,7 @@ class UsersController {
 
       $encriptar = crypt($_POST["password"], '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
 
-      $photo = "assets/img/team/avatar.png";
+      $photo = "assets/img/team/avatar.webp";
       if(isset($_FILES["photo"]["tmp_name"]) && $_FILES['photo']['error'] === UPLOAD_ERR_OK){
          list($ancho, $alto) = getimagesize($_FILES["photo"]["tmp_name"]);
          $nuevoAncho = 500;

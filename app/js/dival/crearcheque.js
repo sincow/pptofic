@@ -37,15 +37,23 @@ document.addEventListener("DOMContentLoaded", function() {
    //*********************************************************************************************
    document.querySelectorAll('.client-search').forEach(input => {
       // initAutocomplete(input, 245, 92);
-      initAutocomplete(input);
+      console.log('input: ', input);
+      let top = 120;
+      if (input.id == "idCliente2") {
+         top = 220;         
+      } else if (input.id == "idCliente3") {
+         top = 300;
+      } else if (input.id == "idCliente4") {
+         top = 377;
+      }
+      initAutocomplete(input, 25, top);
    });
 
 
    //*********************************************************************************************
-   document.getElementById('idCliente').addEventListener('change', function() {
-      alert(this.value);
-      loadCtaClient(this.value);
-   });
+   // document.getElementById('idCliente*').addEventListener('input', function() {
+   //    initAutocomplete(document.getElementById('idCliente'), 25, 120);
+   // });
 
 
    //*********************************************************************************************
@@ -191,6 +199,60 @@ document.addEventListener("DOMContentLoaded", function() {
    });
 
 });
+
+
+//***********************************************************************************************
+function showClientSuggestions2(clients, inputElement, left, top) {
+   hideSuggestions();
+   if (clients.length === 0) return;
+   const suggestionsDiv = document.createElement('div');
+   suggestionsDiv.id = 'clientSuggestions';
+   suggestionsDiv.className = 'list-group position-absolute';
+   suggestionsDiv.style.zIndex = '1000';
+   suggestionsDiv.style.width = inputElement.offsetWidth + 'px';
+   suggestionsDiv.style.maxHeight = '200px';
+   suggestionsDiv.style.overflowY = 'auto';
+   clients.forEach(client => {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'list-group-item list-group-item-action';
+      item.innerHTML = `
+			<div class="fw-bold">${client.TerDocId} ${client.TerNombr}</div>
+			<small class="text-label">${client.TerEmail} | Teléfono: ${client.TerTele1}</small>
+			${client.nivel_riezgo ? `<br><small class="text-label">N.R.: ${client.nivel_riezgo}</small>` : ''}
+      `;
+      item.dataset.clientId = client.id_dvcliente;
+      item.dataset.clientData = JSON.stringify(client);
+      item.addEventListener('click', function () {
+         selectClient(this, inputElement);
+      });
+      item.addEventListener('mouseenter', function () {
+         suggestionsDiv.querySelectorAll('.list-group-item').forEach(i => i.classList.remove('active'));
+         this.classList.add('active');
+      });
+      suggestionsDiv.appendChild(item);
+   });
+
+   console.log('suggestionsDiv: ', suggestionsDiv);
+   // Posicionar debajo del input
+   const rect2 = inputElement.getBoundingClientRect();
+   console.log('div-search: ', document.getElementsByClassName('form-search')[0]);
+   const rect = document.getElementsByClassName('div-search')[0].getBoundingClientRect();
+   console.log('rect: ', rect);
+	// suggestionsDiv.style.top = (rect.bottom + window.scrollY) + 'px';
+   // suggestionsDiv.style.left = (rect.left + window.scrollX) + 'px';
+	if (left == null) {
+		left = rect.left;
+	}
+	if (top == null) {
+		top = rect.top;
+	}
+   suggestionsDiv.style.top = top + 'px';
+   suggestionsDiv.style.left = left + 'px';
+   //document.getElementById('formCtaclienAdd').appendChild(suggestionsDiv);
+   document.getElementsByClassName('div-search')[0].appendChild(suggestionsDiv);
+   // document.body.appendChild(suggestionsDiv);
+}
 
 
 //********************************************************************************************
