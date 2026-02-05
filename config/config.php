@@ -27,10 +27,10 @@ define('BD_USERDEFUSU', '');
 define('BD_PASSDEFUSU', '');
 
 
-define('APP_NAME', 'DIVAL');
+define('APP_NAME', 'Presupuesto');
 define('APP_DESCRIPTION', 'Gestión completa ERP. Accede a utilidades financieras, contabilidad, inventario, compras, ventas, facturación, gestión de clientes y proveedores y mucho más dentro de un mismo sistema de gestión integrado.');
 define('APP_ICON', 'assets/img/favicons/dival_tra.png');
-define('APP_URL', 'http://localhost/dival/');
+define('APP_URL', 'http://localhost/pptofic/');
 define('UPLOADS_PATH', '../storage/uploads/');
 define('APP_PATH', 'app');
 //define('CONFIG_PATH', '../config');
