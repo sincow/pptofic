@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function() {
          "value": '1'
       })
       let selectCuenta = document.getElementById('newCueCodig');
+      
       getSelects('contabilidad', 'cuentas', selectCuenta, 'CueCodig', textOpt = ['CueCodig', 'CueNombr'], listWhere);
       $('#modalCuentaAdd').modal('show');
       document.getElementById('formCuentaAdd').classList.remove('was-validated');

@@ -154,7 +154,7 @@ async function cargarTipoContrato() {
       }
       updateListJS();
       setTimeout(() => {
-         if (window.bancosListInstance) {
+         if (window.tipocontratoListInstance) {
             window.tipocontratoListInstance.update();
             window.tipocontratoListInstance.reIndex();
             window.tipocontratoListInstance.sort('name', { order: 'asc' });

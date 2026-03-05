@@ -16,20 +16,20 @@
                         <div class="col-md-6">
                            <div class="form-group">
                               <label for="newCodigo" class="text-label fs-0 ps-1">Codigo *</label>
-                              <input type="text" class="form-control" id="newCodigo" name="codigo" required>
+                              <input type="text" class="form-control" id="newCodigo" name="codigo" required maxlength="2">
                            </div>
                         </div>
                         <div class="col-md-6">
                            <div class="form-group">
                               <label for="newIniciales" class="text-label fs-0 ps-1">Iniciales</label>
-                              <input type="text" class="form-control" id="newIniciales" name="iniciales">
+                              <input type="text" class="form-control" id="newIniciales" name="iniciales" maxlength="10">
                            </div>
                         </div>
 
                         <div class="col-md-12">
                            <div class="form-group">
                               <label for="newNombre" class="text-label fs-0 ps-1">Nombre *</label>
-                              <input type="text" class="form-control" id="newNombre" name="nombre" required>
+                              <input type="text" class="form-control" id="newNombre" name="nombre" required maxlength="100">
                            </div>
                         </div>
                      </div>

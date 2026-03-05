@@ -24,7 +24,7 @@
                         <div class="col-md-12">
                            <div class="form-group">
                               <label for="editNombre" class="text-label fs-0 ps-1">Nombre *</label>
-                              <input type="text" class="form-control" id="editNombre" name="nombre">
+                              <input type="text" class="form-control" id="editNombre" name="nombre" maxlength="200">
                            </div>
                         </div>
 

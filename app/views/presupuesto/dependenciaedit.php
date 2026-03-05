@@ -1,13 +1,13 @@
-<div id="modalTipoFinanciacionEdit" class="modal fade" tabindex="-1" role="dialog">
+<div id="modalDependenciaEdit" class="modal fade" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 class="modal-title fw-bolder" id="modalTipoFinanciacionEdit">Editar Tipos de Financiación</h4>
+				<h4 class="modal-title fw-bolder" id="modalDependenciaEdit">Editar Dependencia</h4>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
-			<form role="form" id="formTipoFinanciacionEdit" method="post">
+			<form role="form" id="formDependenciaEdit" method="post">
             <input type="hidden" id="modulo" name="modulo" value="presupuesto"/>
-            <input type="hidden" id="option" name="option" value="tipofinanciacion"/>
+            <input type="hidden" id="option" name="option" value="dependencia"/>
             <input type="hidden" id="action" name="action" value="update"/>
             <input type="hidden" id="editId" name="id">
 				<div class="modal-body h-100 p-0">
@@ -20,11 +20,25 @@
                               <input type="text" class="form-control" id="editCodigo" name="codigo" readonly>
                            </div>
                         </div>
-                       
+
+                        <div class="col-md-6">
+                           <div class="form-group">
+                              <label for="editIniciales" class="text-label fs-0 ps-1">Iniciales</label>
+                              <input type="text" class="form-control" id="editIniciales" name="iniciales" maxlength="10">
+                           </div>
+                        </div>
                         <div class="col-md-12">
                            <div class="form-group">
                               <label for="editNombre" class="text-label fs-0 ps-1">Nombre *</label>
                               <input type="text" class="form-control" id="editNombre" name="nombre" maxlength="100">
+                           </div>
+                        </div>
+                        <div class="col-md-12">
+                           <div class="form-group">
+                              <label for="editCentroCto" class="text-label fs-0 ps-1">Centro de Costo *</label>
+                              <select class="form-control" style="width: 100%;" id="editCentroCto" name="centrocto">
+                                 <option value="">Seleccionar</option>
+                              </select>
                            </div>
                         </div>
 
@@ -33,10 +47,19 @@
                </div>
             </div>
             <div class="modal-footer">
-               <button type="submit" class="btn btn-phoenix-primary" id="btnTipoFinanciacionEdit">Guardar</button>
+               <button type="submit" class="btn btn-phoenix-primary" id="btnDependenciaEdit">Guardar</button>
                <button type="button" class="btn btn-phoenix-danger" data-bs-dismiss="modal">Cerrar</button>
             </div>
          </form>
       </div>
    </div>
 </div>
+
+<script>
+   $(document).ready(function() {
+      $('#editCentroCto').select2({
+         dropdownParent: $('#modalDependenciaEdit'),
+         width: '100%'
+      });
+   });
+</script>
