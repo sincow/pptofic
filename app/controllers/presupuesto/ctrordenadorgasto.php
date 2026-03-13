@@ -95,8 +95,7 @@ class OrdenadorGastoController {
       $data["cargo"] = trim($data["cargo"]);
       $data["cargo"] = strip_tags($data["cargo"]);
       $data["cargo"] = strtoupper(htmlspecialchars($data["cargo"], ENT_QUOTES, 'UTF-8'));
-      $data["vigente"] = filter_var($data["vigente"], FILTER_SANITIZE_NUMBER_INT);
-      
+            
       $vigente = isset($_POST["vigente"]) ? 1 : 0;
 
       if ($vigente == 1) {
