@@ -34,7 +34,7 @@ class ParametrosModel {
    /**********************************************************************/
    static public function getWhere($data) {
       $listWhere = json_decode($data["listWhere"], true);
-      $where = "a.EmpCodig = :id_empresa AND ";
+      $where = "EmpCodig = :id_empresa AND ";
       foreach ($listWhere as $key => $value) {
          $where .= $value["id"] . " = :" . $value["id"] . " AND ";
       }
@@ -43,15 +43,17 @@ class ParametrosModel {
          $where = " AND " . $where;
       }
       $connection = Database::getConnection();
-      $stmt = $connection->prepare("SELECT a.* 
-         FROM GrParame a 
+      $stmt = $connection->prepare("SELECT * 
+         FROM GrParame  
          WHERE 1 = 1 " . $where . "
-         ORDER BY a.ConCodig"
+         ORDER BY ParCodig"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_STR);
+      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_STR);
       foreach ($listWhere as $key => $value) {
          $stmt->bindParam(":" . $value["id"], $value["value"]);
       }
+
+      //$stmt->debugDumpParams();   // Agregar esta línea para depuración
       $stmt->execute();
       $resp = $stmt->fetchAll(PDO::FETCH_ASSOC);
       $stmt = null;
@@ -65,7 +67,7 @@ class ParametrosModel {
       $connection = Database::getConnection();
       $stmt = $connection->prepare("SELECT a.*
          FROM GrParame a 
-         WHERE a.EmpCodig = :id_empresa AND a.ConCodig = :id"
+         WHERE a.EmpCodig = :id_empresa AND a.ParCodig = :id"
       );
       $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
       $stmt->bindParam(":id", $id, PDO::PARAM_INT);

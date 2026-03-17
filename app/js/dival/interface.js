@@ -1,5 +1,6 @@
 //*********************************************************************************************
 document.addEventListener("DOMContentLoaded", function() {
+   console.log('DOM fully loaded and parsed');
    var listWhere = [];
    listWhere.push({
       "id": "ComEstad",
@@ -90,6 +91,41 @@ document.addEventListener("DOMContentLoaded", function() {
    document.getElementById('btnSaveParams').addEventListener('click', async function(e) {
       e.preventDefault();
       e.stopPropagation();
+
+      const nivelesRubIng = document.getElementById('DvNivRubIng');
+      if (nivelesRubIng) {
+         const validacion = validarNivelesRubros(nivelesRubIng.value);
+         if (!validacion.success) {
+            Swal.fire({
+               icon: 'error',
+               title: 'Error',
+               text: validacion.message
+            });
+            nivelesRubIng.focus();
+            return;
+         }
+
+         // opcional: normalizar formato
+         nivelesRubIng.value = validacion.niveles.join(',');
+      }
+
+      const nivelesRubGas = document.getElementById('DvNivRubGas');
+      if (nivelesRubGas) {
+         const validacion = validarNivelesRubros(nivelesRubGas.value);
+         if (!validacion.success) {
+            Swal.fire({
+               icon: 'error',
+               title: 'Error',
+               text: validacion.message
+            });
+            nivelesRubGas.focus();
+            return;
+         }
+
+         // opcional: normalizar formato
+         nivelesRubGas.value = validacion.niveles.join(',');
+      }
+
       const params = await createJsonParams();
       const question = swal.fire({
          text: 'Seguro que deseas guardar los cambios?',
@@ -107,7 +143,7 @@ document.addEventListener("DOMContentLoaded", function() {
             saveParams()
          }
       })
-   });
+   }  );
 
 });
 
@@ -147,4 +183,54 @@ function saveParams() {
    formData.append("paramsList", document.getElementById('parametersList').value);
    if (execQueryUpd(formData, 'paramsForm', null)) {
    }
+}
+
+function validarNivelesRubros(valor) {
+   if (!valor || valor.trim() === '') {
+      return {
+         success: false,
+         message: 'Debe definir la estructura de niveles del rubro.'
+      };
+   }
+
+   const partes = valor.split(',')
+      .map(x => x.trim())
+      .filter(x => x !== '');
+
+   if (partes.length === 0) {
+      return {
+         success: false,
+         message: 'La estructura de niveles no es válida.'
+      };
+   }
+
+   const niveles = partes.map(x => Number(x));
+
+   if (niveles.some(x => !Number.isInteger(x) || x <= 0)) {
+      return {
+         success: false,
+         message: 'Los niveles deben ser números enteros positivos.'
+      };
+   }
+
+   for (let i = 1; i < niveles.length; i++) {
+      if (niveles[i] <= niveles[i - 1]) {
+         return {
+            success: false,
+            message: 'Los niveles deben estar en orden ascendente y no repetidos.'
+         };
+      }
+   }
+
+   if (niveles[niveles.length - 1] > 20) {
+      return {
+         success: false,
+         message: 'El nivel máximo no puede ser mayor a 20.'
+      };
+   }
+
+   return {
+      success: true,
+      niveles: niveles
+   };
 }

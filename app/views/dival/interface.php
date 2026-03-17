@@ -145,10 +145,9 @@
                   </div>
 
                </div>
-
-
             </div>       
          </div>
+
          <div class="col-lg-6 mt-0">
             <div class="card mb-3 h-lg-100">
                <div class="card-header fw-bold py-1 fs-0 text-start text-white bg-primary" style="opacity: 70%;">
@@ -159,12 +158,14 @@
                      <div class="col-12 col-md-3 col-xl-2 p-1">
                         <label for="DvComChe" class="d-inline-block">Clientes</label>
                      </div>
+                     
                      <div class="col ps-1">
                         <select class="form-select select2 param" id="DvCueCli" name="DvCueCli" ParCodig="CU1" ParNombr="Cuenta Contable Cliente por Cambio de cheque">
                            <option value="">Seleccionar</option>
                         </select>
                      </div>
                   </div>
+                  
                   <div class="row align-items-center mb-3 mb-md-1">
                      <div class="col-12 col-md-3 col-xl-2 p-1">
                         <label for="DvComChe" class="d-inline-block">Caja</label>
@@ -175,6 +176,7 @@
                         </select>
                      </div>
                   </div>
+                  
                   <div class="row align-items-center mb-3 mb-md-1">
                      <div class="col-12 col-md-3 col-xl-2 p-1">
                         <label for="DvComChe" class="d-inline-block">IVA</label>
@@ -185,6 +187,7 @@
                         </select>
                      </div>
                   </div>
+
                   <div class="row align-items-center mb-3 mb-md-1">
                      <div class="col-12 col-md-3 col-xl-2 p-1">
                         <label for="DvComChe" class="d-inline-block">Impto Banco</label>
@@ -195,6 +198,7 @@
                         </select>
                      </div>
                   </div>
+
                   <div class="row align-items-center mb-3 mb-md-1">
                      <div class="col-12 col-md-3 col-xl-2 p-1">
                         <label for="DvComChe" class="d-inline-block">Int X Cobrar</label>
@@ -205,6 +209,7 @@
                         </select>
                      </div>
                   </div>
+                 
                   <div class="row align-items-center mb-3 mb-md-1">
                      <div class="col-12 col-md-3 col-xl-2 p-1">
                         <label for="DvComChe" class="d-inline-block">Comisión</label>
@@ -215,6 +220,7 @@
                         </select>
                      </div>
                   </div>
+
                   <div class="row align-items-center mb-3 mb-md-1">
                      <div class="col-12 col-md-3 col-xl-2 p-1">
                         <label for="DvComChe" class="d-inline-block">Ingr Intereses</label>
@@ -225,6 +231,7 @@
                         </select>
                      </div>
                   </div>
+
                   <div class="row align-items-center mb-3 mb-md-1">
                      <div class="col-12 col-md-3 col-xl-2 p-1">
                         <label for="DvComChe" class="d-inline-block">Ingr Mensajería</label>
@@ -236,7 +243,7 @@
                      </div>
                   </div>
 
-                  <hr style="border: 1px solid; margin: 20px 0;">
+                  <!-- <hr style="border: 1px solid; margin: 20px 0;"> -->
 
                   <div class="row align-items-center mb-3 mb-md-1">
                      <div class="col-4 col-md-3 col-xl-2 p-1">
@@ -256,21 +263,53 @@
                         <input type="number" class="form-control p-1 text-end param" id="DvPorIva" name="DvPorIva" ParCodig="IVA" ParNombr="Porcentaje de IVA por Cambio de cheque" maxlength="4" step="0.01" value="0.00">
                      </div>
                   </div>
+
                </div>
-            </div>       
-         </div>
-      </div>
-      <div class="row g-3">
-         <div class="col-12">
-            <div class="card mt-2 mb-0">
-               <div class="card-body p-3">
-                  <div class="d-grid gap-2">
-                     <button class="btn btn-phoenix-success" type="button" id="btnSaveParams">Grabar Parámetros</button>
+
+               <div class="card-header fw-bold py-1 fs-0 text-start text-white bg-primary" style="opacity: 70%;">
+                  <i class="fa-solid fa-sitemap me-2"></i>Estructura Codigos Presupuestales
+               </div>
+                     
+               <div class="card-body">
+                  <div class="row align-items-center mb-3 mb-md-1">
+                     <div class="col-12 col-md-3 col-xl-2 p-1">
+                        <label for="DvNivRubIng" class="d-inline-block">Ingreso</label>
+                     </div>
+                     
+                     <div class="col ps-1">
+                        <input type="text" class="form-control param" id="DvNivRubIng" name="DvNivRubIng" ParCodig="PRI" ParNombr="Estructura de niveles para rubro de ingreso"
+                                 placeholder="Ej: 1,2,4,6,9,12,14,16,18,20" maxlength="100">
+                              <small class="text-muted">Separados por coma, en orden ascendente. Ejemplo: 1,2,4,6,9,12,14,16,18,20</small>
+                     </div>
+                  </div>
+
+                  <div class="row align-items-center mb-3 mb-md-1">
+                     <div class="col-12 col-md-3 col-xl-2 p-1">
+                        <label for="DvNivRubGas" class="d-inline-block">Gastos</label>
+                     </div>
+                     
+                     <div class="col ps-1">
+                        <input type="text" class="form-control param" id="DvNivRubGas" name="DvNivRubGas" ParCodig="PRG" ParNombr="Estructura de niveles para rubro de gastos"
+                                 placeholder="Ej: 1,2,4,6,9,12,14,16,18,20" maxlength="100">
+                              <small class="text-muted">Separados por coma, en orden ascendente. Ejemplo: 1,2,4,6,9,12,14,16,18,20</small>
+                     </div>
                   </div>
                </div>
             </div>
          </div>
-      </div>
+         <!-- <hr class="my-3"> -->
+         <div class="row g-3">
+            <div class="col-12">
+               <div class="card mt-2 mb-0">
+                  <div class="card-body p-3">
+                     <div class="d-grid gap-2">
+                        <button class="btn btn-phoenix-success" type="button" id="btnSaveParams">Grabar Parámetros</button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>   
    </form>
 	<?php
 		include APP_PATH.'/views/layouts/footer.php';

@@ -2,8 +2,10 @@
 if (!defined('CONFIG_PATH')) {
    // require_once "../config/config.php";
    define("CONFIG_PATH", "../config");
+   
 }
 require_once CONFIG_PATH . "/Database.php";
+require_once __DIR__ . "/../admon/mdlparametros.php";
 if (!isset($_SESSION)) {
 	session_start();
 }
@@ -20,7 +22,7 @@ class RubroIngresoModel {
          FROM poRubroIngreso a
                left join poTipoFinanciacion b on a.EmpresaId = b.EmpresaId AND a.TipoFinanciacionId = b.TipoFinanciacionId
          WHERE a.EmpresaId = :id_empresa
-         ORDER BY a.Nombre"
+         ORDER BY  a.RubroIngresoId "
       );
       $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
       $stmt->execute();
@@ -48,7 +50,7 @@ class RubroIngresoModel {
          a.FechaCreacion, a.FechaModificacion, a.Estado  
          FROM poRubroIngreso a 
          WHERE 1 = 1 " . $where . "
-         ORDER BY a.nombre"
+         ORDER BY ORDER BY   a.RubroIngresoId "
       );
       $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
       foreach ($listWhere as $key => $value) {
@@ -81,9 +83,41 @@ class RubroIngresoModel {
 
 public static function mdlValidarCodigo($codigo)
     {
-        $niveles = [1, 2, 4, 6, 9, 12, 14, 16, 18, 20];
-        $longitudCodigo = strlen(trim($codigo));
+        //obtener niveles de configuración
+        $listWhere = [
+            ["id" => "ParCodig", "value" => "PRI"]
+        ];
+        
+        $dataParametro = ["listWhere" => json_encode($listWhere)];
+        $parametros = ParametrosModel::getWhere($dataParametro);
+        $valorNiveles = '';
 
+        if (!empty($parametros) && isset($parametros[0]["ParValor"])) {
+            $valorNiveles = trim($parametros[0]["ParValor"]);
+        }
+
+//        var_dump($valorNiveles); // Agregar esta línea para depuración
+        if ($valorNiveles === '') {
+            return [
+                'success' => false,
+                'message' => 'No está configurada la estructura de niveles para rubro de ingreso.'
+            ];
+        }  
+
+        $niveles = array_map('trim', explode(',', $valorNiveles));
+        $niveles = array_filter($niveles, function ($item) {
+            return $item !== '' && ctype_digit($item);
+        });
+        $niveles = array_map('intval', $niveles);
+        $niveles = array_values($niveles);
+
+        if (empty($niveles)) {
+            return [
+                'success' => false,
+                'message' => 'La estructura de niveles para rubro de ingreso no es válida.'
+            ];
+        }
+        $longitudCodigo = strlen(trim($codigo));
         $posNiv = 0;
         $indiceNivel = -1;
 

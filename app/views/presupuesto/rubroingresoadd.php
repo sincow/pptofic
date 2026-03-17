@@ -17,7 +17,7 @@
                            <div class="form-group">
                               <label for="newCodigo" class="text-label fs-0 ps-1">Codigo *</label>
                               <input type="text" class="form-control" id="newCodigo" name="codigo" required maxlength="20">
-                                 <input type="hidden"  id="newRubroDependiente" name="rubrodependiente" value="">                           
+                              <input type="hidden"  id="newRubroDependiente" name="rubrodependiente" value="">                           
                            </div>
                         </div>
                         <div class="col-md-6 d-flex align-items-end">

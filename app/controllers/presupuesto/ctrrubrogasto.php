@@ -38,6 +38,15 @@ class RubroGastoController {
       if ($verification["success"] == false) {
          return $verification;
       }
+
+      $codigo = trim($_POST['codigo'] ?? '');
+      $validacion = RubroGastoModel::mdlValidarCodigo($codigo);
+      if (!$validacion['success']) {
+         return $validacion;
+      }
+
+      $post['rubrodependiente'] = $validacion['dependencia'];
+      
       $data = $_POST;
       $data["nombre"] = trim($data["nombre"]);
       $data["nombre"] = strip_tags($data["nombre"]);
@@ -59,6 +68,7 @@ class RubroGastoController {
          "TipoFinanciacionId" => $data["tipofinanciacion"],
          "CtaPucId" => $data["ctapucid"],
          "Movimiento" => $movimiento,
+         "RubroDependiente" => $data["rubrodependiente"],
          "UsuarioId"   => $_SESSION["user_id"]
       );
 
@@ -132,4 +142,27 @@ class RubroGastoController {
       $response = GeneralModel::update($tabla, $data, $where, null);
       return $response;
    }
+ public function validarCodigo($post)
+    {
+        $codigo = isset($post['codigo']) ? trim($post['codigo']) : '';
+
+        if ($codigo === '') {
+            return [
+                'success' => true,
+                'message' => '',
+                'rubrodependiente' => ''
+            ];
+        }
+
+        if (!ctype_digit($codigo)) {
+            return [
+                'success' => false,
+                'message' => 'El código debe contener solo números.'
+            ];
+        }
+
+        $resultado = RubroGastoModel::mdlValidarCodigo($codigo);
+
+        return $resultado;
+    }
 }

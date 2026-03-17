@@ -1,12 +1,8 @@
 //*********************************************************************************************
-
-
 document.addEventListener("DOMContentLoaded", function() {
    
    cargarRubroIngreso();
-
-   //*********************************************************************************************
-   
+  //*********************************************************************************************
    document.getElementById('btnaddRubroIngreso').addEventListener('click', function(e) {
 
       document.getElementById('newTipoFinanciacion').nextElementSibling.classList.remove('is-valid');
@@ -190,6 +186,7 @@ async function cargarRubroIngreso() {
    .then( data => {
       const tbody = document.getElementById('rubroingreso-table-body');
       tbody.innerHTML = '';
+      console.log('Datos recibidos:', data);
       if (data.length > 0) {
          data.forEach(rubroingreso => {
             const row = document.createElement('tr');
@@ -279,7 +276,7 @@ async function cargarRubroIngreso() {
          if (window.rubroIngresoListInstance) {
             window.rubroIngresoListInstance.update();
             window.rubroIngresoListInstance.reIndex();
-            window.rubroIngresoListInstance.sort('name', { order: 'asc' });
+            window.rubroIngresoListInstance.sort('id', { order: 'asc' });
             $('[data-list-info]').text(`${window.rubroIngresoListInstance.visibleItems.length} to ${window.rubroIngresoListInstance.items.length} Items`);
             window.rubroIngresoListInstance.fuzzySearch('');
          }
@@ -344,12 +341,12 @@ function updateListJS() {
       window.rubroIngresoListInstance = null;
    }
    window.rubroIngresoListInstance = new List('RubroIngreso', {
-      valueNames: ['id', 'name', 'initials', 'status'],
+      valueNames: ['id','name','TipoFinanciacionNombre','movimiento','status'],
       page: 15,
       pagination: true,
       indexAsync: true
    });
-   window.rubroIngresoListInstance.sort('name', { order: 'asc' });
+   window.rubroIngresoListInstance.sort('id', { order: 'asc' });
    window.rubroIngresoListInstance.fuzzySearch('');
 
    setupPaginationEvents(window.rubroIngresoListInstance, 15);
@@ -358,8 +355,6 @@ function updateListJS() {
    });
    updatePaginationInfo(window.rubroIngresoListInstance);
 }
-
-//const nivelesIngreso = [1, 2, 4, 6, 9, 12, 14, 16, 18, 20];
 
 $('#newCodigo').on('blur', async function () {
    const codigo = $(this).val().trim();

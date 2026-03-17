@@ -258,7 +258,7 @@ async function cargarRubroGasto() {
          if (window.rubroGastoListInstance) {
             window.rubroGastoListInstance.update();
             window.rubroGastoListInstance.reIndex();
-            window.rubroGastoListInstance.sort('name', { order: 'asc' });
+            window.rubroGastoListInstance.sort('id');
             $('[data-list-info]').text(`${window.rubroGastoListInstance.visibleItems.length} to ${window.rubroGastoListInstance.items.length} Items`);
             window.rubroGastoListInstance.fuzzySearch('');
          }
@@ -323,12 +323,13 @@ function updateListJS() {
       window.rubroGastoListInstance = null;
    }
    window.rubroGastoListInstance = new List('RubroGasto', {
-      valueNames: ['id', 'name', 'initials', 'status'],
+      valueNames: ['id','name','TipoFinanciacionNombre','movimiento','status'
+],
       page: 15,
       pagination: true,
       indexAsync: true
    });
-   window.rubroGastoListInstance.sort('name', { order: 'asc' });
+   window.rubroGastoListInstance.sort('id');
    window.rubroGastoListInstance.fuzzySearch('');
 
    setupPaginationEvents(window.rubroGastoListInstance, 15);
@@ -336,4 +337,53 @@ function updateListJS() {
       updatePaginationInfo(window.rubroGastoListInstance);
    });
    updatePaginationInfo(window.rubroGastoListInstance);
+}
+
+$('#newCodigo').on('blur', async function () {
+   const codigo = $(this).val().trim();
+
+   if (codigo === '') {
+      $('#newRubroDependiente').val('');
+      return;
+   }
+
+   const data = await validarCodigoRubroGasto(codigo);
+
+   if (!data.success) {
+      Swal.fire({
+         icon: 'error',
+         title: 'Error',
+         text: data.message
+      });
+
+      $('#newCodigo').val('').focus();
+      $('#newRubroDependiente').val('');
+      return;
+   }
+
+   $('#newRubroDependiente').val(data.dependencia || '');
+});
+
+
+async function validarCodigoRubroGasto(codigo) {
+   const formData = new FormData();
+   formData.append("modulo", "presupuesto");
+   formData.append("option", "rubrogasto");
+   formData.append("action", "validarCodigo");
+   formData.append("codigo", codigo);
+
+   try {
+      const response = await fetch('helpers/ajaxRouter.php', {
+         method: 'POST',
+         body: formData
+      });
+
+      return await response.json();
+   } catch (error) {
+      console.error('Error:', error);
+      return {
+         success: false,
+         message: 'Ocurrió un error al validar el código.'
+      };
+   }
 }
