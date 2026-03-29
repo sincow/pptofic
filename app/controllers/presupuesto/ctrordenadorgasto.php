@@ -57,7 +57,7 @@ class OrdenadorGastoController {
             "UsuarioId"   => $_SESSION["user_id"]
          );
          $where = array(
-            "EmpresaId" => $_SESSION["id_empresa"]
+            "EmpresaId" => $_SESSION["empdef"]
          );
          $response = GeneralModel::update($tabla, $dataUpdt, $where, null);
          if ($response["success"] == false) {
@@ -67,7 +67,7 @@ class OrdenadorGastoController {
       
       $tabla = "poOrdenadorGasto";
       $dataUpdt = array(
-         "EmpresaId" => $_SESSION["id_empresa"],
+         "EmpresaId" => $_SESSION["empdef"],
          "TerceroId"    => $data["id"], 
          "Cargo"    => $data["cargo"], 
          "Vigente" => $vigente,
@@ -106,7 +106,7 @@ class OrdenadorGastoController {
             "UsuarioId"   => $_SESSION["user_id"]
          );
          $where = array(
-            "EmpresaId" => $_SESSION["id_empresa"]
+            "EmpresaId" => $_SESSION["empdef"]
          );
          $response = GeneralModel::update($tabla, $dataUpdt, $where, null);
          if ($response["success"] == false) {
@@ -123,7 +123,7 @@ class OrdenadorGastoController {
       );
       $where = array(
          "TerceroId"    => $data["id"], 
-         "EmpresaId" => $_SESSION["id_empresa"]
+         "EmpresaId" => $_SESSION["empdef"]
       );
       $response = GeneralModel::update($tabla, $dataUpdt, $where, null);
       return $response;
@@ -148,7 +148,7 @@ class OrdenadorGastoController {
          "Estado" => $_POST["status"]
       );
       $where = array(
-         "EmpresaId" => $_SESSION["id_empresa"],
+         "EmpresaId" => $_SESSION["empdef"],
          "TerceroId"   => $idOrdenador
       );
       

@@ -47,7 +47,7 @@ class TipoDocumentoController {
       $data["iniciales"] = strtoupper(htmlspecialchars($data["iniciales"], ENT_QUOTES, 'UTF-8'));
       $tabla = "poTipoDocumento";
       $dataUpdt = array(
-         "EmpresaId" => $_SESSION["id_empresa"],
+         "EmpresaId" => $_SESSION["empdef"],
          "TipoDocumentoId"    => $data["codigo"], 
          "Nombre"    => $data["nombre"], 
          "Iniciales" => $data["iniciales"],
@@ -86,7 +86,7 @@ class TipoDocumentoController {
       );
       $where = array(
          "TipoDocumentoId"    => $data["codigo"], 
-         "EmpresaId" => $_SESSION["id_empresa"]
+         "EmpresaId" => $_SESSION["empdef"]
       );
       $response = GeneralModel::update($tabla, $dataUpdt, $where, null);
       return $response;
@@ -110,7 +110,7 @@ class TipoDocumentoController {
          "Estado" => $_POST["status"]
       );
       $where = array(
-         "EmpresaId" => $_SESSION["id_empresa"],
+         "EmpresaId" => $_SESSION["empdef"],
          "TipoDocumentoId"   => $idTipoDocumento
       );
       $response = GeneralModel::update($tabla, $data, $where, null);

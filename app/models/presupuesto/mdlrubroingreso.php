@@ -24,7 +24,7 @@ class RubroIngresoModel {
          WHERE a.EmpresaId = :id_empresa
          ORDER BY  a.RubroIngresoId "
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
       $stmt->execute();
       $resp = $stmt->fetchAll(PDO::FETCH_ASSOC);
       $stmt = null;
@@ -52,7 +52,7 @@ class RubroIngresoModel {
          WHERE 1 = 1 " . $where . "
          ORDER BY ORDER BY   a.RubroIngresoId "
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
       foreach ($listWhere as $key => $value) {
          $stmt->bindParam(":" . $value["id"], $value["value"]);
       }
@@ -72,7 +72,7 @@ class RubroIngresoModel {
          FROM poRubroIngreso a 
          WHERE a.EmpresaId = :id_empresa AND a.RubroIngresoId = :id"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
       $stmt->bindParam(":id", $id, PDO::PARAM_INT);
       $stmt->execute();
       $resp = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -84,9 +84,7 @@ class RubroIngresoModel {
 public static function mdlValidarCodigo($codigo)
     {
         //obtener niveles de configuración
-        $listWhere = [
-            ["id" => "ParCodig", "value" => "PRI"]
-        ];
+        $listWhere = [["id" => "ParCodig", "value" => "RUI"]];
         
         $dataParametro = ["listWhere" => json_encode($listWhere)];
         $parametros = ParametrosModel::getWhere($dataParametro);
@@ -96,13 +94,14 @@ public static function mdlValidarCodigo($codigo)
             $valorNiveles = trim($parametros[0]["ParValor"]);
         }
 
-//        var_dump($valorNiveles); // Agregar esta línea para depuración
         if ($valorNiveles === '') {
             return [
                 'success' => false,
                 'message' => 'No está configurada la estructura de niveles para rubro de ingreso.'
             ];
         }  
+
+        //var_dump($parametros[0]); // Agregar esta línea para depuración  
 
         $niveles = array_map('trim', explode(',', $valorNiveles));
         $niveles = array_filter($niveles, function ($item) {

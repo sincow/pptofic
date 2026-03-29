@@ -47,7 +47,7 @@ class TipoContratoController {
       $data["iniciales"] = strtoupper(htmlspecialchars($data["iniciales"], ENT_QUOTES, 'UTF-8'));
       $tabla = "poTipoContrato";
       $dataUpdt = array(
-         "EmpresaId" => $_SESSION["id_empresa"],
+         "EmpresaId" => $_SESSION["empdef"],
          "TipoContratoId"    => $data["codigo"], 
          "Nombre"    => $data["nombre"], 
          "Iniciales" => $data["iniciales"],
@@ -86,7 +86,7 @@ class TipoContratoController {
       );
       $where = array(
          "TipoContratoId"    => $data["codigo"], 
-         "EmpresaId" => $_SESSION["id_empresa"]
+         "EmpresaId" => $_SESSION["empdef"]
       );
       $response = GeneralModel::update($tabla, $dataUpdt, $where, null);
       return $response;
@@ -110,7 +110,7 @@ class TipoContratoController {
          "Estado" => $_POST["status"]
       );
       $where = array(
-         "EmpresaId" => $_SESSION["id_empresa"],
+         "EmpresaId" => $_SESSION["empdef"],
          "TipoContratoId"   => $idTipoContrato
       );
       $response = GeneralModel::update($tabla, $data, $where, null);

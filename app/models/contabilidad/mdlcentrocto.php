@@ -21,7 +21,7 @@ class CentroCtoModel {
          WHERE EmpCodig = :id_empresa
          ORDER BY CenDescr"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_STR);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_STR);
       $stmt->execute();
       $resp = $stmt->fetchAll(PDO::FETCH_ASSOC);
       $stmt = null;
@@ -48,7 +48,7 @@ class CentroCtoModel {
          WHERE 1 = 1 " . $where . "
          ORDER BY a.CenCodig"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_STR);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_STR);
       foreach ($listWhere as $key => $value) {
          $stmt->bindParam(":" . $value["id"], $value["value"]);
       }
@@ -67,7 +67,7 @@ class CentroCtoModel {
          FROM CoCenCos 
          WHERE EmpCodig = :id_empresa AND CenCodig = :CenCodig"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_STR);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_STR);
       $stmt->bindParam(":CenCodig", $id, PDO::PARAM_STR);
       $stmt->execute();
       $resp = $stmt->fetch(PDO::FETCH_ASSOC);

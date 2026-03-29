@@ -45,7 +45,7 @@ class TipoFinanciacionController {
       
       $tabla = "poTipoFinanciacion";
       $dataUpdt = array(
-         "EmpresaId" => $_SESSION["id_empresa"],
+         "EmpresaId" => $_SESSION["empdef"],
          "TipoFinanciacionId"    => $data["codigo"], 
          "Nombre"    => $data["nombre"], 
          "UsuarioId"   => $_SESSION["user_id"]
@@ -79,7 +79,7 @@ class TipoFinanciacionController {
       );
       $where = array(
          "TipoFinanciacionId"   => $data["codigo"], 
-         "EmpresaId" => $_SESSION["id_empresa"]
+         "EmpresaId" => $_SESSION["empdef"]
       );
       $response = GeneralModel::update($tabla, $dataUpdt, $where, null);
       return $response;
@@ -105,7 +105,7 @@ class TipoFinanciacionController {
          "Estado" => $_POST["status"]
       );
       $where = array(
-         "EmpresaId" => $_SESSION["id_empresa"],
+         "EmpresaId" => $_SESSION["empdef"],
          "TipoFinanciacionId"   => $idTipoFinanciacion
       );
       $response = GeneralModel::update($tabla, $data, $where, null);

@@ -1,6 +1,5 @@
 <?php
 if (!defined('CONFIG_PATH')) {
-   // require_once "../config/config.php";
    define("CONFIG_PATH", "../config");
 }
 require_once CONFIG_PATH . "/Database.php";
@@ -22,7 +21,7 @@ class OrdenadorGastoModel {
          WHERE o.EmpresaId = :id_empresa
          ORDER BY t.TerNombr"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
       $stmt->execute();
       $resp = $stmt->fetchAll(PDO::FETCH_ASSOC);
       $stmt = null;
@@ -51,7 +50,7 @@ class OrdenadorGastoModel {
          WHERE 1 = 1 " . $where . "
          ORDER BY t.TerNombr"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
       foreach ($listWhere as $key => $value) {
          $stmt->bindParam(":" . $value["id"], $value["value"]);
       }
@@ -72,7 +71,7 @@ class OrdenadorGastoModel {
          INNER JOIN coTercer t ON a.EmpresaId = t.EmpCodig AND a.TerceroId = t.TerDocId
          WHERE a.EmpresaId = :id_empresa AND a.TerceroId = :id"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
       $stmt->bindParam(":id", $id, PDO::PARAM_INT);
       $stmt->execute();
       $resp = $stmt->fetch(PDO::FETCH_ASSOC);

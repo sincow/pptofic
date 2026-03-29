@@ -51,9 +51,7 @@ class RubroGastoController {
       $data["nombre"] = trim($data["nombre"]);
       $data["nombre"] = strip_tags($data["nombre"]);
       $data["nombre"] = strtoupper(htmlspecialchars($data["nombre"], ENT_QUOTES, 'UTF-8'));
-      $data["tipofinanciacion"] = trim($data["tipofinanciacion"]);
       $data["tipofinanciacion"] = strip_tags($data["tipofinanciacion"]);
-      $data["tipofinanciacion"] = strtoupper(htmlspecialchars($data["tipofinanciacion"], ENT_QUOTES, 'UTF-8'));
       $data["ctapucid"] = trim($data["ctapucid"]);
       $data["ctapucid"] = strip_tags($data["ctapucid"]);
       $data["ctapucid"] = strtoupper(htmlspecialchars($data["ctapucid"], ENT_QUOTES, 'UTF-8'));
@@ -62,7 +60,7 @@ class RubroGastoController {
 
       $tabla = "poRubroGasto";
       $dataUpdt = array(
-         "EmpresaId" => $_SESSION["id_empresa"],
+         "EmpresaId" => $_SESSION["empdef"],
          "RubroGastoId"    => $data["codigo"], 
          "Nombre"    => $data["nombre"], 
          "TipoFinanciacionId" => $data["tipofinanciacion"],
@@ -94,9 +92,7 @@ class RubroGastoController {
       $data["nombre"] = trim($data["nombre"]);
       $data["nombre"] = strip_tags($data["nombre"]);
       $data["nombre"] = strtoupper(htmlspecialchars($data["nombre"], ENT_QUOTES, 'UTF-8'));
-      $data["tipofinanciacion"] = trim($data["tipofinanciacion"]);
       $data["tipofinanciacion"] = strip_tags($data["tipofinanciacion"]);
-      $data["tipofinanciacion"] = strtoupper(htmlspecialchars($data["tipofinanciacion"], ENT_QUOTES, 'UTF-8'));
       $data["ctapucid"] = trim($data["ctapucid"]);
       $data["ctapucid"] = strip_tags($data["ctapucid"]);
       $data["ctapucid"] = strtoupper(htmlspecialchars($data["ctapucid"], ENT_QUOTES, 'UTF-8'));
@@ -111,7 +107,7 @@ class RubroGastoController {
       );
       $where = array(
          "RubroGastoId"    => $data["codigo"], 
-         "EmpresaId" => $_SESSION["id_empresa"]
+         "EmpresaId" => $_SESSION["empdef"]
       );
       $response = GeneralModel::update($tabla, $dataUpdt, $where, null);
       return $response;
@@ -136,7 +132,7 @@ class RubroGastoController {
          "Estado" => $_POST["status"]
       );
       $where = array(
-         "EmpresaId" => $_SESSION["id_empresa"],
+         "EmpresaId" => $_SESSION["empdef"],
          "RubroGastoId"   => $idRubroGasto
       );
       $response = GeneralModel::update($tabla, $data, $where, null);
@@ -165,4 +161,16 @@ class RubroGastoController {
 
         return $resultado;
     }
+
+
+    static public function getTipoFinanciacion(){
+      if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+         $response = array("success" => false, "message" => 'Método inválido');
+         return $response;
+      }
+      $data = $_POST;
+      $rubrogasto = RubroGastoModel::getTipoFinanciacion($data);
+      return $rubrogasto;
+   }
+
 }

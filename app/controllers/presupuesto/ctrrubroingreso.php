@@ -63,7 +63,7 @@ class RubroIngresoController {
 
       $tabla = "poRubroIngreso";
       $dataUpdt = array(
-         "EmpresaId" => $_SESSION["id_empresa"],
+         "EmpresaId" => $_SESSION["empdef"],
          "RubroIngresoId"    => $data["codigo"], 
          "Nombre"    => $data["nombre"], 
          "TipoFinanciacionId" => $data["tipofinanciacion"],
@@ -117,7 +117,7 @@ class RubroIngresoController {
       );
       $where = array(
          "RubroIngresoId"    => $data["codigo"], 
-         "EmpresaId" => $_SESSION["id_empresa"]
+         "EmpresaId" => $_SESSION["empdef"]
       );
       $response = GeneralModel::update($tabla, $dataUpdt, $where, null);
       return $response;
@@ -142,7 +142,7 @@ class RubroIngresoController {
          "Estado" => $_POST["status"]
       );
       $where = array(
-         "EmpresaId" => $_SESSION["id_empresa"],
+         "EmpresaId" => $_SESSION["empdef"],
          "RubroIngresoId"   => $idRubroIngreso
       );
       $response = GeneralModel::update($tabla, $data, $where, null);

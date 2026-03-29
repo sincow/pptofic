@@ -19,7 +19,7 @@ class ChipModel {
          WHERE EmpresaId = :id_empresa
          ORDER BY nombre"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
       $stmt->execute();
       $resp = $stmt->fetchAll(PDO::FETCH_ASSOC);
       $stmt = null;
@@ -45,7 +45,7 @@ class ChipModel {
          WHERE 1 = 1 " . $where . "
          ORDER BY a.nombre"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
       foreach ($listWhere as $key => $value) {
          $stmt->bindParam(":" . $value["id"], $value["value"]);
       }
@@ -64,7 +64,7 @@ class ChipModel {
          FROM pochip a 
          WHERE a.EmpresaId = :id_empresa AND ChipId = :id"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
       $stmt->bindParam(":id", $id, PDO::PARAM_INT);
       $stmt->execute();
       $resp = $stmt->fetch(PDO::FETCH_ASSOC);

@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function() {
       
       document.getElementById('formOrdenadorGastoEdit').reset();
       var data = $(this).parents().parents('tr');
-      $('#editId').val(data.find('.id').attr('id'));
+      $('#editId').val(data.find('.id').attr('terid'));
       $('#editNombre').val(data.find('.name').text());
       $('#editCargo').val(data.find('.cargo').text());
       $('#editDireccion').val(data.find('.id').attr('terdirec'));

@@ -51,7 +51,7 @@ class TercerosModel {
          WHERE 1 = 1 " . $where . "
          ORDER BY a.TerNombr"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_STR);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_STR);
       foreach ($listWhere as $key => $value) {
          $stmt->bindParam(":" . $value["id"], $value["value"]);
       }
@@ -71,7 +71,7 @@ class TercerosModel {
          FROM CoTercer a 
          WHERE a.EmpCodig = :id_empresa AND a.TerDocId = :id"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
       $stmt->bindParam(":id", $id, PDO::PARAM_INT);
       $stmt->execute();
       $resp = $stmt->fetch(PDO::FETCH_ASSOC);

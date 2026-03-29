@@ -45,7 +45,7 @@ class OrigIngresoController {
       
       $tabla = "poOrigIngreso";
       $dataUpdt = array(
-         "EmpresaId" => $_SESSION["id_empresa"],
+         "EmpresaId" => $_SESSION["empdef"],
          "OrigIngresoId"    => $data["codigo"], 
          "Nombre"    => $data["nombre"], 
          "UsuarioId"   => $_SESSION["user_id"]
@@ -79,7 +79,7 @@ class OrigIngresoController {
       );
       $where = array(
          "OrigIngresoId"   => $data["codigo"], 
-         "EmpresaId" => $_SESSION["id_empresa"]
+         "EmpresaId" => $_SESSION["empdef"]
       );
       $response = GeneralModel::update($tabla, $dataUpdt, $where, null);
       return $response;
@@ -105,7 +105,7 @@ class OrigIngresoController {
          "Estado" => $_POST["status"]
       );
       $where = array(
-         "EmpresaId" => $_SESSION["id_empresa"],
+         "EmpresaId" => $_SESSION["empdef"],
          "OrigIngresoId"   => $idIngreso
       );
       $response = GeneralModel::update($tabla, $data, $where, null);

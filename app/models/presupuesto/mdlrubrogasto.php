@@ -23,7 +23,7 @@ class RubroGastoModel {
          WHERE a.EmpresaId = :id_empresa
          ORDER BY a.RubroGastoId"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
       $stmt->execute();
       $resp = $stmt->fetchAll(PDO::FETCH_ASSOC);
       $stmt = null;
@@ -36,7 +36,7 @@ class RubroGastoModel {
    static public function getWhere($data) {
       $listWhere = json_decode($data["listWhere"], true);
       $status = "1";
-      $where = "a.EmpresaId = :id_empresa AND ";
+      $where = "EmpresaId = :id_empresa AND ";
       foreach ($listWhere as $key => $value) {
          $where .= $value["id"] . " = :" . $value["id"] . " AND ";
       }
@@ -45,13 +45,13 @@ class RubroGastoModel {
          $where = " AND " . $where;
       }
       $connection = Database::getConnection();
-      $stmt = $connection->prepare("SELECT a.RubroGastoId, a.Nombre, a.TipoFinanciacionId, a.CtaPucId, a.UsuarioId, 
-         a.FechaCreacion, a.FechaModificacion, a.Estado, a RubroDependiente  
-         FROM poRubroGasto a 
+      $stmt = $connection->prepare("SELECT RubroGastoId, Nombre, TipoFinanciacionId, CtaPucId, UsuarioId, 
+         FechaCreacion, FechaModificacion, Estado, RubroDependiente  
+         FROM poRubroGasto  
          WHERE 1 = 1 " . $where . "
-         ORDER BY a.RubroGastoId"
+         ORDER BY RubroGastoId"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
       foreach ($listWhere as $key => $value) {
          $stmt->bindParam(":" . $value["id"], $value["value"]);
       }
@@ -71,7 +71,7 @@ class RubroGastoModel {
          FROM poRubroGasto a 
          WHERE a.EmpresaId = :id_empresa AND a.RubroGastoId = :id"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
       $stmt->bindParam(":id", $id, PDO::PARAM_INT);
       $stmt->execute();
       $resp = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -80,12 +80,9 @@ class RubroGastoModel {
       return $resp;
    }
 
-   public static function mdlValidarCodigo($codigo)
-    {
+   public static function mdlValidarCodigo($codigo){
         //obtener niveles de configuración
-        $listWhere = [
-            ["id" => "ParCodig", "value" => "PRG"]
-        ];
+        $listWhere = [["id" => "ParCodig", "value" => "PRG"]];
         
         $dataParametro = ["listWhere" => json_encode($listWhere)];
         $parametros = ParametrosModel::getWhere($dataParametro);
@@ -95,7 +92,6 @@ class RubroGastoModel {
             $valorNiveles = trim($parametros[0]["ParValor"]);
         }
 
-//        var_dump($valorNiveles); // Agregar esta línea para depuración
         if ($valorNiveles === '') {
             return [
                 'success' => false,
@@ -105,8 +101,8 @@ class RubroGastoModel {
 
         $niveles = array_map('trim', explode(',', $valorNiveles));
         $niveles = array_filter($niveles, function ($item) {
-            return $item !== '' && ctype_digit($item);
-        });
+                        return $item !== '' && ctype_digit($item);
+                    });
         $niveles = array_map('intval', $niveles);
         $niveles = array_values($niveles);
 
@@ -135,7 +131,7 @@ class RubroGastoModel {
             ];
         }
 
-      $connection = Database::getConnection();
+        $connection = Database::getConnection();
          // Validar duplicado
         $sql = "SELECT RubroGastoId, Movimiento
                 FROM poRubroGasto
@@ -197,6 +193,36 @@ class RubroGastoModel {
             'message' => '',
             'dependencia' => $dependencia
         ];
+    }
+    static public function getTipoFinanciacion($data) {
+      $listWhere = json_decode($data["listWhere"], true);
+      $where = "g.EmpresaId = :id_empresa AND  f.nombre is not null  ";
+      $params = [];
+
+      foreach ($listWhere as $item) {
+         $campo = $item["id"]; // ej: c.PeriodoFiscal
+         $param = str_replace('.', '_', $campo); // ej: c_PeriodoFiscal
+
+         $where .= " AND $campo = :$param";
+         $params[$param] = $item["value"];
+      }
+      
+      $connection = Database::getConnection();
+      $stmt = $connection->prepare("SELECT g.TipoFinanciacionId, f.Nombre as TipoFinanciacionNombre
+            FROM PoRubroGasto g 
+            LEFT JOIN  PoTipoFinanciacion f ON g.EmpresaId = f.EmpresaId AND g.tipofinanciacionid = f.TipoFinanciacionId
+            WHERE " . $where  
+         
+      );
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
+      foreach ($params as $param => $valor) {
+           $stmt->bindValue(":$param", $valor);
+      }
+      $stmt->execute();
+      $resp = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $stmt = null;
+      $connection = null;
+      return $resp;
     }
 
 }

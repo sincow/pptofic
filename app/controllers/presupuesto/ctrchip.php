@@ -44,7 +44,7 @@ class ChipController {
       $data["nombre"] = strtoupper(htmlspecialchars($data["nombre"], ENT_QUOTES, 'UTF-8'));
       $tabla = "pochip";
       $dataUpdt = array(
-         "EmpresaId" => $_SESSION["id_empresa"],
+         "EmpresaId" => $_SESSION["empdef"],
          "ChipId"    => $data["codigo"], 
          "Nombre"    => $data["nombre"], 
          "UsuarioId" => $_SESSION["user_id"]
@@ -77,7 +77,7 @@ class ChipController {
       );
       $where = array(
          "ChipId"   => $data["codigo"], 
-         "EmpresaId" => $_SESSION["id_empresa"]
+         "EmpresaId" => $_SESSION["empdef"]
       );
       $response = GeneralModel::update($tabla, $dataUpdt, $where, null);
       return $response;
@@ -101,7 +101,7 @@ class ChipController {
          "nombre" => $_POST["nombre"]
       );
       $where = array(
-         "EmpresaId" => $_SESSION["id_empresa"],
+         "EmpresaId" => $_SESSION["empdef"],
          "ChipId"   => $idChip
       );
       $response = GeneralModel::update($tabla, $data, $where, null);

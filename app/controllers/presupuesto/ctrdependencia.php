@@ -48,7 +48,7 @@ class DependenciaController {
      $data["centrocto"] = strip_tags($data["centrocto"]);
       $tabla = "poDependencia";
       $dataUpdt = array(
-         "EmpresaId" => $_SESSION["id_empresa"],
+         "EmpresaId" => $_SESSION["empdef"],
          "DependenciaId"    => $data["codigo"], 
          "Nombre"    => $data["nombre"], 
          "Iniciales" => $data["iniciales"],
@@ -95,7 +95,7 @@ class DependenciaController {
       );
       $where = array(
          "DependenciaId"    => $data["codigo"], 
-         "EmpresaId" => $_SESSION["id_empresa"]
+         "EmpresaId" => $_SESSION["empdef"]
       );
       $response = GeneralModel::update($tabla, $dataUpdt, $where, null);
       return $response;
@@ -119,7 +119,7 @@ class DependenciaController {
          "Estado" => $_POST["status"]
       );
       $where = array(
-         "EmpresaId" => $_SESSION["id_empresa"],
+         "EmpresaId" => $_SESSION["empdef"],
          "DependenciaId"   => $idDependencia
       );
       $response = GeneralModel::update($tabla, $data, $where, null);

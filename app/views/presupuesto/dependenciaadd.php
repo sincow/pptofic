@@ -16,7 +16,7 @@
                         <div class="col-md-6">
                            <div class="form-group">
                               <label for="newCodigo" class="text-label fs-0 ps-1">Codigo *</label>
-                              <input type="text" class="form-control" id="newCodigo" name="codigo" required maxlength="2">
+                              <input type="text" class="form-control" id="newCodigo" name="codigo" required maxlength="4">
                               
                            </div>
                         </div>

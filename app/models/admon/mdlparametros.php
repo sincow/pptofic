@@ -42,13 +42,15 @@ class ParametrosModel {
          $where = substr($where, 0, -4);
          $where = " AND " . $where;
       }
+
+      //var_dump($where); // Agregar esta línea para depuración
       $connection = Database::getConnection();
       $stmt = $connection->prepare("SELECT * 
          FROM GrParame  
          WHERE 1 = 1 " . $where . "
          ORDER BY ParCodig"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_STR);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_STR);
       foreach ($listWhere as $key => $value) {
          $stmt->bindParam(":" . $value["id"], $value["value"]);
       }
@@ -69,7 +71,7 @@ class ParametrosModel {
          FROM GrParame a 
          WHERE a.EmpCodig = :id_empresa AND a.ParCodig = :id"
       );
-      $stmt->bindParam(":id_empresa", $_SESSION["id_empresa"], PDO::PARAM_INT);
+      $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
       $stmt->bindParam(":id", $id, PDO::PARAM_INT);
       $stmt->execute();
       $resp = $stmt->fetch(PDO::FETCH_ASSOC);

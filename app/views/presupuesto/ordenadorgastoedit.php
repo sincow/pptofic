@@ -17,7 +17,7 @@
                         <div class="col-md-6">
                            <div class="form-group">
                               <label for="editId" class="text-label fs-0 ps-1">Identificación *</label>
-                              <input type="text" class="form-control" id="editId" name="id" required maxlength="12">
+                              <input type="text" class="form-control" id="editId" name="id" required maxlength="12" readonly>
                            </div>
                         </div>
 

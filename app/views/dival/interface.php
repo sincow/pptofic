@@ -277,7 +277,7 @@
                      </div>
                      
                      <div class="col ps-1">
-                        <input type="text" class="form-control param" id="DvNivRubIng" name="DvNivRubIng" ParCodig="PRI" ParNombr="Estructura de niveles para rubro de ingreso"
+                        <input type="text" class="form-control param" id="DvNivRubIng" name="DvNivRubIng" ParCodig="RUI" ParNombr="Estructura de niveles para rubro de ingreso"
                                  placeholder="Ej: 1,2,4,6,9,12,14,16,18,20" maxlength="100">
                               <small class="text-muted">Separados por coma, en orden ascendente. Ejemplo: 1,2,4,6,9,12,14,16,18,20</small>
                      </div>
