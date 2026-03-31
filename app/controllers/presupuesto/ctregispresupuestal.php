@@ -1,79 +1,23 @@
 <?php
 if (!isset($_POST["option"])) {
-	require_once APP_PATH . '/models/presupuesto/mdlcertdisponibilidad.php';
+	require_once APP_PATH . '/models/presupuesto/mdlregispresupuestal.php';
 }
 
-class CertDisponibilidadController {
-
-   //*****************************************************************************************************
-   // static public function index(){
-   //    $origingreso = OrigIngresoModel::getAll(null);
-   //    return $origingreso;
-   // }
+class RegisPresupuestalController {
 
 
-   //*****************************************************************************************************
-   static public function getValorUsado(){
+     static public function create() {
       if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-         $response = array("success" => false, "message" => 'Método inválido');
-         return $response;
-      }
-      $data = $_POST;
-      $presupuesto = CertDisponibilidadModel::getValorUsado($data);
-      return $presupuesto;
-   }
-
-   static public function getCertDisponibilidad() {
-      if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-         return array(
+         return [
             "success" => false,
             "message" => "Método inválido"
-         );
+         ];
       }
 
       $data = $_POST;
+      $response = RegisPresupuestalModel::create($data);
 
-      if (empty($data["certDispId"])) {
-         return array(
-            "success" => false,
-            "message" => "El número de CDP es obligatorio"
-         );
-      }
-
-      if (empty($data["periodoFiscal"])) {
-         return array(
-            "success" => false,
-            "message" => "El período fiscal es obligatorio"
-         );
-      }
-
-      $response = CertDisponibilidadModel::getCertDisponibilidad($data);
       return $response;
-   }
-
-
-
-
-   static public function create() {
-      if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-         return ["success" => false, "message" => "Método inválido"];
-      }
-      $data = $_POST;
-       $response = CertDisponibilidadModel::create($data);
-
-      if (!$response["success"]) {
-         return $response;
-      }
-
-      //var_dump($response);
-      return self::generarImpresion(
-         $_SESSION["empdef"],
-         $data["periodofiscal"],
-         $response["cdpNumero"],
-         "Documento grabado correctamente. CDP: " . $response["cdpNumero"]
-      );
-
-
    }
 
 

@@ -15,27 +15,9 @@
 	</div>
 
    <form class="needs-validation form-search crearCDPForm" role="form" id="crearCDPForm" name="crearCDPForm" enctype="multipart/form-data" method="post" novalidate>
-      <!-- Verificar los objetos hidden para que queden los que necesito  -->
       <input type="hidden" id="nombretipofinanciacion" name="nombretipofinanciacion" value=''>
 
-
-      <!-- <input type="hidden" id="idCliente" name="id_dvcliente">
-      <input type="hidden" id="fechaActual" name="fechaActual" value="<?php echo date('Y-m-d'); ?>">
-      <input type="hidden" id="ivaIncluido" name="ivaIncluido" value=<?= $_SESSION['ivaIncluido']?>>
-      <input type="hidden" id="clase" name="clase" value='1'>
-      <input type="hidden" id="valorIva" name="valorIva" value=<?= $_SESSION['valorIva']?>>
-      <input type="hidden" id="TerDocId" name="TerDocId">
-      <input type="hidden" id="TerDocId2" name="TerDocId2" value=0>
-      <input type="hidden" id="TerDocId3" name="TerDocId3" value=0>
-      <input type="hidden" id="TerDocId4" name="TerDocId4" value=0>
-      <input type="hidden" id="clearSearch2" name="clearSearch2" value="">
-      <input type="hidden" id="clearSearch3" name="clearSearch3" value="">
-      <input type="hidden" id="clearSearch4" name="clearSearch4" value="">
-      <input type="hidden" id="compte" name="compte" value="">
-      <input type="hidden" name="acountingList" id="acountingList" value=""> -->
-
       <div class="row g-3">
-         
          <!-- card datos -->
          <div class="col-12 mt-0">
             <div class="card mb-3 h-lg-100">
@@ -64,8 +46,8 @@
                      
                      <div class="col-md-4">  
                         <div class="form-group">
-                           <label for="peridofiscal" class="text-label fs-0 ps-1">Periodo Fiscal *</label>
-                           <input type="text" class="form-control" id="peridofiscal" name="peridofiscal" required maxlength="4">
+                           <label for="periodofiscal" class="text-label fs-0 ps-1">Periodo Fiscal *</label>
+                           <input type="text" class="form-control" id="periodofiscal" name="periodofiscal" required maxlength="4">
                         </div>
                      </div>
 
@@ -220,8 +202,7 @@
                   <div class="row g-3 align-items-end">
             
                      <div class="col-md-3">
-                        <label for="numeroCopia" class="text-label fs-0 ps-1">Número de Copia</label>
-                        <input type="text" class="form-control" id="numeroCopia" name="numeroCopia">
+                        
                      </div>
 
                      <div class="col-md-9">

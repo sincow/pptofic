@@ -60,7 +60,7 @@ class CertDisponibilidadModel {
          $required = [
             'fecha',
             'expiracion',
-            'peridofiscal',
+            'periodofiscal',
             'dependencia',
             'ordenadorgasto',
             'tipodocumento',
@@ -94,7 +94,7 @@ class CertDisponibilidadModel {
 
          $fecha = trim($data["fecha"]);
          $expiracion = trim($data["expiracion"]);
-         $periodo = trim($data["peridofiscal"]);
+         $periodo = trim($data["periodofiscal"]);
          $dependencia = trim($data["dependencia"]);
          $ordenador = trim($data["ordenadorgasto"]);
          $tipoDocumento = trim($data["tipodocumento"]);
@@ -294,44 +294,170 @@ class CertDisponibilidadModel {
       return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
 
+   static public function getCertDisponibilidad($data) {
+      try {
+      
+         $empresaId     = $_SESSION["empdef"];
+         $periodoFiscal = trim($data["periodoFiscal"] ?? '');
+         $certDispId    = trim($data["certDispId"] ?? '');
+
+         if ($periodoFiscal === '' || $certDispId === '') {
+            return array(
+               "success" => false,
+               "message" => "Faltan datos para consultar el CDP"
+            );
+         }
+
+         $db = Database::getConnection();
+
+         /*
+         * CABECERA
+         */
+         $sqlHeader = "SELECT 
+                           a.EmpresaId,
+                           a.PeriodoFiscal,
+                           a.CertDispId,
+                           a.Fecha,
+                           a.Expiracion,
+                           a.DependenciaId,
+                           d.Nombre AS DependenciaNombre,
+                           a.Concepto,
+                           a.TipoDocumentoId,
+                           td.Nombre AS TipoDocumentoNombre,
+                           a.TipoDocumentoNr,
+                           a.OrdGastoId,
+                           COALESCE(ct.TerNombr, '') AS OrdenadorGastoNombre,
+                           COALESCE(pog.Cargo, '') AS OrdenadorGastoCargo
+                     FROM PoCertDisp a
+                              LEFT JOIN PoDependencia d ON d.EmpresaId = a.EmpresaId AND d.DependenciaId = a.DependenciaId
+                              LEFT JOIN PoTipoDocumento td ON td.EmpresaId = a.EmpresaId AND td.TipoDocumentoId = a.TipoDocumentoId
+                              LEFT JOIN CoTercer ct ON ct.EmpCodig = a.EmpresaId  AND ct.TerDocId = a.OrdGastoId
+                              LEFT JOIN PoOrdenadorGasto pog ON pog.EmpresaId = a.EmpresaId AND pog.TerceroId = a.OrdGastoId
+                     WHERE  a.EmpresaId = :empresaId
+                              AND a.PeriodoFiscal = :periodoFiscal
+                              AND a.CertDispId = :certDispId
+                              AND a.Estado = 1";
+
+         $stmtHeader = $db->prepare($sqlHeader);
+         $stmtHeader->bindParam(':empresaId', $empresaId, PDO::PARAM_STR);
+         $stmtHeader->bindParam(':periodoFiscal', $periodoFiscal, PDO::PARAM_STR);
+         $stmtHeader->bindParam(':certDispId', $certDispId, PDO::PARAM_STR);
+         $stmtHeader->execute();
+
+         $header = $stmtHeader->fetch(PDO::FETCH_ASSOC);
+
+         if (!$header) {
+            return array(
+               "success" => false,
+               "message" => "El CDP no existe o está anulado"
+            );
+         }
+
+         /*
+         * DETALLE
+         */
+         $sqlDetail = "SELECT
+                           d.EmpresaId,
+                           d.PeriodoFiscal,
+                           d.CertDispId,
+                           d.RubroGastoId,
+                           rg.Nombre AS RubroGastoNombre,
+                           d.TipoFinanciacionId,
+                           tf.Nombre AS TipoFinanciacionNombre,
+                           d.RecCodig,
+                           d.OEICodig,
+                           d.DReCodig,
+                           d.FGaCodig,
+                           d.Valor,
+                           d.RubroSaldo,
+                           d.LibValor,
+                           COALESCE(rpu.ValorUsado, 0) AS ValorUsado,
+                           (COALESCE(d.Valor, 0) - COALESCE(d.LibValor, 0) - COALESCE(rpu.ValorUsado, 0)) AS SaldoDisponible
+                         FROM PoCertDispDet d
+                              LEFT JOIN PoRubroGasto rg ON rg.EmpresaId = d.EmpresaId AND rg.RubroGastoId = d.RubroGastoId AND rg.TipoFinanciacionId = d.TipoFinanciacionId
+                              LEFT JOIN PoTipoFinanciacion tf ON tf.EmpresaId = d.EmpresaId AND tf.TipoFinanciacionId = d.TipoFinanciacionId 
+                              LEFT JOIN (SELECT rp.EmpresaId, 
+                                                rp.PeriodoFiscal,
+                                                rp.CertDispId,
+                                                rpd.RubroGastoId,
+                                                rpd.TipoFinanciacionId,
+                                                SUM(COALESCE(rpd.Valor, 0) - COALESCE(rpd.LibValor, 0)) AS ValorUsado
+                                          FROM PoRegistroPres rp
+                                                INNER JOIN PoRegistroPresDet rpd ON rp.EmpresaId = rpd.EmpresaId AND rp.PeriodoFiscal = rpd.PeriodoFiscal AND rp.RegistroPresId = rpd.RegistroPresId
+                                          WHERE rp.EmpresaId = :empresaIdSub AND rp.PeriodoFiscal = :periodoFiscalSub AND rp.CertDispId = :certDispIdSub AND rp.Estado = 1
+                                          GROUP BY rp.EmpresaId,rp.PeriodoFiscal,rp.CertDispId,rpd.RubroGastoId,rpd.TipoFinanciacionId) rpu ON rpu.EmpresaId = d.EmpresaId
+                                       AND rpu.PeriodoFiscal = d.PeriodoFiscal AND rpu.CertDispId = d.CertDispId AND rpu.RubroGastoId = d.RubroGastoId AND rpu.TipoFinanciacionId = d.TipoFinanciacionId
+                         WHERE d.EmpresaId = :empresaId  AND d.PeriodoFiscal = :periodoFiscal AND d.CertDispId = :certDispId
+                           ORDER BY d.RubroGastoId, d.TipoFinanciacionId";
+
+         $stmtDetail = $db->prepare($sqlDetail);
+
+         $stmtDetail->bindParam(':empresaId', $empresaId, PDO::PARAM_STR);
+         $stmtDetail->bindParam(':periodoFiscal', $periodoFiscal, PDO::PARAM_STR);
+         $stmtDetail->bindParam(':certDispId', $certDispId, PDO::PARAM_STR);
+
+         $stmtDetail->bindParam(':empresaIdSub', $empresaId, PDO::PARAM_STR);
+         $stmtDetail->bindParam(':periodoFiscalSub', $periodoFiscal, PDO::PARAM_STR);
+         $stmtDetail->bindParam(':certDispIdSub', $certDispId, PDO::PARAM_STR);
+
+         $stmtDetail->execute();
+         $detail = $stmtDetail->fetchAll(PDO::FETCH_ASSOC);
+
+         $totalDisponible = 0;
+
+         foreach ($detail as &$row) {
+            $row["Valor"] = (float)$row["Valor"];
+            $row["RubroSaldo"] = (float)$row["RubroSaldo"];
+            $row["LibValor"] = (float)$row["LibValor"];
+            $row["ValorUsado"] = (float)$row["ValorUsado"]; 
+            $row["SaldoDisponible"] = (float)$row["SaldoDisponible"];
+
+            if ($row["SaldoDisponible"] < 0) {
+               $row["SaldoDisponible"] = 0;
+            }
+
+            $totalDisponible += $row["SaldoDisponible"];
+         }
+         unset($row);
+
+         return array(
+            "success" => true,
+            "message" => "CDP consultado correctamente",
+            "header" => array(
+               "empresaId"             => $header["EmpresaId"],
+               "periodoFiscal"         => $header["PeriodoFiscal"],
+               "certDispId"            => $header["CertDispId"],
+               "fecha"                 => $header["Fecha"],
+               "expiracion"            => $header["Expiracion"],
+               "dependenciaId"         => $header["DependenciaId"],
+               "dependenciaNombre"     => $header["DependenciaNombre"],
+               "concepto"              => $header["Concepto"],
+               "tipoDocumentoId"       => $header["TipoDocumentoId"],
+               "tipoDocumentoNombre"   => $header["TipoDocumentoNombre"],
+               "tipoDocumentoNr"       => $header["TipoDocumentoNr"],
+               "ordenadorGastoId"      => $header["OrdGastoId"],
+               "ordenadorGastoNombre"  => $header["OrdenadorGastoNombre"],
+               "ordenadorGastoCargo"   => $header["OrdenadorGastoCargo"]
+            ),
+            "detail" => $detail,
+            "totalDisponible" => $totalDisponible
+         );
+
+      } catch (PDOException $e) {
+         return array(
+            "success" => false,
+            "message" => "Error al consultar el CDP: " . $e->getMessage()
+         );
+      } catch (Exception $e) {
+         return array(
+            "success" => false,
+            "message" => "Error general: " . $e->getMessage()
+         );
+      }
+   }
+
 }
 
 
 
-   // /**********************************************************************/
-   // static public function getAll($conn = null) {
-   //    if ($conn == null) {
-	// 		$connection = Database::getConnection();
-	// 	}
-   //    $stmt = $connection->prepare("SELECT OrigIngresoId, Nombre, Estado, UsuarioId, 
-   //       FechaCreacion, FechaModificacion
-   //       FROM poOrigIngreso
-   //       WHERE EmpresaId = :id_empresa
-   //       ORDER BY Nombre"
-   //    );
-   //    $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
-   //    $stmt->execute();
-   //    $resp = $stmt->fetchAll(PDO::FETCH_ASSOC);
-   //    $stmt = null;
-   //    $connection = null;
-   //    return $resp;
-   // }
-
-
-   /**********************************************************************/
-   // static public function getOne($id) {
-   //    $connection = Database::getConnection();
-   //    $stmt = $connection->prepare("SELECT a.OrigIngresoId, a.Nombre, a.Estado, a.UsuarioId, 
-   //       a.FechaCreacion, a.FechaModificacion
-   //       FROM poOrigIngreso a 
-   //       WHERE a.EmpresaId = :id_empresa AND OrigIngresoId = :id"
-   //    );
-   //    $stmt->bindParam(":id_empresa", $_SESSION["empdef"], PDO::PARAM_INT);
-   //    $stmt->bindParam(":id", $id, PDO::PARAM_INT);
-   //    $stmt->execute();
-   //    $resp = $stmt->fetch(PDO::FETCH_ASSOC);
-   //    $stmt = null;
-   //    $connection = null;
-   //    return $resp;
-   // }
 

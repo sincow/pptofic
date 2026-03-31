@@ -59,7 +59,7 @@ $('#detalleCodigo').on('select2:opening', function (e) {
 function validarCabeceraAntesDetalle() {
    const fecha = document.getElementById('fecha').value.trim();
    const expiracion = document.getElementById('expiracion').value.trim();
-   const perfiscal = document.getElementById('peridofiscal').value.trim();
+   const perfiscal = document.getElementById('periodofiscal').value.trim();
    const dependencia = document.getElementById('dependencia').value.trim();
    const ordenador = document.getElementById('ordenadorgasto').value.trim();
    const documento = document.getElementById('tipodocumento').value.trim();
@@ -81,7 +81,7 @@ function validarCabeceraAntesDetalle() {
 
    if (perfiscal === '') {
       alert('Debe seleccionar el periodo fiscal.');
-      document.getElementById('peridofiscal').focus();
+      document.getElementById('periodofiscal').focus();
       return false;
    }
 
@@ -146,7 +146,7 @@ $('#detalleTipoFinanciacion').on('select2:select', function (e) {
 async function valorRubro(codigo) {
    
    //para hallar el valor 
-    const PeriodoFiscal = document.getElementById('peridofiscal').value.trim();  
+    const PeriodoFiscal = document.getElementById('periodofiscal').value.trim();  
     const tipoFinanciacion = document.getElementById('detalleTipoFinanciacion').value.trim();  
     const dependencia = document.getElementById('dependencia').value.trim();
     var aprValor = 0;
@@ -433,9 +433,9 @@ $('#btnLimpiar').on('click', function (e) {
    // 🔹 1. Limpiar inputs de cabecera
    $('#fecha').val('');
    $('#expiracion').val('');
-   $('#peridofiscal').val('');
+   $('#periodofiscal').val('');
    $('#documentonro').val('');
-   $('#numeroCopia').val('');
+   
    $('#concepto').val('');
 
    // 🔹 2. Resetear selects principales

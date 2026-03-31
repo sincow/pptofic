@@ -190,7 +190,7 @@ function initializeOwnerSelect() {
 /*************************************************************************************/
 function initialSelect(selectQuery, parameters){
 	const ajaxUrl = 'helpers/ajaxRouter.php';
-	setupSelect = "#terceroVale";
+	// setupSelect = "#terceroVale";
 	setupSelect = "#"+selectQuery;
    var moduleParam = parameters[0]["modulo"];
 	var optionParam = parameters[0]["option"];
